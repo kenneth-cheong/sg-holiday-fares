@@ -117,6 +117,17 @@ payload. So the stop count and carrier shown describe the outbound journey, whil
 the price is for both. Fine for tracking prices, wrong if you want itinerary
 detail.
 
+**Results depend on where the query comes from.** Google Flights returns
+different inventory by point of sale, and GitHub's runners are not in Singapore.
+Measured on the first run: the Jakarta window of 7–9 Nov 2026 returned a nonstop
+TransNusa at SGD 227 from a Singapore connection, and *no nonstop at all* from
+the US-based runner minutes later. Currency is pinned to SGD so the numbers stay
+comparable, but expect the history to drift from what you see booking at home,
+and expect occasional "no offers matched the stop limit" gaps on nonstop-only
+destinations. Trends stay valid because every observation comes from the same
+place; absolute prices are indicative. A self-hosted in-region runner is the
+only real fix.
+
 **Daily sampling smooths over intraday volatility.** Fares move hour to hour. A
 single observation is weak evidence; the trend is the signal.
 
