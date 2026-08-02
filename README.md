@@ -81,40 +81,53 @@ bridges both and buys **nine consecutive days off** — and no per-holiday view
 would show you that, because it only exists when the two are considered
 together.
 
+## Live prices and the API
+
+The page fetches prices when it loads rather than reading a stale snapshot. It
+calls a small Lambda in **ap-southeast-1**, which matters for a reason beyond
+latency: Google returns different inventory by point of sale, and querying from
+Singapore surfaces itineraries a US-based runner never sees. A Jakarta nonstop
+that the GitHub Actions sweep reported as "no offers" comes back at SGD 227 from
+the Singapore endpoint.
+
+```
+POST /fares    {origin, currency, fresh?, queries:[{dest,depart,ret,maxStops}]}
+GET  /verify   ?dest=HND
+```
+
+Results are cached in the function for 15 minutes, so a page load is usually
+instant and Google sees a fraction of the traffic. **Refresh** in the header
+sets `fresh` and re-queries everything.
+
+Because the repository is public the endpoint URL is too, so the API Gateway
+stage is throttled (5 requests/second, burst 10) to bound what a stranger can
+cost. Deploy changes with:
+
+```bash
+./api/build.sh && aws lambda update-function-code --region ap-southeast-1 --function-name sg-holiday-fares-api --zip-file fileb://api/fares-api.zip
+```
+
+`build.sh` pins the wheel platform to `manylinux2014_x86_64`. `fast-flights`
+depends on `primp` and `selectolax`, both compiled — installing them on macOS
+produces binaries Lambda cannot load, and the failure is silent until runtime.
+
 ## Choosing destinations
 
-There are two different things this could mean, and they are handled in
-different places.
+**On the page.** The Destinations row adds, removes and hides destinations, all
+persisted in the browser. Adding one verifies the route with a real lookup first,
+so a typo or an airport with no service from Singapore is refused rather than
+charted as an empty row. A destination keeps its chart colour until you remove
+it, so toggling one never repaints the others; only eight distinct series exist
+and they are never reused, so anything past the eighth shows in the table.
 
-**What gets displayed** is a reader's choice, made on the dashboard. The
-destination picker toggles each one on or off and remembers it in the browser.
-A destination keeps its chart colour until you deselect it, so toggling one
-never repaints the others. Only eight distinct series exist and they are never
-reused, so any selection past the eighth appears in the table rather than the
-chart.
-
-**What gets tracked** lives in `config.json`, because the daily job reads it at
-runtime — a static page cannot change that. Edit it through the **Manage
-destinations** workflow in the Actions tab, which takes the code, name, stop
-limit and target as a form, or run the same thing locally:
+**In the repository.** `config.json` still drives the daily sweep — the recorded
+history and the Telegram alerts. Adding a destination on the page gives you live
+prices immediately but no trend line until it is tracked here too, through the
+**Manage destinations** workflow in the Actions tab or locally:
 
 ```bash
 python manage.py add HND Tokyo --max-stops 1 --target 800 --verify
 ```
-
-`--verify` runs a single live query first and refuses a route that returns
-nothing, which catches typos and airports with no service from Singapore. Use
-`set` to retune, and `remove` to stop tracking — past observations stay in the
-history either way. Both paths write one destination per line, so a change is a
-one-line diff.
-
-## Refreshing on demand
-
-The sweep runs daily, but the **Refresh ↗** link in the dashboard header opens
-the workflow on GitHub where **Run workflow** re-checks every fare immediately —
-about five minutes end to end. Triggering it from the page itself would mean
-embedding a credential in a public site, which is why it links out to GitHub and
-lets GitHub do the authenticating.
 
 ## Booking and journey time
 

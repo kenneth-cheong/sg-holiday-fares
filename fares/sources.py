@@ -40,11 +40,20 @@ class Offer:
 
 
 def _leg_time(part) -> datetime | None:
-    """A leg endpoint as a naive local datetime. Times arrive as [h] or [h, m]."""
+    """A leg endpoint as a naive local datetime. Times arrive as [h] or [h, m].
+
+    Upstream occasionally supplies a None inside those lists, so every component
+    is validated rather than trusted — building a datetime from one raises, and
+    losing a fare over a missing minute field would be a poor trade.
+    """
     day, clock = getattr(part, "date", None), getattr(part, "time", None)
-    if not day or not clock:
+    if not day or not clock or len(day) < 3:
         return None
-    return datetime(day[0], day[1], day[2], clock[0], clock[1] if len(clock) > 1 else 0)
+    minute = clock[1] if len(clock) > 1 else 0
+    parts = [day[0], day[1], day[2], clock[0], minute]
+    if any(not isinstance(value, int) for value in parts):
+        return None
+    return datetime(*parts)
 
 
 def journey_minutes(legs) -> int | None:
@@ -58,7 +67,7 @@ def journey_minutes(legs) -> int | None:
     if not legs:
         return None
 
-    total = sum(leg.duration or 0 for leg in legs)
+    total = sum(leg.duration or 0 for leg in legs if isinstance(getattr(leg, "duration", None), int))
     for previous, following in zip(legs, legs[1:]):
         landed, leaves = _leg_time(previous.arrival), _leg_time(following.departure)
         if landed is None or leaves is None:
@@ -177,6 +186,13 @@ class GoogleFlightsSource:
             if price is None or not legs:
                 continue
 
+            # The price is the point; journey time is context. A parsing fault in
+            # the timestamps must never cost us the fare.
+            try:
+                duration = journey_minutes(legs)
+            except Exception:
+                duration = None
+
             hops = [legs[0].from_airport.code] + [leg.to_airport.code for leg in legs]
             offers.append(
                 Offer(
@@ -186,7 +202,7 @@ class GoogleFlightsSource:
                     stops=len(legs) - 1,
                     route="-".join(hops),
                     source=self.name,
-                    duration_minutes=journey_minutes(legs),
+                    duration_minutes=duration,
                 )
             )
 
