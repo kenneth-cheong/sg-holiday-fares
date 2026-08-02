@@ -85,8 +85,19 @@
 
   section.holiday, details.holiday {
     background: var(--surface-1); border: 1px solid var(--border); border-radius: 14px;
-    padding: 18px 18px 6px; margin-top: 18px;
+    padding: 18px 18px 6px;
   }
+  section.holiday { margin-top: 18px; }
+
+  /* Collapsed cards tile; an expanded one takes the full row because the chart
+     and table need the width. */
+  #out {
+    display: grid; gap: 16px; margin-top: 18px;
+    grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+    align-items: start;
+  }
+  details.holiday { margin: 0; }
+  details.holiday[open] { grid-column: 1 / -1; }
 
   /* Summary cards: the collapsed state answers "how much, and where to". */
   details.card > summary {
@@ -102,6 +113,12 @@
   details.card > summary:hover { background: color-mix(in srgb, var(--text-primary) 4%, transparent); }
   details.card > summary .htitle { padding-right: 26px; }
   details.card .card-body { padding-top: 4px; }
+  /* A tiled card is ~330px wide, where the expanded card's 26px figure wraps
+     mid-phrase. */
+  details.card:not([open]) .headline { font-size: 13px; }
+  details.card:not([open]) .headline b { font-size: 19px; letter-spacing: -0.01em; }
+  details.card:not([open]) .htitle { flex-direction: column; gap: 2px; }
+  details.card:not([open]) .away { font-size: 12px; }
   details.card .headline.muted b { font-weight: 500; }
   details.card .headline.muted { color: var(--text-muted); font-size: 13px; }
 
@@ -125,6 +142,11 @@
   }
   .skeleton-row { display: flex; flex-wrap: wrap; gap: 8px 14px; margin-top: 10px; }
   .updating { color: var(--text-muted); font-size: 12px; margin-left: 8px; white-space: nowrap; }
+  .badge {
+    font-size: 11px; margin-left: 8px; padding: 2px 7px; border-radius: 999px;
+    border: 1px solid var(--border); color: var(--text-muted); vertical-align: 2px; white-space: nowrap;
+  }
+  .badge.is-live { color: var(--good); border-color: currentColor; }
 
   .mini { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 8px; font-size: 13px; }
   .mini-item { display: inline-flex; align-items: center; gap: 6px; color: var(--text-secondary); }
@@ -696,6 +718,7 @@ function renderHoliday(holiday, maxLeave, currency, openByDefault) {
       <span class="away">${esc(dateLabel)} · ${away} days away</span></div>`;
 
   const busy = LOADING.has(holiday.date);
+  const isLive = enriched.some(entry => entry.windows.some(w => w.live));
 
   // A card exists for every holiday; distant ones have nothing priced until
   // they are opened, and pricing takes a few seconds worth showing.
@@ -778,7 +801,8 @@ function renderHoliday(holiday, maxLeave, currency, openByDefault) {
     <summary>
       ${head}
       <p class="headline">Cheapest — ${esc(cheapest.dest.name)} at <b>${esc(currency)} ${cheapestPrice.toLocaleString()}</b>${delta}${
-        busy ? '<span class="updating"><span class="spin"></span> updating…</span>' : ''}</p>
+        busy ? '<span class="updating"><span class="spin"></span> updating…</span>'
+             : `<span class="badge ${isLive ? 'is-live' : ''}">${isLive ? 'live' : 'recorded'}</span>`}</p>
       <div class="mini">${mini}</div>
     </summary>
     <div class="card-body">
@@ -1295,8 +1319,14 @@ Promise.all([grab('data/dashboard.json'), grab('data/plan.json').catch(() => nul
     loadDestinations();
     loadSelection();
     renderPicker();
+    // Deliberately no live fetch here. The page opens on the recorded snapshot
+    // and only queries Google when a specific holiday is asked for. The card
+    // set is still built now — it is local work, and it used to happen as a
+    // side effect of the fetch, so removing the fetch lost every holiday that
+    // had no recorded history.
+    syncDestinations();
     render();
-    refreshLive();
+    setLiveStatus('showing the recorded snapshot — open a holiday for live prices', false);
   })
   .catch(err => {
     document.getElementById('out').innerHTML =
