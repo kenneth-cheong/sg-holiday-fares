@@ -141,7 +141,18 @@ def _handle_verify(params: dict) -> dict:
     )
 
     if outcome["best"] is None:
-        return _cors({"ok": False, "reason": f"no {origin}-{dest} itineraries found"})
+        # "no offers" means the route genuinely returned nothing; anything else
+        # is an upstream failure and must not be reported as an absent route.
+        # Some real destinations (SIN-PVG, SIN-CTU) currently trip a parser bug
+        # in fast-flights, and calling those "no service" would be wrong.
+        detail = outcome.get("error") or ""
+        if detail.startswith("no offers"):
+            return _cors({"ok": False, "reason": f"no {origin}-{dest} itineraries returned"})
+        return _cors({
+            "ok": False,
+            "reason": f"lookup failed for {origin}-{dest} — this may be a route the fare source cannot parse",
+            "detail": detail[:160],
+        })
     return _cors({
         "ok": True,
         "dest": dest,

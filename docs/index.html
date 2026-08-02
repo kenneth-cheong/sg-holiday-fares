@@ -83,10 +83,32 @@
     border: 1px solid var(--border); background: var(--surface-1); color: var(--text-primary);
   }
 
-  section.holiday {
+  section.holiday, details.holiday {
     background: var(--surface-1); border: 1px solid var(--border); border-radius: 14px;
     padding: 18px 18px 6px; margin-top: 18px;
   }
+
+  /* Summary cards: the collapsed state answers "how much, and where to". */
+  details.card > summary {
+    list-style: none; cursor: pointer; margin: -18px -18px 0; padding: 18px 18px 14px;
+    border-radius: 14px; position: relative;
+  }
+  details.card > summary::-webkit-details-marker { display: none; }
+  details.card > summary::after {
+    content: '⌄'; position: absolute; right: 18px; top: 16px;
+    color: var(--text-muted); font-size: 18px; line-height: 1; transition: transform .15s;
+  }
+  details.card[open] > summary::after { transform: rotate(180deg); }
+  details.card > summary:hover { background: color-mix(in srgb, var(--text-primary) 4%, transparent); }
+  details.card > summary .htitle { padding-right: 26px; }
+  details.card .card-body { padding-top: 4px; }
+  details.card .headline.muted b { font-weight: 500; }
+  details.card .headline.muted { color: var(--text-muted); font-size: 13px; }
+
+  .mini { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 8px; font-size: 13px; }
+  .mini-item { display: inline-flex; align-items: center; gap: 6px; color: var(--text-secondary); }
+  .mini-item b { color: var(--text-primary); font-variant-numeric: tabular-nums; font-weight: 600; }
+  .mini-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
   .htitle { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
   h2 { font-size: 17px; margin: 0; }
   .away { color: var(--text-muted); font-size: 13px; }
@@ -536,6 +558,9 @@ function lineChart(series, currency) {
 }
 
 function attachHover(root, series, currency) {
+  // An unpriced card has no chart at all; without this guard the throw aborts
+  // the render loop and every later card loses its expand handler.
+  if (!root) return;
   const svg = root.querySelector('svg'), tip = root.querySelector('.tip');
   if (!svg || !tip) return;
   const layer = svg.querySelector('.hoverlayer'), hit = svg.querySelector('.hit');
@@ -575,14 +600,31 @@ function attachHover(root, series, currency) {
   hit.addEventListener('mouseleave', () => { tip.style.opacity = '0'; layer.innerHTML = ''; });
 }
 
-function renderHoliday(holiday, maxLeave, currency) {
+function renderHoliday(holiday, maxLeave, currency, openByDefault) {
   const enriched = holiday.destinations
     .filter(dest => SELECTED.has(dest.code))
     .map(dest => ({ dest, slot: SLOT_OF[dest.code], ...seriesFor(dest, maxLeave) }))
     // A destination added on the page has no committed history, so it qualifies
     // on having a live price alone.
     .filter(entry => entry.points.length || entry.windows.some(w => w.current != null));
-  if (!enriched.length) return '';
+
+  const away = Math.round((parse(holiday.date) - new Date()) / 864e5);
+  const dateLabel = parse(holiday.date).toLocaleDateString(undefined,
+    { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  const head = `<div class="htitle"><h2>${esc(holiday.name)}</h2>
+      <span class="away">${esc(dateLabel)} · ${away} days away</span></div>`;
+
+  // A card exists for every holiday; distant ones simply have nothing priced
+  // until they are opened.
+  if (!enriched.length) {
+    const state = PRICED.has(holiday.date)
+      ? 'No fares returned — airlines usually publish only about eleven months ahead.'
+      : 'Open to load live prices.';
+    return `<details class="holiday card" data-anchor="${esc(holiday.date)}">
+      <summary>${head}<p class="headline muted">${esc(state)}</p></summary>
+      <div class="card-body"><p class="note">${esc(state)}</p></div>
+    </details>`;
+  }
 
   const current = entry => entry.points.length
     ? entry.points[entry.points.length - 1].price
@@ -590,17 +632,25 @@ function renderHoliday(holiday, maxLeave, currency) {
   const charted = chartSeries(holiday, maxLeave);
   const hidden = enriched.length - charted.length;
 
-  const cheapest = [...enriched].sort((a, b) => current(a) - current(b))[0];
+  const ranked = [...enriched].sort((a, b) => current(a) - current(b));
+  const cheapest = ranked[0];
   const cheapestPrice = current(cheapest);
   const base = median(cheapest.points.slice(0, -1).map(p => p.price));
   const delta = base && cheapestPrice < base
     ? ` <span class="delta">↓ ${Math.round((base - cheapestPrice) / base * 100)}% vs its ${currency} ${base.toLocaleString()} median</span>` : '';
 
-  const away = Math.round((parse(holiday.date) - new Date()) / 864e5);
+  // The summary answers "how much, and where to" without opening anything.
+  const mini = ranked.map(entry => {
+    const colour = entry.slot === undefined ? 'var(--axis)' : `var(--series-${entry.slot + 1})`;
+    return `<span class="mini-item" title="${esc(entry.dest.name)}">
+      <span class="mini-dot" style="background:${colour}"></span>${esc(entry.dest.code)}
+      <b>${current(entry).toLocaleString()}</b></span>`;
+  }).join('');
+
   const legend = charted.map(s =>
     `<span class="item"><span class="dot" style="background:var(--series-${s.slot + 1})"></span>${esc(s.name)}</span>`).join('');
 
-  const rows = [...enriched].sort((a, b) => current(a) - current(b)).flatMap(entry => entry.windows.map(w => {
+  const rows = ranked.flatMap(entry => entry.windows.map(w => {
     const prices = w.series.map(p => p.price);
     const med = median(prices.slice(0, -1));
     return `<tr>
@@ -616,22 +666,22 @@ function renderHoliday(holiday, maxLeave, currency) {
     </tr>`;
   })).join('');
 
-  return `<section class="holiday">
-    <div class="htitle">
-      <h2>${esc(holiday.name)}</h2>
-      <span class="away">${esc(parse(holiday.date).toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }))} · ${away} days away</span>
-    </div>
-    <p class="headline">Cheapest right now — ${esc(cheapest.dest.name)} at <b>${esc(currency)} ${cheapestPrice.toLocaleString()}</b>${delta}</p>
-    <div class="chart">${lineChart(charted, currency)}<div class="tip"></div></div>
-    <div class="legend">${legend}</div>
-    ${hidden > 0 ? `<p class="note">${hidden} selected destination${hidden > 1 ? 's appear' : ' appears'} in the table but not the chart — there are ${SLOTS} distinct series and they are never reused. Deselect one above to free a colour.</p>` : ''}
-    <details><summary>All windows and destinations (${rows ? enriched.reduce((n, e) => n + e.windows.length, 0) : 0} rows)</summary>
+  return `<details class="holiday card" data-anchor="${esc(holiday.date)}"${openByDefault ? ' open' : ''}>
+    <summary>
+      ${head}
+      <p class="headline">Cheapest — ${esc(cheapest.dest.name)} at <b>${esc(currency)} ${cheapestPrice.toLocaleString()}</b>${delta}</p>
+      <div class="mini">${mini}</div>
+    </summary>
+    <div class="card-body">
+      <div class="chart">${lineChart(charted, currency)}<div class="tip"></div></div>
+      <div class="legend">${legend}</div>
+      ${hidden > 0 ? `<p class="note">${hidden} selected destination${hidden > 1 ? 's appear' : ' appears'} in the table but not the chart — there are ${SLOTS} distinct series and they are never reused. Deselect one above to free a colour.</p>` : ''}
       <div class="scroller"><table>
         <thead><tr><th>Destination</th><th>Window</th><th class="num">Now</th><th class="num">Median</th><th class="num">Low</th><th>Carrier</th><th>Stops</th><th class="num">Journey</th><th>Google Flights</th></tr></thead>
         <tbody>${rows}</tbody>
       </table></div>
-    </details>
-  </section>`;
+    </div>
+  </details>`;
 }
 
 /* ── Live prices ────────────────────────────────────────────────────────────
@@ -639,11 +689,16 @@ function renderHoliday(holiday, maxLeave, currency) {
    queried from Singapore so it matches what a local traveller is quoted. The
    two are merged rather than one replacing the other. */
 const MIN_LEAD_DAYS = 14, LOOKAHEAD_DAYS = 180;
+const PRICED = new Set();   // holiday anchors whose live prices have been fetched
 
-function horizonWindows(anchorIso) {
+/* Every future break gets a card. Only those inside the booking horizon are
+   priced on load — airlines generally do not publish fares much beyond eleven
+   months, and pricing thirteen holidays eagerly would be hundreds of lookups. */
+function windowsFor(anchorIso, horizonOnly = false) {
   if (!PLAN) return [];
   const now = Date.now();
-  const earliest = now + MIN_LEAD_DAYS * 864e5, latest = now + LOOKAHEAD_DAYS * 864e5;
+  const earliest = now + MIN_LEAD_DAYS * 864e5;
+  const latest = horizonOnly ? now + LOOKAHEAD_DAYS * 864e5 : Infinity;
   const unique = new Map();
   for (const brk of PLAN.breaks) {
     if (brk.anchor !== anchorIso) continue;
@@ -656,6 +711,9 @@ function horizonWindows(anchorIso) {
   return [...unique.values()];
 }
 
+const horizonWindows = anchor => windowsFor(anchor, true);
+const inHorizon = anchor => horizonWindows(anchor).length > 0;
+
 /* A destination the reader added is not in the committed history, so its
    windows are synthesised from the holiday plan and start with no series. */
 /* The recorded history only covers holidays the sweep has reached. Live pricing
@@ -664,7 +722,7 @@ function horizonWindows(anchorIso) {
 function syncHolidays() {
   const present = new Set(DATA.holidays.map(h => h.date));
   for (const brk of (PLAN?.breaks || [])) {
-    if (present.has(brk.anchor) || !horizonWindows(brk.anchor).length) continue;
+    if (present.has(brk.anchor) || !windowsFor(brk.anchor).length) continue;
     DATA.holidays.push({ name: brk.name, date: brk.anchor, destinations: [] });
     present.add(brk.anchor);
   }
@@ -674,7 +732,7 @@ function syncHolidays() {
 function syncDestinations() {
   syncHolidays();
   for (const holiday of DATA.holidays) {
-    const windows = horizonWindows(holiday.date);
+    const windows = windowsFor(holiday.date);
     if (!windows.length) continue;
 
     for (const dest of DESTS) {
@@ -714,16 +772,21 @@ function setLiveStatus(text, busy) {
   if (el) { el.textContent = text; el.classList.toggle('busy', !!busy); }
 }
 
-async function refreshLive({ fresh = false } = {}) {
+async function refreshLive({ fresh = false, only = null } = {}) {
   syncDestinations();
   const index = windowIndex();
   const groups = DATA.holidays
-    .map(holiday => ({ holiday, windows: horizonWindows(holiday.date) }))
+    .filter(holiday => (only ? holiday.date === only : inHorizon(holiday.date)))
+    .map(holiday => ({ holiday, windows: windowsFor(holiday.date, !only) }))
     .filter(group => group.windows.length);
 
   if (!groups.length || !DESTS.length) { render(); return; }
+  if (fresh) for (const group of groups) PRICED.delete(group.holiday.date);
 
-  setLiveStatus(fresh ? 'fetching fresh prices…' : 'checking live prices…', true);
+  setLiveStatus(
+    only ? `pricing ${groups[0].holiday.name}…` : fresh ? 'fetching fresh prices…' : 'checking live prices…',
+    true,
+  );
   let ok = 0, failed = 0;
 
   // One request per holiday keeps each batch inside the API's per-call cap and
@@ -763,6 +826,7 @@ async function refreshLive({ fresh = false } = {}) {
         w.min = Math.min(...w.series.map(p => p.price));
         w.max = Math.max(...w.series.map(p => p.price));
       }
+      PRICED.add(holiday.date);
       render();
     } catch (error) {
       failed += 1;
@@ -778,19 +842,44 @@ async function refreshLive({ fresh = false } = {}) {
   render();
 }
 
+/* Which cards are expanded. Held outside the DOM because render() rebuilds it,
+   which would otherwise collapse every card on each live update. */
+const OPEN = new Set();
+let SEEDED = false;
+
 function render() {
   const out = document.getElementById('out');
   const maxLeave = Number(document.getElementById('leave').value);
 
+  // Open the nearest holiday once, on first paint only. Re-seeding whenever the
+  // set is empty made it impossible to collapse every card.
+  if (!SEEDED) {
+    SEEDED = true;
+    const first = DATA.holidays.find(h => inHorizon(h.date));
+    if (first) OPEN.add(first.date);
+  }
+
   const rendered = DATA.holidays
-    .map(holiday => ({ holiday, html: renderHoliday(holiday, maxLeave, DATA.currency) }))
+    .map(holiday => ({ holiday, html: renderHoliday(holiday, maxLeave, DATA.currency, OPEN.has(holiday.date)) }))
     .filter(entry => entry.html);
 
   out.innerHTML = rendered.map(entry => entry.html).join('')
     || `<div class="empty">No fares match that leave budget yet.</div>`;
 
-  out.querySelectorAll('section.holiday').forEach((section, i) => {
-    attachHover(section.querySelector('.chart'), chartSeries(rendered[i].holiday, maxLeave), DATA.currency);
+  out.querySelectorAll('details.holiday').forEach((card, i) => {
+    /* The open state is owned here, not by the element. `toggle` fires
+       asynchronously, so it raced with the re-render that live pricing
+       triggers and cards reopened or collapsed unpredictably. Taking the click
+       and driving `open` from OPEN makes the DOM a pure function of state. */
+    card.querySelector('summary').addEventListener('click', event => {
+      event.preventDefault();
+      const anchor = card.dataset.anchor;
+      if (OPEN.has(anchor)) OPEN.delete(anchor); else OPEN.add(anchor);
+      if (OPEN.has(anchor) && !PRICED.has(anchor)) refreshLive({ only: anchor });
+      else render();
+    });
+
+    attachHover(card.querySelector('.chart'), chartSeries(rendered[i].holiday, maxLeave), DATA.currency);
   });
 }
 

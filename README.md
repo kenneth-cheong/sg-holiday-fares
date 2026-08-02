@@ -81,6 +81,18 @@ bridges both and buys **nine consecutive days off** — and no per-holiday view
 would show you that, because it only exists when the two are considered
 together.
 
+## The dashboard
+
+Each holiday is a summary card: the cheapest destination, then every tracked
+destination with its lowest return fare. Click a card to expand it into the
+price chart and the full window-by-window table.
+
+**Every** future public holiday gets a card, not only the ones being priced.
+Holidays inside the booking horizon (14–180 days out) are priced when the page
+loads; anything further away is priced when you open it, because airlines
+generally do not publish fares much beyond eleven months and pricing a dozen
+holidays eagerly would be hundreds of lookups per visit.
+
 ## Live prices and the API
 
 The page fetches prices when it loads rather than reading a stale snapshot. It
