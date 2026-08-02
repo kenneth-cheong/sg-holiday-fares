@@ -105,6 +105,27 @@
   details.card .headline.muted b { font-weight: 500; }
   details.card .headline.muted { color: var(--text-muted); font-size: 13px; }
 
+  /* Loading state. A lazy card takes a few seconds to price, and silence there
+     reads as a broken click. */
+  .spin {
+    display: inline-block; width: 12px; height: 12px; border: 2px solid var(--grid);
+    border-top-color: var(--series-1); border-radius: 50%; vertical-align: -2px;
+    animation: spin .7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .skeleton {
+    display: inline-block; height: 13px; border-radius: 6px; background: var(--grid);
+    animation: pulse 1.3s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
+  @media (prefers-reduced-motion: reduce) {
+    .spin { animation-duration: 2.4s; }
+    .skeleton { animation: none; }
+  }
+  .skeleton-row { display: flex; flex-wrap: wrap; gap: 8px 14px; margin-top: 10px; }
+  .updating { color: var(--text-muted); font-size: 12px; margin-left: 8px; white-space: nowrap; }
+
   .mini { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 8px; font-size: 13px; }
   .mini-item { display: inline-flex; align-items: center; gap: 6px; color: var(--text-secondary); }
   .mini-item b { color: var(--text-primary); font-variant-numeric: tabular-nums; font-weight: 600; }
@@ -145,6 +166,10 @@
   table { border-collapse: collapse; width: 100%; margin-top: 10px; font-size: 13px; }
   th, td { text-align: left; padding: 7px 9px; border-bottom: 1px solid var(--grid); }
   th { color: var(--text-muted); font-weight: 600; font-size: 12px; }
+  th.sortable { cursor: pointer; user-select: none; white-space: nowrap; }
+  th.sortable:hover, th.sortable:focus-visible { color: var(--text-primary); }
+  th.sortable[aria-sort="ascending"], th.sortable[aria-sort="descending"] { color: var(--text-primary); }
+  th .arrow { display: inline-block; width: 10px; font-size: 10px; }
   td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
   td.name { display: flex; align-items: center; gap: 7px; }
   .scroller { overflow-x: auto; }
@@ -600,6 +625,56 @@ function attachHover(root, series, currency) {
   hit.addEventListener('mouseleave', () => { tip.style.opacity = '0'; layer.innerHTML = ''; });
 }
 
+/* ── Table sorting ──────────────────────────────────────────────────────────
+   One sort applies to every holiday's table, so comparing them stays
+   like-for-like. Three states per column: ascending, descending, then back to
+   the default (cheapest destination first, then by departure). */
+const COLUMNS = [
+  { key: 'dest', label: 'Destination', field: 'name' },
+  { key: 'window', label: 'Window', field: 'depart' },
+  { key: 'now', label: 'Now', field: 'now', num: true },
+  { key: 'median', label: 'Median', field: 'med', num: true },
+  { key: 'low', label: 'Low', field: 'low', num: true },
+  { key: 'carrier', label: 'Carrier', field: 'carrier' },
+  { key: 'stops', label: 'Stops', field: 'stops' },
+  { key: 'journey', label: 'Journey', field: 'journey', num: true },
+  { key: null, label: 'Google Flights' },
+];
+let SORT = null;
+
+function sortRows(list) {
+  if (!SORT) {
+    list.sort((a, b) => a.rank - b.rank || (a.depart < b.depart ? -1 : a.depart > b.depart ? 1 : 0));
+    return;
+  }
+  const column = COLUMNS.find(c => c.key === SORT.key);
+  if (!column) return;
+  const dir = SORT.dir === 'desc' ? -1 : 1;
+
+  list.sort((a, b) => {
+    const x = a[column.field], y = b[column.field];
+    // Missing values sink to the bottom in both directions — a blank is never
+    // "the cheapest".
+    if (x == null && y == null) return 0;
+    if (x == null) return 1;
+    if (y == null) return -1;
+    if (typeof x === 'number' && typeof y === 'number') return (x - y) * dir;
+    return String(x).localeCompare(String(y)) * dir;
+  });
+}
+
+function tableHead() {
+  return COLUMNS.map(column => {
+    const cls = column.num ? 'num' : '';
+    if (!column.key) return `<th class="${cls}">${esc(column.label)}</th>`;
+    const active = SORT && SORT.key === column.key;
+    const aria = active ? (SORT.dir === 'desc' ? 'descending' : 'ascending') : 'none';
+    const arrow = active ? (SORT.dir === 'desc' ? '▾' : '▴') : '';
+    return `<th class="${cls} sortable" data-sort="${esc(column.key)}" aria-sort="${aria}"
+      title="Sort by ${esc(column.label)}" tabindex="0" role="button">${esc(column.label)}<span class="arrow">${arrow}</span></th>`;
+  }).join('');
+}
+
 function renderHoliday(holiday, maxLeave, currency, openByDefault) {
   const enriched = holiday.destinations
     .filter(dest => SELECTED.has(dest.code))
@@ -614,13 +689,26 @@ function renderHoliday(holiday, maxLeave, currency, openByDefault) {
   const head = `<div class="htitle"><h2>${esc(holiday.name)}</h2>
       <span class="away">${esc(dateLabel)} · ${away} days away</span></div>`;
 
-  // A card exists for every holiday; distant ones simply have nothing priced
-  // until they are opened.
+  const busy = LOADING.has(holiday.date);
+
+  // A card exists for every holiday; distant ones have nothing priced until
+  // they are opened, and pricing takes a few seconds worth showing.
   if (!enriched.length) {
+    if (busy) {
+      const bars = [72, 58, 64, 50, 68, 54].map(w =>
+        `<span class="skeleton" style="width:${w}px"></span>`).join('');
+      return `<details class="holiday card" data-anchor="${esc(holiday.date)}" open>
+        <summary>${head}
+          <p class="headline muted"><span class="spin"></span> Checking live prices from Singapore…</p>
+          <div class="skeleton-row">${bars}</div>
+        </summary>
+        <div class="card-body"><p class="note">Querying every travel window for this holiday. This takes a few seconds the first time.</p></div>
+      </details>`;
+    }
     const state = PRICED.has(holiday.date)
       ? 'No fares returned — airlines usually publish only about eleven months ahead.'
       : 'Open to load live prices.';
-    return `<details class="holiday card" data-anchor="${esc(holiday.date)}">
+    return `<details class="holiday card" data-anchor="${esc(holiday.date)}"${openByDefault ? ' open' : ''}>
       <summary>${head}<p class="headline muted">${esc(state)}</p></summary>
       <div class="card-body"><p class="note">${esc(state)}</p></div>
     </details>`;
@@ -650,26 +738,39 @@ function renderHoliday(holiday, maxLeave, currency, openByDefault) {
   const legend = charted.map(s =>
     `<span class="item"><span class="dot" style="background:var(--series-${s.slot + 1})"></span>${esc(s.name)}</span>`).join('');
 
-  const rows = ranked.flatMap(entry => entry.windows.map(w => {
-    const prices = w.series.map(p => p.price);
-    const med = median(prices.slice(0, -1));
-    return `<tr>
-      <td class="name">${esc(entry.dest.name)} <span class="meta">${esc(entry.dest.code)}</span></td>
-      <td>${esc(w.label)}</td>
-      <td class="num">${w.current == null ? '—' : esc(currency) + ' ' + w.current.toLocaleString()}</td>
-      <td class="num">${med == null ? '—' : med.toLocaleString()}</td>
-      <td class="num">${w.min == null ? '—' : w.min.toLocaleString()}</td>
-      <td>${esc((w.airlines || []).join(', ') || '—')}</td>
-      <td>${w.stops === 0 ? 'nonstop' : w.stops == null ? '—' : w.stops + ' stop'}</td>
-      <td class="num">${esc(fmtDuration(w.duration))}</td>
-      <td>${w.book ? `<a class="book" href="${esc(w.book)}" target="_blank" rel="noopener noreferrer">Open ↗</a>` : '—'}</td>
-    </tr>`;
-  })).join('');
+  const rowData = ranked.flatMap((entry, rank) => entry.windows.map(w => ({
+    rank,
+    name: entry.dest.name,
+    code: entry.dest.code,
+    label: w.label,
+    depart: w.depart,
+    now: w.current,
+    med: median(w.series.map(p => p.price).slice(0, -1)),
+    low: w.min,
+    carrier: (w.airlines || []).join(', '),
+    stops: w.stops,
+    journey: w.duration,
+    book: w.book,
+  })));
+  sortRows(rowData);
+
+  const rows = rowData.map(r => `<tr>
+      <td class="name">${esc(r.name)} <span class="meta">${esc(r.code)}</span></td>
+      <td>${esc(r.label)}</td>
+      <td class="num">${r.now == null ? '—' : esc(currency) + ' ' + r.now.toLocaleString()}</td>
+      <td class="num">${r.med == null ? '—' : r.med.toLocaleString()}</td>
+      <td class="num">${r.low == null ? '—' : r.low.toLocaleString()}</td>
+      <td>${esc(r.carrier || '—')}</td>
+      <td>${r.stops === 0 ? 'nonstop' : r.stops == null ? '—' : r.stops + ' stop'}</td>
+      <td class="num">${esc(fmtDuration(r.journey))}</td>
+      <td>${r.book ? `<a class="book" href="${esc(r.book)}" target="_blank" rel="noopener noreferrer">Open ↗</a>` : '—'}</td>
+    </tr>`).join('');
 
   return `<details class="holiday card" data-anchor="${esc(holiday.date)}"${openByDefault ? ' open' : ''}>
     <summary>
       ${head}
-      <p class="headline">Cheapest — ${esc(cheapest.dest.name)} at <b>${esc(currency)} ${cheapestPrice.toLocaleString()}</b>${delta}</p>
+      <p class="headline">Cheapest — ${esc(cheapest.dest.name)} at <b>${esc(currency)} ${cheapestPrice.toLocaleString()}</b>${delta}${
+        busy ? '<span class="updating"><span class="spin"></span> updating…</span>' : ''}</p>
       <div class="mini">${mini}</div>
     </summary>
     <div class="card-body">
@@ -677,7 +778,7 @@ function renderHoliday(holiday, maxLeave, currency, openByDefault) {
       <div class="legend">${legend}</div>
       ${hidden > 0 ? `<p class="note">${hidden} selected destination${hidden > 1 ? 's appear' : ' appears'} in the table but not the chart — there are ${SLOTS} distinct series and they are never reused. Deselect one above to free a colour.</p>` : ''}
       <div class="scroller"><table>
-        <thead><tr><th>Destination</th><th>Window</th><th class="num">Now</th><th class="num">Median</th><th class="num">Low</th><th>Carrier</th><th>Stops</th><th class="num">Journey</th><th>Google Flights</th></tr></thead>
+        <thead><tr>${tableHead()}</tr></thead>
         <tbody>${rows}</tbody>
       </table></div>
     </div>
@@ -690,6 +791,7 @@ function renderHoliday(holiday, maxLeave, currency, openByDefault) {
    two are merged rather than one replacing the other. */
 const MIN_LEAD_DAYS = 14, LOOKAHEAD_DAYS = 180;
 const PRICED = new Set();   // holiday anchors whose live prices have been fetched
+const LOADING = new Set();  // anchors with a lookup in flight, for the card spinner
 
 /* Every future break gets a card. Only those inside the booking horizon are
    priced on load — airlines generally do not publish fares much beyond eleven
@@ -787,6 +889,10 @@ async function refreshLive({ fresh = false, only = null } = {}) {
     only ? `pricing ${groups[0].holiday.name}…` : fresh ? 'fetching fresh prices…' : 'checking live prices…',
     true,
   );
+  // Paint the spinner before the first await, so a click gets instant feedback.
+  for (const group of groups) LOADING.add(group.holiday.date);
+  render();
+
   let ok = 0, failed = 0;
 
   // One request per holiday keeps each batch inside the API's per-call cap and
@@ -827,10 +933,12 @@ async function refreshLive({ fresh = false, only = null } = {}) {
         w.max = Math.max(...w.series.map(p => p.price));
       }
       PRICED.add(holiday.date);
-      render();
     } catch (error) {
       failed += 1;
       console.warn('live fares failed', error);
+    } finally {
+      LOADING.delete(holiday.date);
+      render();
     }
   }));
 
@@ -1031,6 +1139,27 @@ function startPlanner(payload) {
   document.getElementById('budget').addEventListener('change', renderPlan);
   renderPlan();
 }
+
+/* Delegated so it survives every re-render. Cards own their summary clicks, and
+   these headers live in the body, so the two never collide. */
+function toggleSort(key) {
+  SORT = SORT && SORT.key === key
+    ? (SORT.dir === 'asc' ? { key, dir: 'desc' } : null)
+    : { key, dir: 'asc' };
+  render();
+}
+
+document.getElementById('out').addEventListener('click', event => {
+  const th = event.target.closest('th.sortable');
+  if (th) toggleSort(th.dataset.sort);
+});
+document.getElementById('out').addEventListener('keydown', event => {
+  if (event.key !== 'Enter' && event.key !== ' ') return;
+  const th = event.target.closest('th.sortable');
+  if (!th) return;
+  event.preventDefault();
+  toggleSort(th.dataset.sort);
+});
 
 document.getElementById('refresh').addEventListener('click', async event => {
   event.target.disabled = true;
