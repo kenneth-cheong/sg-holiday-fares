@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Singapore holiday fares</title>
+<style>
+  :root {
+    color-scheme: light;
+    --surface-1: #fcfcfb;
+    --page: #f9f9f7;
+    --text-primary: #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted: #898781;
+    --grid: #e1e0d9;
+    --axis: #c3c2b7;
+    --border: rgba(11, 11, 11, 0.10);
+    --good: #006300;
+    --series-1: #2a78d6; --series-2: #eb6834; --series-3: #1baf7a; --series-4: #eda100;
+    --series-5: #e87ba4; --series-6: #008300; --series-7: #4a3aa7; --series-8: #e34948;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --surface-1: #1a1a19;
+      --page: #0d0d0d;
+      --text-primary: #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted: #898781;
+      --grid: #2c2c2a;
+      --axis: #383835;
+      --border: rgba(255, 255, 255, 0.10);
+      --good: #0ca30c;
+      --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70; --series-4: #c98500;
+      --series-5: #d55181; --series-6: #008300; --series-7: #9085e9; --series-8: #e66767;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --surface-1: #1a1a19;
+    --page: #0d0d0d;
+    --text-primary: #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted: #898781;
+    --grid: #2c2c2a;
+    --axis: #383835;
+    --border: rgba(255, 255, 255, 0.10);
+    --good: #0ca30c;
+    --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70; --series-4: #c98500;
+    --series-5: #d55181; --series-6: #008300; --series-7: #9085e9; --series-8: #e66767;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 24px 20px 64px;
+    background: var(--page);
+    color: var(--text-primary);
+    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; }
+
+  header { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
+  h1 { font-size: 22px; margin: 0; letter-spacing: -0.01em; }
+  .meta { color: var(--text-muted); font-size: 13px; }
+  #theme {
+    margin-left: auto; background: none; border: 1px solid var(--border); color: var(--text-secondary);
+    border-radius: 8px; padding: 5px 11px; font: inherit; font-size: 13px; cursor: pointer;
+  }
+  #theme:hover { color: var(--text-primary); }
+
+  .filters { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin: 18px 0 8px; }
+  .filters label { font-size: 13px; color: var(--text-secondary); }
+  select {
+    font: inherit; font-size: 13px; padding: 5px 9px; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--surface-1); color: var(--text-primary);
+  }
+
+  section.holiday {
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 14px;
+    padding: 18px 18px 6px; margin-top: 18px;
+  }
+  .htitle { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  h2 { font-size: 17px; margin: 0; }
+  .away { color: var(--text-muted); font-size: 13px; }
+  .headline { margin: 10px 0 2px; font-size: 13px; color: var(--text-secondary); }
+  .headline b { font-size: 26px; color: var(--text-primary); font-weight: 650; letter-spacing: -0.02em; }
+  .delta { color: var(--good); font-size: 13px; }
+
+  .chart { position: relative; margin-top: 6px; }
+  .chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .gridline { stroke: var(--grid); stroke-width: 1; }
+  .axisline { stroke: var(--axis); stroke-width: 1; }
+  .tick { fill: var(--text-muted); font-size: 11px; }
+  .tick.y { text-anchor: end; }
+  .serieslabel { font-size: 11px; font-weight: 600; }
+  .crosshair { stroke: var(--axis); stroke-width: 1; stroke-dasharray: 3 3; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 10px 0 2px; font-size: 13px; }
+  .legend .item { display: inline-flex; align-items: center; gap: 6px; color: var(--text-secondary); cursor: default; }
+  .legend .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+  .note { color: var(--text-muted); font-size: 12px; margin: 6px 0 0; }
+
+  .tip {
+    position: absolute; pointer-events: none; opacity: 0; transition: opacity .1s;
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px;
+    padding: 8px 10px; font-size: 12px; box-shadow: 0 6px 18px rgba(0,0,0,.14); min-width: 150px; z-index: 5;
+  }
+  .tip .when { color: var(--text-muted); margin-bottom: 5px; }
+  .tip .row { display: flex; align-items: center; gap: 7px; white-space: nowrap; }
+  .tip .row span:last-child { margin-left: auto; font-variant-numeric: tabular-nums; color: var(--text-primary); }
+  .tip .row span:nth-child(2) { color: var(--text-secondary); }
+
+  details { margin: 12px 0 14px; }
+  summary { cursor: pointer; font-size: 13px; color: var(--text-secondary); }
+  table { border-collapse: collapse; width: 100%; margin-top: 10px; font-size: 13px; }
+  th, td { text-align: left; padding: 7px 9px; border-bottom: 1px solid var(--grid); }
+  th { color: var(--text-muted); font-weight: 600; font-size: 12px; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  td.name { display: flex; align-items: center; gap: 7px; }
+  .scroller { overflow-x: auto; }
+  .empty { color: var(--text-secondary); background: var(--surface-1); border: 1px solid var(--border);
+           border-radius: 14px; padding: 28px; margin-top: 18px; }
+  code { font-size: 12px; background: var(--grid); padding: 1px 5px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Singapore holiday fares</h1>
+    <span class="meta" id="meta"></span>
+    <button id="theme" type="button">Theme</button>
+  </header>
+
+  <div class="filters" id="filters" hidden>
+    <label for="leave">Annual leave</label>
+    <select id="leave">
+      <option value="9">Any</option>
+      <option value="0">None — public holidays only</option>
+      <option value="1">Up to 1 day</option>
+      <option value="2">Up to 2 days</option>
+    </select>
+  </div>
+
+  <div id="out"></div>
+</div>
+
+<script>
+const SLOTS = 8;
+const fmtDay = d => d.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const parse = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const median = xs => {
+  if (!xs.length) return null;
+  const s = [...xs].sort((a, b) => a - b), m = s.length >> 1;
+  return s.length % 2 ? s[m] : Math.round((s[m - 1] + s[m]) / 2);
+};
+
+let DATA = null;
+
+/* One destination's daily price = the cheapest window that fits the leave budget.
+   Windows are kept separate in the table; the chart answers "how cheap is this
+   destination today", which is the question the alerting acts on. */
+function seriesFor(dest, maxLeave) {
+  const windows = dest.windows.filter(w => w.leave_days <= maxLeave);
+  const byDate = new Map();
+  for (const w of windows) {
+    for (const point of w.series) {
+      const prev = byDate.get(point.on);
+      if (prev === undefined || point.price < prev) byDate.set(point.on, point.price);
+    }
+  }
+  return { windows, points: [...byDate.entries()].map(([on, price]) => ({ on, price })).sort((a, b) => a.on < b.on ? -1 : 1) };
+}
+
+/* Colour follows the destination, never its rank. The slot is the destination's
+   fixed position in the payload, so changing the leave filter never repaints a
+   series that did not itself change. Slots are never cycled: destinations past
+   the eighth are table-only. */
+function chartSeries(holiday, maxLeave) {
+  return holiday.destinations
+    .map((dest, slot) => ({ code: dest.code, name: dest.name, slot, ...seriesFor(dest, maxLeave) }))
+    .filter(entry => entry.points.length && entry.slot < SLOTS);
+}
+
+function lineChart(series, currency) {
+  const W = 900, H = 260, pad = { t: 14, r: 96, b: 26, l: 52 };
+  const all = series.flatMap(s => s.points);
+  if (!all.length) return '';
+
+  const times = all.map(p => parse(p.on).getTime());
+  const prices = all.map(p => p.price);
+  let t0 = Math.min(...times), t1 = Math.max(...times);
+  if (t0 === t1) { t0 -= 432e5; t1 += 432e5; }              // single observation: give it a day either side
+  let lo = Math.min(...prices), hi = Math.max(...prices);
+  const padY = Math.max(Math.round((hi - lo) * 0.12), 12);
+  lo = Math.max(0, lo - padY); hi = hi + padY;
+
+  const x = t => pad.l + (t - t0) / (t1 - t0) * (W - pad.l - pad.r);
+  const y = v => pad.t + (1 - (v - lo) / (hi - lo)) * (H - pad.t - pad.b);
+
+  const ticks = 4, parts = [];
+  for (let i = 0; i <= ticks; i++) {
+    const v = lo + (hi - lo) * i / ticks, yy = y(v);
+    parts.push(`<line class="gridline" x1="${pad.l}" y1="${yy.toFixed(1)}" x2="${W - pad.r}" y2="${yy.toFixed(1)}"/>`);
+    parts.push(`<text class="tick y" x="${pad.l - 8}" y="${(yy + 4).toFixed(1)}">${Math.round(v).toLocaleString()}</text>`);
+  }
+  parts.push(`<line class="axisline" x1="${pad.l}" y1="${H - pad.b}" x2="${W - pad.r}" y2="${H - pad.b}"/>`);
+
+  const dates = [...new Set(all.map(p => p.on))].sort();
+  const every = Math.max(1, Math.ceil(dates.length / 6));
+  dates.forEach((d, i) => {
+    if (i % every && i !== dates.length - 1) return;
+    parts.push(`<text class="tick" text-anchor="middle" x="${x(parse(d).getTime()).toFixed(1)}" y="${H - pad.b + 16}">${esc(fmtDay(parse(d)))}</text>`);
+  });
+
+  series.forEach(s => {
+    const colour = `var(--series-${s.slot + 1})`;
+    const pts = s.points.map(p => [x(parse(p.on).getTime()), y(p.price)]);
+    if (pts.length > 1) {
+      const d = pts.map(([px, py], j) => `${j ? 'L' : 'M'}${px.toFixed(1)},${py.toFixed(1)}`).join(' ');
+      parts.push(`<path d="${d}" fill="none" stroke="${colour}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`);
+    }
+    // A 2px surface ring keeps overlapping end-markers legible where lines cross.
+    const [ex, ey] = pts[pts.length - 1];
+    parts.push(`<circle cx="${ex.toFixed(1)}" cy="${ey.toFixed(1)}" r="4.5" fill="${colour}" stroke="var(--surface-1)" stroke-width="2"/>`);
+    if (series.length <= 4) {
+      parts.push(`<text class="serieslabel" fill="${colour}" x="${(ex + 10).toFixed(1)}" y="${(ey + 4).toFixed(1)}">${esc(s.code)}</text>`);
+    }
+  });
+
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Fare history in ${esc(currency)} by destination">
+    ${parts.join('')}
+    <g class="hoverlayer"></g>
+    <rect class="hit" x="${pad.l}" y="${pad.t}" width="${W - pad.l - pad.r}" height="${H - pad.t - pad.b}" fill="transparent"/>
+  </svg>`;
+}
+
+function attachHover(root, series, currency) {
+  const svg = root.querySelector('svg'), tip = root.querySelector('.tip');
+  if (!svg || !tip) return;
+  const layer = svg.querySelector('.hoverlayer'), hit = svg.querySelector('.hit');
+  const dates = [...new Set(series.flatMap(s => s.points.map(p => p.on)))].sort();
+  if (!dates.length) return;
+
+  const W = 900, pad = { l: 52, r: 96, t: 14, b: 26 };
+  const times = dates.map(d => parse(d).getTime());
+  let t0 = Math.min(...times), t1 = Math.max(...times);
+  if (t0 === t1) { t0 -= 432e5; t1 += 432e5; }
+  const x = t => pad.l + (t - t0) / (t1 - t0) * (W - pad.l - pad.r);
+
+  const move = event => {
+    const box = svg.getBoundingClientRect();
+    const local = (event.clientX - box.left) / box.width * W;
+    let best = dates[0], bestGap = Infinity;
+    for (const d of dates) {
+      const gap = Math.abs(x(parse(d).getTime()) - local);
+      if (gap < bestGap) { bestGap = gap; best = d; }
+    }
+    const px = x(parse(best).getTime());
+    layer.innerHTML = `<line class="crosshair" x1="${px.toFixed(1)}" y1="${pad.t}" x2="${px.toFixed(1)}" y2="${260 - pad.b}"/>`;
+
+    const rows = series.map(s => {
+      const hit = s.points.find(p => p.on === best);
+      return hit ? `<div class="row"><span class="dot" style="background:var(--series-${s.slot + 1});width:9px;height:9px;border-radius:50%"></span><span>${esc(s.code)}</span><span>${esc(currency)} ${hit.price.toLocaleString()}</span></div>` : '';
+    }).filter(Boolean).join('');
+
+    tip.innerHTML = `<div class="when">${esc(parse(best).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' }))}</div>${rows}`;
+    tip.style.opacity = '1';
+    const left = px / W * box.width;
+    tip.style.left = Math.min(Math.max(left + 14, 0), box.width - tip.offsetWidth - 4) + 'px';
+    tip.style.top = '10px';
+  };
+
+  hit.addEventListener('mousemove', move);
+  hit.addEventListener('mouseleave', () => { tip.style.opacity = '0'; layer.innerHTML = ''; });
+}
+
+function renderHoliday(holiday, maxLeave, currency) {
+  const enriched = holiday.destinations
+    .map((dest, slot) => ({ dest, slot, ...seriesFor(dest, maxLeave) }))
+    .filter(entry => entry.points.length);
+  if (!enriched.length) return '';
+
+  const current = entry => entry.points[entry.points.length - 1].price;
+  const charted = chartSeries(holiday, maxLeave);
+  const hidden = enriched.length - charted.length;
+
+  const cheapest = [...enriched].sort((a, b) => current(a) - current(b))[0];
+  const cheapestPrice = current(cheapest);
+  const base = median(cheapest.points.slice(0, -1).map(p => p.price));
+  const delta = base && cheapestPrice < base
+    ? ` <span class="delta">↓ ${Math.round((base - cheapestPrice) / base * 100)}% vs its ${currency} ${base.toLocaleString()} median</span>` : '';
+
+  const away = Math.round((parse(holiday.date) - new Date()) / 864e5);
+  const legend = charted.map(s =>
+    `<span class="item"><span class="dot" style="background:var(--series-${s.slot + 1})"></span>${esc(s.name)}</span>`).join('');
+
+  const rows = [...enriched].sort((a, b) => current(a) - current(b)).flatMap(entry => entry.windows.map(w => {
+    const prices = w.series.map(p => p.price);
+    const med = median(prices.slice(0, -1));
+    return `<tr>
+      <td class="name">${esc(entry.dest.name)} <span class="meta">${esc(entry.dest.code)}</span></td>
+      <td>${esc(w.label)}</td>
+      <td class="num">${w.current == null ? '—' : esc(currency) + ' ' + w.current.toLocaleString()}</td>
+      <td class="num">${med == null ? '—' : med.toLocaleString()}</td>
+      <td class="num">${w.min == null ? '—' : w.min.toLocaleString()}</td>
+      <td>${esc((w.airlines || []).join(', ') || '—')}</td>
+      <td>${w.stops === 0 ? 'nonstop' : w.stops == null ? '—' : w.stops + ' stop'}</td>
+    </tr>`;
+  })).join('');
+
+  return `<section class="holiday">
+    <div class="htitle">
+      <h2>${esc(holiday.name)}</h2>
+      <span class="away">${esc(parse(holiday.date).toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }))} · ${away} days away</span>
+    </div>
+    <p class="headline">Cheapest right now — ${esc(cheapest.dest.name)} at <b>${esc(currency)} ${cheapestPrice.toLocaleString()}</b>${delta}</p>
+    <div class="chart">${lineChart(charted, currency)}<div class="tip"></div></div>
+    <div class="legend">${legend}</div>
+    ${hidden > 0 ? `<p class="note">${hidden} further destination${hidden > 1 ? 's are' : ' is'} tracked but not charted — the palette has ${SLOTS} distinct series and they are never reused, so destinations past the ${SLOTS}th in <code>config.json</code> appear in the table only.</p>` : ''}
+    <details><summary>All windows and destinations (${rows ? enriched.reduce((n, e) => n + e.windows.length, 0) : 0} rows)</summary>
+      <div class="scroller"><table>
+        <thead><tr><th>Destination</th><th>Window</th><th class="num">Now</th><th class="num">Median</th><th class="num">Low</th><th>Carrier</th><th>Stops</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table></div>
+    </details>
+  </section>`;
+}
+
+function render() {
+  const out = document.getElementById('out');
+  const maxLeave = Number(document.getElementById('leave').value);
+
+  const rendered = DATA.holidays
+    .map(holiday => ({ holiday, html: renderHoliday(holiday, maxLeave, DATA.currency) }))
+    .filter(entry => entry.html);
+
+  out.innerHTML = rendered.map(entry => entry.html).join('')
+    || `<div class="empty">No fares match that leave budget yet.</div>`;
+
+  out.querySelectorAll('section.holiday').forEach((section, i) => {
+    attachHover(section.querySelector('.chart'), chartSeries(rendered[i].holiday, maxLeave), DATA.currency);
+  });
+}
+
+document.getElementById('theme').addEventListener('click', () => {
+  const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+  const now = document.documentElement.getAttribute('data-theme') || (dark ? 'dark' : 'light');
+  document.documentElement.setAttribute('data-theme', now === 'dark' ? 'light' : 'dark');
+});
+document.getElementById('leave').addEventListener('change', render);
+
+fetch('data/dashboard.json', { cache: 'no-store' })
+  .then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)))
+  .then(payload => {
+    DATA = payload;
+    document.getElementById('meta').textContent =
+      `updated ${new Date(payload.generated_at).toLocaleString()} · prices in ${payload.currency}`;
+    if (!payload.holidays.length) {
+      document.getElementById('out').innerHTML =
+        `<div class="empty">No upcoming holiday windows are being tracked yet. Run <code>python sweep.py</code> to collect the first observations.</div>`;
+      return;
+    }
+    document.getElementById('filters').hidden = false;
+    render();
+  })
+  .catch(err => {
+    document.getElementById('out').innerHTML =
+      `<div class="empty">Couldn't load <code>data/dashboard.json</code> (${esc(err.message)}).<br>Run <code>python sweep.py</code> first, and serve this folder over HTTP rather than opening the file directly.</div>`;
+  });
+</script>
+</body>
+</html>

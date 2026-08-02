@@ -1,0 +1,1002 @@
+{
+ "generated_at": "2026-08-02T21:36:44",
+ "currency": "SGD",
+ "holidays": [
+  {
+   "name": "Deepavali",
+   "date": "2026-11-08",
+   "destinations": [
+    {
+     "code": "BKK",
+     "name": "Bangkok",
+     "windows": [
+      {
+       "key": "BKK|2026-11-08|2026-11-07|2026-11-09",
+       "depart": "2026-11-07",
+       "return": "2026-11-09",
+       "nights": 2,
+       "leave_days": 0,
+       "label": "Sat 7 Nov–Mon 9 Nov (2 nights, no leave)",
+       "current": 467,
+       "nonstop": 467,
+       "airlines": [
+        "Scoot"
+       ],
+       "route": "SIN-BKK",
+       "stops": 0,
+       "min": 467,
+       "max": 467,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 467
+        }
+       ]
+      },
+      {
+       "key": "BKK|2026-11-08|2026-11-06|2026-11-09",
+       "depart": "2026-11-06",
+       "return": "2026-11-09",
+       "nights": 3,
+       "leave_days": 1,
+       "label": "Fri 6 Nov–Mon 9 Nov (3 nights, 1d leave)",
+       "current": 478,
+       "nonstop": 561,
+       "airlines": [
+        "Malaysia Airlines"
+       ],
+       "route": "SIN-KUL-BKK",
+       "stops": 1,
+       "min": 478,
+       "max": 478,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 478
+        }
+       ]
+      },
+      {
+       "key": "BKK|2026-11-08|2026-11-07|2026-11-10",
+       "depart": "2026-11-07",
+       "return": "2026-11-10",
+       "nights": 3,
+       "leave_days": 1,
+       "label": "Sat 7 Nov–Tue 10 Nov (3 nights, 1d leave)",
+       "current": 424,
+       "nonstop": 424,
+       "airlines": [
+        "Scoot"
+       ],
+       "route": "SIN-BKK",
+       "stops": 0,
+       "min": 424,
+       "max": 424,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 424
+        }
+       ]
+      },
+      {
+       "key": "BKK|2026-11-08|2026-11-05|2026-11-09",
+       "depart": "2026-11-05",
+       "return": "2026-11-09",
+       "nights": 4,
+       "leave_days": 2,
+       "label": "Thu 5 Nov–Mon 9 Nov (4 nights, 2d leave)",
+       "current": 478,
+       "nonstop": 518,
+       "airlines": [
+        "Malaysia Airlines"
+       ],
+       "route": "SIN-KUL-BKK",
+       "stops": 1,
+       "min": 478,
+       "max": 478,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 478
+        }
+       ]
+      }
+     ],
+     "cheapest": 424
+    },
+    {
+     "code": "HKT",
+     "name": "Phuket",
+     "windows": [
+      {
+       "key": "HKT|2026-11-08|2026-11-07|2026-11-09",
+       "depart": "2026-11-07",
+       "return": "2026-11-09",
+       "nights": 2,
+       "leave_days": 0,
+       "label": "Sat 7 Nov–Mon 9 Nov (2 nights, no leave)",
+       "current": 411,
+       "nonstop": 411,
+       "airlines": [
+        "Scoot"
+       ],
+       "route": "SIN-HKT",
+       "stops": 0,
+       "min": 411,
+       "max": 411,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 411
+        }
+       ]
+      },
+      {
+       "key": "HKT|2026-11-08|2026-11-06|2026-11-09",
+       "depart": "2026-11-06",
+       "return": "2026-11-09",
+       "nights": 3,
+       "leave_days": 1,
+       "label": "Fri 6 Nov–Mon 9 Nov (3 nights, 1d leave)",
+       "current": 374,
+       "nonstop": 374,
+       "airlines": [
+        "Scoot"
+       ],
+       "route": "SIN-HKT",
+       "stops": 0,
+       "min": 374,
+       "max": 374,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 374
+        }
+       ]
+      },
+      {
+       "key": "HKT|2026-11-08|2026-11-07|2026-11-10",
+       "depart": "2026-11-07",
+       "return": "2026-11-10",
+       "nights": 3,
+       "leave_days": 1,
+       "label": "Sat 7 Nov–Tue 10 Nov (3 nights, 1d leave)",
+       "current": 266,
+       "nonstop": 266,
+       "airlines": [
+        "Scoot"
+       ],
+       "route": "SIN-HKT",
+       "stops": 0,
+       "min": 266,
+       "max": 266,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 266
+        }
+       ]
+      },
+      {
+       "key": "HKT|2026-11-08|2026-11-05|2026-11-09",
+       "depart": "2026-11-05",
+       "return": "2026-11-09",
+       "nights": 4,
+       "leave_days": 2,
+       "label": "Thu 5 Nov–Mon 9 Nov (4 nights, 2d leave)",
+       "current": 344,
+       "nonstop": 344,
+       "airlines": [
+        "Scoot"
+       ],
+       "route": "SIN-HKT",
+       "stops": 0,
+       "min": 344,
+       "max": 344,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 344
+        }
+       ]
+      }
+     ],
+     "cheapest": 266
+    },
+    {
+     "code": "DPS",
+     "name": "Bali",
+     "windows": [
+      {
+       "key": "DPS|2026-11-08|2026-11-07|2026-11-09",
+       "depart": "2026-11-07",
+       "return": "2026-11-09",
+       "nights": 2,
+       "leave_days": 0,
+       "label": "Sat 7 Nov–Mon 9 Nov (2 nights, no leave)",
+       "current": 285,
+       "nonstop": 285,
+       "airlines": [
+        "TransNusa"
+       ],
+       "route": "SIN-DPS",
+       "stops": 0,
+       "min": 285,
+       "max": 285,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 285
+        }
+       ]
+      },
+      {
+       "key": "DPS|2026-11-08|2026-11-06|2026-11-09",
+       "depart": "2026-11-06",
+       "return": "2026-11-09",
+       "nights": 3,
+       "leave_days": 1,
+       "label": "Fri 6 Nov–Mon 9 Nov (3 nights, 1d leave)",
+       "current": 429,
+       "nonstop": 429,
+       "airlines": [
+        "Scoot"
+       ],
+       "route": "SIN-DPS",
+       "stops": 0,
+       "min": 429,
+       "max": 429,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 429
+        }
+       ]
+      },
+      {
+       "key": "DPS|2026-11-08|2026-11-07|2026-11-10",
+       "depart": "2026-11-07",
+       "return": "2026-11-10",
+       "nights": 3,
+       "leave_days": 1,
+       "label": "Sat 7 Nov–Tue 10 Nov (3 nights, 1d leave)",
+       "current": 285,
+       "nonstop": 285,
+       "airlines": [
+        "TransNusa"
+       ],
+       "route": "SIN-DPS",
+       "stops": 0,
+       "min": 285,
+       "max": 285,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 285
+        }
+       ]
+      },
+      {
+       "key": "DPS|2026-11-08|2026-11-05|2026-11-09",
+       "depart": "2026-11-05",
+       "return": "2026-11-09",
+       "nights": 4,
+       "leave_days": 2,
+       "label": "Thu 5 Nov–Mon 9 Nov (4 nights, 2d leave)",
+       "current": 285,
+       "nonstop": 285,
+       "airlines": [
+        "TransNusa"
+       ],
+       "route": "SIN-DPS",
+       "stops": 0,
+       "min": 285,
+       "max": 285,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 285
+        }
+       ]
+      }
+     ],
+     "cheapest": 285
+    },
+    {
+     "code": "KUL",
+     "name": "Kuala Lumpur",
+     "windows": [
+      {
+       "key": "KUL|2026-11-08|2026-11-07|2026-11-09",
+       "depart": "2026-11-07",
+       "return": "2026-11-09",
+       "nights": 2,
+       "leave_days": 0,
+       "label": "Sat 7 Nov–Mon 9 Nov (2 nights, no leave)",
+       "current": 197,
+       "nonstop": 197,
+       "airlines": [
+        "AirAsia"
+       ],
+       "route": "SIN-KUL",
+       "stops": 0,
+       "min": 197,
+       "max": 197,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 197
+        }
+       ]
+      },
+      {
+       "key": "KUL|2026-11-08|2026-11-06|2026-11-09",
+       "depart": "2026-11-06",
+       "return": "2026-11-09",
+       "nights": 3,
+       "leave_days": 1,
+       "label": "Fri 6 Nov–Mon 9 Nov (3 nights, 1d leave)",
+       "current": 213,
+       "nonstop": 213,
+       "airlines": [
+        "AirAsia"
+       ],
+       "route": "SIN-KUL",
+       "stops": 0,
+       "min": 213,
+       "max": 213,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 213
+        }
+       ]
+      },
+      {
+       "key": "KUL|2026-11-08|2026-11-07|2026-11-10",
+       "depart": "2026-11-07",
+       "return": "2026-11-10",
+       "nights": 3,
+       "leave_days": 1,
+       "label": "Sat 7 Nov–Tue 10 Nov (3 nights, 1d leave)",
+       "current": 171,
+       "nonstop": 171,
+       "airlines": [
+        "AirAsia"
+       ],
+       "route": "SIN-KUL",
+       "stops": 0,
+       "min": 171,
+       "max": 171,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 171
+        }
+       ]
+      },
+      {
+       "key": "KUL|2026-11-08|2026-11-05|2026-11-09",
+       "depart": "2026-11-05",
+       "return": "2026-11-09",
+       "nights": 4,
+       "leave_days": 2,
+       "label": "Thu 5 Nov–Mon 9 Nov (4 nights, 2d leave)",
+       "current": 186,
+       "nonstop": 186,
+       "airlines": [
+        "AirAsia"
+       ],
+       "route": "SIN-KUL",
+       "stops": 0,
+       "min": 186,
+       "max": 186,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 186
+        }
+       ]
+      }
+     ],
+     "cheapest": 171
+    },
+    {
+     "code": "PEN",
+     "name": "Penang",
+     "windows": [
+      {
+       "key": "PEN|2026-11-08|2026-11-07|2026-11-09",
+       "depart": "2026-11-07",
+       "return": "2026-11-09",
+       "nights": 2,
+       "leave_days": 0,
+       "label": "Sat 7 Nov–Mon 9 Nov (2 nights, no leave)",
+       "current": 283,
+       "nonstop": 283,
+       "airlines": [
+        "Scoot"
+       ],
+       "route": "SIN-PEN",
+       "stops": 0,
+       "min": 283,
+       "max": 283,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 283
+        }
+       ]
+      },
+      {
+       "key": "PEN|2026-11-08|2026-11-06|2026-11-09",
+       "depart": "2026-11-06",
+       "return": "2026-11-09",
+       "nights": 3,
+       "leave_days": 1,
+       "label": "Fri 6 Nov–Mon 9 Nov (3 nights, 1d leave)",
+       "current": 276,
+       "nonstop": 276,
+       "airlines": [
+        "AirAsia"
+       ],
+       "route": "SIN-PEN",
+       "stops": 0,
+       "min": 276,
+       "max": 276,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 276
+        }
+       ]
+      },
+      {
+       "key": "PEN|2026-11-08|2026-11-07|2026-11-10",
+       "depart": "2026-11-07",
+       "return": "2026-11-10",
+       "nights": 3,
+       "leave_days": 1,
+       "label": "Sat 7 Nov–Tue 10 Nov (3 nights, 1d leave)",
+       "current": 272,
+       "nonstop": 272,
+       "airlines": [
+        "AirAsia"
+       ],
+       "route": "SIN-PEN",
+       "stops": 0,
+       "min": 272,
+       "max": 272,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 272
+        }
+       ]
+      },
+      {
+       "key": "PEN|2026-11-08|2026-11-05|2026-11-09",
+       "depart": "2026-11-05",
+       "return": "2026-11-09",
+       "nights": 4,
+       "leave_days": 2,
+       "label": "Thu 5 Nov–Mon 9 Nov (4 nights, 2d leave)",
+       "current": 257,
+       "nonstop": 257,
+       "airlines": [
+        "AirAsia"
+       ],
+       "route": "SIN-PEN",
+       "stops": 0,
+       "min": 257,
+       "max": 257,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 257
+        }
+       ]
+      }
+     ],
+     "cheapest": 257
+    },
+    {
+     "code": "CGK",
+     "name": "Jakarta",
+     "windows": [
+      {
+       "key": "CGK|2026-11-08|2026-11-07|2026-11-09",
+       "depart": "2026-11-07",
+       "return": "2026-11-09",
+       "nights": 2,
+       "leave_days": 0,
+       "label": "Sat 7 Nov–Mon 9 Nov (2 nights, no leave)",
+       "current": 227,
+       "nonstop": 227,
+       "airlines": [
+        "TransNusa"
+       ],
+       "route": "SIN-CGK",
+       "stops": 0,
+       "min": 227,
+       "max": 227,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 227
+        }
+       ]
+      },
+      {
+       "key": "CGK|2026-11-08|2026-11-06|2026-11-09",
+       "depart": "2026-11-06",
+       "return": "2026-11-09",
+       "nights": 3,
+       "leave_days": 1,
+       "label": "Fri 6 Nov–Mon 9 Nov (3 nights, 1d leave)",
+       "current": 227,
+       "nonstop": 227,
+       "airlines": [
+        "TransNusa"
+       ],
+       "route": "SIN-CGK",
+       "stops": 0,
+       "min": 227,
+       "max": 227,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 227
+        }
+       ]
+      },
+      {
+       "key": "CGK|2026-11-08|2026-11-07|2026-11-10",
+       "depart": "2026-11-07",
+       "return": "2026-11-10",
+       "nights": 3,
+       "leave_days": 1,
+       "label": "Sat 7 Nov–Tue 10 Nov (3 nights, 1d leave)",
+       "current": 227,
+       "nonstop": 227,
+       "airlines": [
+        "TransNusa"
+       ],
+       "route": "SIN-CGK",
+       "stops": 0,
+       "min": 227,
+       "max": 227,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 227
+        }
+       ]
+      },
+      {
+       "key": "CGK|2026-11-08|2026-11-05|2026-11-09",
+       "depart": "2026-11-05",
+       "return": "2026-11-09",
+       "nights": 4,
+       "leave_days": 2,
+       "label": "Thu 5 Nov–Mon 9 Nov (4 nights, 2d leave)",
+       "current": 194,
+       "nonstop": 194,
+       "airlines": [
+        "Scoot"
+       ],
+       "route": "SIN-CGK",
+       "stops": 0,
+       "min": 194,
+       "max": 194,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 194
+        }
+       ]
+      }
+     ],
+     "cheapest": 194
+    },
+    {
+     "code": "SGN",
+     "name": "Ho Chi Minh City",
+     "windows": [
+      {
+       "key": "SGN|2026-11-08|2026-11-07|2026-11-09",
+       "depart": "2026-11-07",
+       "return": "2026-11-09",
+       "nights": 2,
+       "leave_days": 0,
+       "label": "Sat 7 Nov–Mon 9 Nov (2 nights, no leave)",
+       "current": 330,
+       "nonstop": 330,
+       "airlines": [
+        "Vietjet"
+       ],
+       "route": "SIN-SGN",
+       "stops": 0,
+       "min": 330,
+       "max": 330,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 330
+        }
+       ]
+      },
+      {
+       "key": "SGN|2026-11-08|2026-11-06|2026-11-09",
+       "depart": "2026-11-06",
+       "return": "2026-11-09",
+       "nights": 3,
+       "leave_days": 1,
+       "label": "Fri 6 Nov–Mon 9 Nov (3 nights, 1d leave)",
+       "current": 330,
+       "nonstop": 330,
+       "airlines": [
+        "Vietjet"
+       ],
+       "route": "SIN-SGN",
+       "stops": 0,
+       "min": 330,
+       "max": 330,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 330
+        }
+       ]
+      },
+      {
+       "key": "SGN|2026-11-08|2026-11-07|2026-11-10",
+       "depart": "2026-11-07",
+       "return": "2026-11-10",
+       "nights": 3,
+       "leave_days": 1,
+       "label": "Sat 7 Nov–Tue 10 Nov (3 nights, 1d leave)",
+       "current": 291,
+       "nonstop": 291,
+       "airlines": [
+        "Vietjet"
+       ],
+       "route": "SIN-SGN",
+       "stops": 0,
+       "min": 291,
+       "max": 291,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 291
+        }
+       ]
+      },
+      {
+       "key": "SGN|2026-11-08|2026-11-05|2026-11-09",
+       "depart": "2026-11-05",
+       "return": "2026-11-09",
+       "nights": 4,
+       "leave_days": 2,
+       "label": "Thu 5 Nov–Mon 9 Nov (4 nights, 2d leave)",
+       "current": 272,
+       "nonstop": 272,
+       "airlines": [
+        "Scoot"
+       ],
+       "route": "SIN-SGN",
+       "stops": 0,
+       "min": 272,
+       "max": 272,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 272
+        }
+       ]
+      }
+     ],
+     "cheapest": 272
+    },
+    {
+     "code": "HAN",
+     "name": "Hanoi",
+     "windows": [
+      {
+       "key": "HAN|2026-11-08|2026-11-07|2026-11-09",
+       "depart": "2026-11-07",
+       "return": "2026-11-09",
+       "nights": 2,
+       "leave_days": 0,
+       "label": "Sat 7 Nov–Mon 9 Nov (2 nights, no leave)",
+       "current": 644,
+       "nonstop": 644,
+       "airlines": [
+        "Singapore Airlines"
+       ],
+       "route": "SIN-HAN",
+       "stops": 0,
+       "min": 644,
+       "max": 644,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 644
+        }
+       ]
+      },
+      {
+       "key": "HAN|2026-11-08|2026-11-06|2026-11-09",
+       "depart": "2026-11-06",
+       "return": "2026-11-09",
+       "nights": 3,
+       "leave_days": 1,
+       "label": "Fri 6 Nov–Mon 9 Nov (3 nights, 1d leave)",
+       "current": 697,
+       "nonstop": 781,
+       "airlines": [
+        "AirAsia"
+       ],
+       "route": "SIN-KUL-HAN",
+       "stops": 1,
+       "min": 697,
+       "max": 697,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 697
+        }
+       ]
+      },
+      {
+       "key": "HAN|2026-11-08|2026-11-07|2026-11-10",
+       "depart": "2026-11-07",
+       "return": "2026-11-10",
+       "nights": 3,
+       "leave_days": 1,
+       "label": "Sat 7 Nov–Tue 10 Nov (3 nights, 1d leave)",
+       "current": 432,
+       "nonstop": 432,
+       "airlines": [
+        "Vietnam Airlines"
+       ],
+       "route": "SIN-HAN",
+       "stops": 0,
+       "min": 432,
+       "max": 432,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 432
+        }
+       ]
+      },
+      {
+       "key": "HAN|2026-11-08|2026-11-05|2026-11-09",
+       "depart": "2026-11-05",
+       "return": "2026-11-09",
+       "nights": 4,
+       "leave_days": 2,
+       "label": "Thu 5 Nov–Mon 9 Nov (4 nights, 2d leave)",
+       "current": 345,
+       "nonstop": 345,
+       "airlines": [
+        "Vietnam Airlines"
+       ],
+       "route": "SIN-HAN",
+       "stops": 0,
+       "min": 345,
+       "max": 345,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 345
+        }
+       ]
+      }
+     ],
+     "cheapest": 345
+    },
+    {
+     "code": "TPE",
+     "name": "Taipei",
+     "windows": [
+      {
+       "key": "TPE|2026-11-08|2026-11-07|2026-11-09",
+       "depart": "2026-11-07",
+       "return": "2026-11-09",
+       "nights": 2,
+       "leave_days": 0,
+       "label": "Sat 7 Nov–Mon 9 Nov (2 nights, no leave)",
+       "current": 393,
+       "nonstop": 537,
+       "airlines": [
+        "Cebu Pacific"
+       ],
+       "route": "SIN-MNL-TPE",
+       "stops": 1,
+       "min": 393,
+       "max": 393,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 393
+        }
+       ]
+      },
+      {
+       "key": "TPE|2026-11-08|2026-11-06|2026-11-09",
+       "depart": "2026-11-06",
+       "return": "2026-11-09",
+       "nights": 3,
+       "leave_days": 1,
+       "label": "Fri 6 Nov–Mon 9 Nov (3 nights, 1d leave)",
+       "current": 419,
+       "nonstop": 481,
+       "airlines": [
+        "Vietjet"
+       ],
+       "route": "SIN-SGN-TPE",
+       "stops": 1,
+       "min": 419,
+       "max": 419,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 419
+        }
+       ]
+      },
+      {
+       "key": "TPE|2026-11-08|2026-11-07|2026-11-10",
+       "depart": "2026-11-07",
+       "return": "2026-11-10",
+       "nights": 3,
+       "leave_days": 1,
+       "label": "Sat 7 Nov–Tue 10 Nov (3 nights, 1d leave)",
+       "current": 393,
+       "nonstop": 537,
+       "airlines": [
+        "Cebu Pacific"
+       ],
+       "route": "SIN-MNL-TPE",
+       "stops": 1,
+       "min": 393,
+       "max": 393,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 393
+        }
+       ]
+      },
+      {
+       "key": "TPE|2026-11-08|2026-11-05|2026-11-09",
+       "depart": "2026-11-05",
+       "return": "2026-11-09",
+       "nights": 4,
+       "leave_days": 2,
+       "label": "Thu 5 Nov–Mon 9 Nov (4 nights, 2d leave)",
+       "current": 389,
+       "nonstop": 389,
+       "airlines": [
+        "Scoot"
+       ],
+       "route": "SIN-TPE",
+       "stops": 0,
+       "min": 389,
+       "max": 389,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 389
+        }
+       ]
+      }
+     ],
+     "cheapest": 389
+    },
+    {
+     "code": "HKG",
+     "name": "Hong Kong",
+     "windows": [
+      {
+       "key": "HKG|2026-11-08|2026-11-07|2026-11-09",
+       "depart": "2026-11-07",
+       "return": "2026-11-09",
+       "nights": 2,
+       "leave_days": 0,
+       "label": "Sat 7 Nov–Mon 9 Nov (2 nights, no leave)",
+       "current": 410,
+       "nonstop": 574,
+       "airlines": [
+        "Royal Brunei"
+       ],
+       "route": "SIN-BWN-HKG",
+       "stops": 1,
+       "min": 410,
+       "max": 410,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 410
+        }
+       ]
+      },
+      {
+       "key": "HKG|2026-11-08|2026-11-06|2026-11-09",
+       "depart": "2026-11-06",
+       "return": "2026-11-09",
+       "nights": 3,
+       "leave_days": 1,
+       "label": "Fri 6 Nov–Mon 9 Nov (3 nights, 1d leave)",
+       "current": 430,
+       "nonstop": 574,
+       "airlines": [
+        "Royal Brunei"
+       ],
+       "route": "SIN-BWN-HKG",
+       "stops": 1,
+       "min": 430,
+       "max": 430,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 430
+        }
+       ]
+      },
+      {
+       "key": "HKG|2026-11-08|2026-11-07|2026-11-10",
+       "depart": "2026-11-07",
+       "return": "2026-11-10",
+       "nights": 3,
+       "leave_days": 1,
+       "label": "Sat 7 Nov–Tue 10 Nov (3 nights, 1d leave)",
+       "current": 513,
+       "nonstop": 574,
+       "airlines": [
+        "Cebu Pacific"
+       ],
+       "route": "SIN-ILO-HKG",
+       "stops": 1,
+       "min": 513,
+       "max": 513,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 513
+        }
+       ]
+      },
+      {
+       "key": "HKG|2026-11-08|2026-11-05|2026-11-09",
+       "depart": "2026-11-05",
+       "return": "2026-11-09",
+       "nights": 4,
+       "leave_days": 2,
+       "label": "Thu 5 Nov–Mon 9 Nov (4 nights, 2d leave)",
+       "current": 396,
+       "nonstop": 574,
+       "airlines": [
+        "Royal Brunei"
+       ],
+       "route": "SIN-BWN-HKG",
+       "stops": 1,
+       "min": 396,
+       "max": 396,
+       "series": [
+        {
+         "on": "2026-08-02",
+         "price": 396
+        }
+       ]
+      }
+     ],
+     "cheapest": 396
+    }
+   ]
+  }
+ ]
+}

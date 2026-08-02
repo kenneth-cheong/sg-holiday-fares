@@ -1,0 +1,8 @@
+# fast-flights talks to Google Flights' internal endpoint. Pinned deliberately:
+# it is an unofficial client, so an unattended upgrade is a plausible way for the
+# nightly sweep to start failing.
+fast-flights==3.0.2
+
+# Not declared by fast-flights 3.0.2 but imported by it — a clean install fails
+# on `from typing_extensions import override` without this.
+typing_extensions>=4.7

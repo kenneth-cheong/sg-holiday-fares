@@ -1,0 +1,60 @@
+name: Daily fare sweep
+
+on:
+  schedule:
+    # 01:15 UTC = 09:15 SGT. Off the hour on purpose: GitHub queues scheduled
+    # jobs hardest at :00, and a delayed run skews the daily observation.
+    - cron: "15 1 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Fetch and print without writing or notifying"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fare-sweep
+  cancel-in-progress: false
+
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -t . -q
+
+      - name: Sweep fares
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python sweep.py ${{ inputs.dry_run && '--dry-run' || '' }}
+
+      - name: Commit observations
+        if: ${{ !inputs.dry_run }}
+        run: |
+          git config user.name  "fare-sweep[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data docs/data
+          if git diff --staged --quiet; then
+            echo "no new observations to commit"
+            exit 0
+          fi
+          git commit -m "Fares: $(date -u +%Y-%m-%d) sweep"
+          # The scheduled job is the only writer, but a manual dispatch can race
+          # it; rebase rather than fail so an observation is never lost.
+          git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
+          git push
