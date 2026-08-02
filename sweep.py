@@ -71,6 +71,8 @@ def observe(source, origin, dest_cfg, window, currency, today, now):
         "origin": origin,
         "dest": dest_cfg["code"],
         "dest_name": dest_cfg["name"],
+        "airports": list(dest_cfg.get("airports") or [dest_cfg["code"]]),
+        "airport": None,
         "depart": window.depart.isoformat(),
         "return": window.ret.isoformat(),
         "nights": window.nights,
@@ -89,19 +91,32 @@ def observe(source, origin, dest_cfg, window, currency, today, now):
         "error": None,
     }
 
-    try:
-        offers = source.search(
-            origin, dest_cfg["code"], window.depart, window.ret, dest_cfg.get("max_stops")
-        )
-    except Exception as exc:
-        row["error"] = f"{type(exc).__name__}: {exc}"[:300]
-        return row, None, None
+    # A destination can span several airports — Bangkok is BKK and DMK, and the
+    # low-cost carriers only fly into one of them. Each is queried and the
+    # cheapest wins, with the winning airport recorded so the row still says
+    # where you actually land.
+    max_stops = dest_cfg.get("max_stops")
+    best = nonstop = winner = None
+    failures = []
 
-    best, nonstop = pick_offers(offers, dest_cfg.get("max_stops"))
+    for airport in row["airports"]:
+        try:
+            offers = source.search(origin, airport, window.depart, window.ret, max_stops)
+        except Exception as exc:
+            failures.append(f"{airport}: {type(exc).__name__}")
+            continue
+
+        candidate, candidate_nonstop = pick_offers(offers, max_stops)
+        if candidate and (best is None or candidate.price < best.price):
+            best, winner = candidate, airport
+        if candidate_nonstop and (nonstop is None or candidate_nonstop.price < nonstop.price):
+            nonstop = candidate_nonstop
+
     if best is None:
-        row["error"] = "no offers matched the stop limit"
+        row["error"] = "; ".join(failures)[:300] if failures else "no offers matched the stop limit"
         return row, None, None
 
+    row["airport"] = winner
     row.update(
         price=best.price,
         stops=best.stops,

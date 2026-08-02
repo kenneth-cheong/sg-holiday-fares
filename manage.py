@@ -45,9 +45,12 @@ def dump(config: dict, path: Path) -> None:
         name = f'"{dest["name"]}",'.ljust(width_name + 1)
         stops = dest.get("max_stops")
         target = dest.get("alert_below")
+        # Only written when a destination actually spans more than one airport,
+        # so ordinary entries stay a single readable line.
+        extra = f', "airports": {json.dumps(dest["airports"])}' if dest.get("airports") else ""
         lines.append(
             f'    {{ "code": {code} "name": {name} '
-            f'"max_stops": {json.dumps(stops)}, "alert_below": {json.dumps(target)} }}'
+            f'"max_stops": {json.dumps(stops)}, "alert_below": {json.dumps(target)}{extra} }}'
         )
 
     config["destinations"] = destinations  # restore, callers may still hold it
@@ -79,12 +82,13 @@ def verify_route(origin: str, code: str, currency: str) -> tuple[bool, str]:
 
 def cmd_list(config: dict, args) -> int:
     print(f"origin {config['origin']} · prices in {config['currency']}\n")
-    print(f"{'code':<6}{'destination':<20}{'stops':<8}{'alert below':>12}")
+    print(f"{'code':<6}{'destination':<22}{'airports':<12}{'stops':<8}{'alert below':>12}")
     for dest in config["destinations"]:
         stops = dest.get("max_stops")
         label = "nonstop" if stops == 0 else "any" if stops is None else f"<={stops}"
         target = dest.get("alert_below")
-        print(f"{dest['code']:<6}{dest['name']:<20}{label:<8}{(target or '—'):>12}")
+        airports = "+".join(dest.get("airports") or [dest["code"]])
+        print(f"{dest['code']:<6}{dest['name']:<22}{airports:<12}{label:<8}{(target or '—'):>12}")
     print(f"\n{len(config['destinations'])} tracked")
     return 0
 

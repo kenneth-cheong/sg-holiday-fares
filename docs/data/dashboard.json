@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-02T23:37:05",
+ "generated_at": "2026-08-02T23:50:06",
  "currency": "SGD",
  "holidays": [
   {
@@ -9,6 +9,10 @@
     {
      "code": "BKK",
      "name": "Bangkok",
+     "airports": [
+      "BKK",
+      "DMK"
+     ],
      "windows": [
       {
        "key": "BKK|2026-11-08|2026-11-07|2026-11-09",
@@ -17,22 +21,23 @@
        "nights": 2,
        "leave_days": 0,
        "label": "Sat 7 Nov–Mon 9 Nov (2 nights, no leave)",
-       "current": 467,
-       "nonstop": 467,
+       "current": 374,
+       "nonstop": 395,
        "airlines": [
-        "Scoot"
+        "Thai Lion Air"
        ],
-       "route": "SIN-BKK",
-       "stops": 0,
-       "duration": 165,
-       "nonstop_duration": 165,
-       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDQktLGhwSCjIwMjYtMTEtMDkoAWoFEgNCS0tyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
-       "min": 467,
-       "max": 467,
+       "route": "SIN-HKT-DMK",
+       "stops": 1,
+       "airport": "DMK",
+       "duration": 335,
+       "nonstop_duration": 150,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDRE1LGhwSCjIwMjYtMTEtMDkoAWoFEgNETUtyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
+       "min": 374,
+       "max": 374,
        "series": [
         {
          "on": "2026-08-02",
-         "price": 467
+         "price": 374
         }
        ]
       },
@@ -43,22 +48,23 @@
        "nights": 3,
        "leave_days": 1,
        "label": "Fri 6 Nov–Mon 9 Nov (3 nights, 1d leave)",
-       "current": 478,
-       "nonstop": 561,
+       "current": 388,
+       "nonstop": 425,
        "airlines": [
-        "Malaysia Airlines"
+        "Vietnam Airlines"
        ],
-       "route": "SIN-KUL-BKK",
+       "route": "SIN-SGN-BKK",
        "stops": 1,
-       "duration": 525,
+       "airport": "BKK",
+       "duration": 375,
        "nonstop_duration": 150,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDYoAWoFEgNTSU5yBRIDQktLGhwSCjIwMjYtMTEtMDkoAWoFEgNCS0tyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
-       "min": 478,
-       "max": 478,
+       "min": 388,
+       "max": 388,
        "series": [
         {
          "on": "2026-08-02",
-         "price": 478
+         "price": 388
         }
        ]
       },
@@ -69,22 +75,23 @@
        "nights": 3,
        "leave_days": 1,
        "label": "Sat 7 Nov–Tue 10 Nov (3 nights, 1d leave)",
-       "current": 424,
-       "nonstop": 424,
+       "current": 357,
+       "nonstop": 378,
        "airlines": [
-        "Scoot"
+        "Thai Lion Air"
        ],
-       "route": "SIN-BKK",
-       "stops": 0,
-       "duration": 165,
-       "nonstop_duration": 165,
-       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDQktLGhwSCjIwMjYtMTEtMTAoAWoFEgNCS0tyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
-       "min": 424,
-       "max": 424,
+       "route": "SIN-HKT-DMK",
+       "stops": 1,
+       "airport": "DMK",
+       "duration": 335,
+       "nonstop_duration": 150,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDRE1LGhwSCjIwMjYtMTEtMTAoAWoFEgNETUtyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
+       "min": 357,
+       "max": 357,
        "series": [
         {
          "on": "2026-08-02",
-         "price": 424
+         "price": 357
         }
        ]
       },
@@ -95,142 +102,35 @@
        "nights": 4,
        "leave_days": 2,
        "label": "Thu 5 Nov–Mon 9 Nov (4 nights, 2d leave)",
-       "current": 478,
-       "nonstop": 518,
+       "current": 365,
+       "nonstop": 427,
        "airlines": [
-        "Malaysia Airlines"
+        "Vietnam Airlines"
        ],
-       "route": "SIN-KUL-BKK",
+       "route": "SIN-SGN-BKK",
        "stops": 1,
-       "duration": 280,
-       "nonstop_duration": 155,
+       "airport": "BKK",
+       "duration": 1010,
+       "nonstop_duration": 145,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDUoAWoFEgNTSU5yBRIDQktLGhwSCjIwMjYtMTEtMDkoAWoFEgNCS0tyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
-       "min": 478,
-       "max": 478,
+       "min": 365,
+       "max": 365,
        "series": [
         {
          "on": "2026-08-02",
-         "price": 478
+         "price": 365
         }
        ]
       }
      ],
-     "cheapest": 424
-    },
-    {
-     "code": "DMK",
-     "name": "Bangkok Don Mueang",
-     "windows": [
-      {
-       "key": "DMK|2026-11-08|2026-11-07|2026-11-09",
-       "depart": "2026-11-07",
-       "return": "2026-11-09",
-       "nights": 2,
-       "leave_days": 0,
-       "label": "Sat 7 Nov–Mon 9 Nov (2 nights, no leave)",
-       "current": 347,
-       "nonstop": 347,
-       "airlines": [
-        "Thai Lion Air"
-       ],
-       "route": "SIN-DMK",
-       "stops": 0,
-       "duration": 150,
-       "nonstop_duration": 150,
-       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAGoFEgNTSU5yBRIDRE1LGhwSCjIwMjYtMTEtMDkoAGoFEgNETUtyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
-       "min": 347,
-       "max": 347,
-       "series": [
-        {
-         "on": "2026-08-02",
-         "price": 347
-        }
-       ]
-      },
-      {
-       "key": "DMK|2026-11-08|2026-11-06|2026-11-09",
-       "depart": "2026-11-06",
-       "return": "2026-11-09",
-       "nights": 3,
-       "leave_days": 1,
-       "label": "Fri 6 Nov–Mon 9 Nov (3 nights, 1d leave)",
-       "current": 370,
-       "nonstop": 370,
-       "airlines": [
-        "Thai Lion Air"
-       ],
-       "route": "SIN-DMK",
-       "stops": 0,
-       "duration": 150,
-       "nonstop_duration": 150,
-       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDYoAGoFEgNTSU5yBRIDRE1LGhwSCjIwMjYtMTEtMDkoAGoFEgNETUtyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
-       "min": 370,
-       "max": 370,
-       "series": [
-        {
-         "on": "2026-08-02",
-         "price": 370
-        }
-       ]
-      },
-      {
-       "key": "DMK|2026-11-08|2026-11-07|2026-11-10",
-       "depart": "2026-11-07",
-       "return": "2026-11-10",
-       "nights": 3,
-       "leave_days": 1,
-       "label": "Sat 7 Nov–Tue 10 Nov (3 nights, 1d leave)",
-       "current": 330,
-       "nonstop": 330,
-       "airlines": [
-        "Thai Lion Air"
-       ],
-       "route": "SIN-DMK",
-       "stops": 0,
-       "duration": 150,
-       "nonstop_duration": 150,
-       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAGoFEgNTSU5yBRIDRE1LGhwSCjIwMjYtMTEtMTAoAGoFEgNETUtyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
-       "min": 330,
-       "max": 330,
-       "series": [
-        {
-         "on": "2026-08-02",
-         "price": 330
-        }
-       ]
-      },
-      {
-       "key": "DMK|2026-11-08|2026-11-05|2026-11-09",
-       "depart": "2026-11-05",
-       "return": "2026-11-09",
-       "nights": 4,
-       "leave_days": 2,
-       "label": "Thu 5 Nov–Mon 9 Nov (4 nights, 2d leave)",
-       "current": 347,
-       "nonstop": 347,
-       "airlines": [
-        "Thai Lion Air"
-       ],
-       "route": "SIN-DMK",
-       "stops": 0,
-       "duration": 150,
-       "nonstop_duration": 150,
-       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDUoAGoFEgNTSU5yBRIDRE1LGhwSCjIwMjYtMTEtMDkoAGoFEgNETUtyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
-       "min": 347,
-       "max": 347,
-       "series": [
-        {
-         "on": "2026-08-02",
-         "price": 347
-        }
-       ]
-      }
-     ],
-     "cheapest": 330
+     "cheapest": 357
     },
     {
      "code": "TPE",
      "name": "Taipei",
+     "airports": [
+      "TPE"
+     ],
      "windows": [
       {
        "key": "TPE|2026-11-08|2026-11-07|2026-11-09",
@@ -246,6 +146,7 @@
        ],
        "route": "SIN-MNL-TPE",
        "stops": 1,
+       "airport": "TPE",
        "duration": 910,
        "nonstop_duration": 275,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDVFBFGhwSCjIwMjYtMTEtMDkoAWoFEgNUUEVyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
@@ -272,6 +173,7 @@
        ],
        "route": "SIN-SGN-TPE",
        "stops": 1,
+       "airport": "TPE",
        "duration": 1505,
        "nonstop_duration": 275,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDYoAWoFEgNTSU5yBRIDVFBFGhwSCjIwMjYtMTEtMDkoAWoFEgNUUEVyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
@@ -298,6 +200,7 @@
        ],
        "route": "SIN-MNL-TPE",
        "stops": 1,
+       "airport": "TPE",
        "duration": 910,
        "nonstop_duration": 275,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDVFBFGhwSCjIwMjYtMTEtMTAoAWoFEgNUUEVyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
@@ -324,6 +227,7 @@
        ],
        "route": "SIN-TPE",
        "stops": 0,
+       "airport": "TPE",
        "duration": 275,
        "nonstop_duration": 275,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDUoAWoFEgNTSU5yBRIDVFBFGhwSCjIwMjYtMTEtMDkoAWoFEgNUUEVyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
@@ -342,6 +246,9 @@
     {
      "code": "HKG",
      "name": "Hong Kong",
+     "airports": [
+      "HKG"
+     ],
      "windows": [
       {
        "key": "HKG|2026-11-08|2026-11-07|2026-11-09",
@@ -357,6 +264,7 @@
        ],
        "route": "SIN-BWN-HKG",
        "stops": 1,
+       "airport": "HKG",
        "duration": 970,
        "nonstop_duration": 240,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDSEtHGhwSCjIwMjYtMTEtMDkoAWoFEgNIS0dyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
@@ -383,6 +291,7 @@
        ],
        "route": "SIN-BWN-HKG",
        "stops": 1,
+       "airport": "HKG",
        "duration": 2410,
        "nonstop_duration": 240,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDYoAWoFEgNTSU5yBRIDSEtHGhwSCjIwMjYtMTEtMDkoAWoFEgNIS0dyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
@@ -409,6 +318,7 @@
        ],
        "route": "SIN-ILO-HKG",
        "stops": 1,
+       "airport": "HKG",
        "duration": 1330,
        "nonstop_duration": 250,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDSEtHGhwSCjIwMjYtMTEtMTAoAWoFEgNIS0dyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
@@ -435,6 +345,7 @@
        ],
        "route": "SIN-BWN-HKG",
        "stops": 1,
+       "airport": "HKG",
        "duration": 960,
        "nonstop_duration": 225,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDUoAWoFEgNTSU5yBRIDSEtHGhwSCjIwMjYtMTEtMDkoAWoFEgNIS0dyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
@@ -453,6 +364,9 @@
     {
      "code": "HND",
      "name": "Tokyo",
+     "airports": [
+      "HND"
+     ],
      "windows": [
       {
        "key": "HND|2026-11-08|2026-11-07|2026-11-09",
@@ -468,6 +382,7 @@
        ],
        "route": "SIN-HKG-HND",
        "stops": 1,
+       "airport": "HND",
        "duration": null,
        "nonstop_duration": 400,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDSE5EGhwSCjIwMjYtMTEtMDkoAWoFEgNITkRyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
@@ -494,6 +409,7 @@
        ],
        "route": "SIN-SGN-HND",
        "stops": 1,
+       "airport": "HND",
        "duration": 1710,
        "nonstop_duration": 395,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDYoAWoFEgNTSU5yBRIDSE5EGhwSCjIwMjYtMTEtMDkoAWoFEgNITkRyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
@@ -520,6 +436,7 @@
        ],
        "route": "SIN-SGN-HND",
        "stops": 1,
+       "airport": "HND",
        "duration": 1710,
        "nonstop_duration": 400,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDSE5EGhwSCjIwMjYtMTEtMTAoAWoFEgNITkRyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
@@ -546,6 +463,7 @@
        ],
        "route": "SIN-SGN-HND",
        "stops": 1,
+       "airport": "HND",
        "duration": 1710,
        "nonstop_duration": 395,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDUoAWoFEgNTSU5yBRIDSE5EGhwSCjIwMjYtMTEtMDkoAWoFEgNITkRyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
@@ -564,6 +482,9 @@
     {
      "code": "ICN",
      "name": "Seoul",
+     "airports": [
+      "ICN"
+     ],
      "windows": [
       {
        "key": "ICN|2026-11-08|2026-11-07|2026-11-09",
@@ -579,6 +500,7 @@
        ],
        "route": "SIN-DAD-ICN",
        "stops": 1,
+       "airport": "ICN",
        "duration": 575,
        "nonstop_duration": 390,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDSUNOGhwSCjIwMjYtMTEtMDkoAWoFEgNJQ05yBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
@@ -598,22 +520,23 @@
        "nights": 3,
        "leave_days": 1,
        "label": "Fri 6 Nov–Mon 9 Nov (3 nights, 1d leave)",
-       "current": 429,
+       "current": 362,
        "nonstop": 899,
        "airlines": [
-        "Cebu Pacific"
+        "Vietnam Airlines"
        ],
-       "route": "SIN-CEB-ICN",
+       "route": "SIN-SGN-ICN",
        "stops": 1,
-       "duration": 1090,
+       "airport": "ICN",
+       "duration": 1570,
        "nonstop_duration": 395,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDYoAWoFEgNTSU5yBRIDSUNOGhwSCjIwMjYtMTEtMDkoAWoFEgNJQ05yBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
-       "min": 429,
-       "max": 429,
+       "min": 362,
+       "max": 362,
        "series": [
         {
          "on": "2026-08-02",
-         "price": 429
+         "price": 362
         }
        ]
       },
@@ -631,6 +554,7 @@
        ],
        "route": "SIN-DAD-ICN",
        "stops": 1,
+       "airport": "ICN",
        "duration": 575,
        "nonstop_duration": 390,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDSUNOGhwSCjIwMjYtMTEtMTAoAWoFEgNJQ05yBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
@@ -657,6 +581,7 @@
        ],
        "route": "SIN-HAN-ICN",
        "stops": 1,
+       "airport": "ICN",
        "duration": 810,
        "nonstop_duration": 375,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDUoAWoFEgNTSU5yBRIDSUNOGhwSCjIwMjYtMTEtMDkoAWoFEgNJQ05yBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
@@ -670,11 +595,14 @@
        ]
       }
      ],
-     "cheapest": 414
+     "cheapest": 362
     },
     {
      "code": "PEK",
      "name": "Beijing",
+     "airports": [
+      "PEK"
+     ],
      "windows": [
       {
        "key": "PEK|2026-11-08|2026-11-07|2026-11-09",
@@ -690,6 +618,7 @@
        ],
        "route": "SIN-HKG-PEK",
        "stops": 1,
+       "airport": "PEK",
        "duration": 580,
        "nonstop_duration": 365,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDUEVLGhwSCjIwMjYtMTEtMDkoAWoFEgNQRUtyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
@@ -716,6 +645,7 @@
        ],
        "route": "SIN-HKG-PEK",
        "stops": 1,
+       "airport": "PEK",
        "duration": 495,
        "nonstop_duration": 375,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDYoAWoFEgNTSU5yBRIDUEVLGhwSCjIwMjYtMTEtMDkoAWoFEgNQRUtyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
@@ -742,6 +672,7 @@
        ],
        "route": "SIN-HKG-PEK",
        "stops": 1,
+       "airport": "PEK",
        "duration": null,
        "nonstop_duration": 365,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDUEVLGhwSCjIwMjYtMTEtMTAoAWoFEgNQRUtyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
@@ -768,6 +699,7 @@
        ],
        "route": "SIN-HKG-PEK",
        "stops": 1,
+       "airport": "PEK",
        "duration": null,
        "nonstop_duration": 365,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDUoAWoFEgNTSU5yBRIDUEVLGhwSCjIwMjYtMTEtMDkoAWoFEgNQRUtyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
@@ -786,6 +718,9 @@
     {
      "code": "CAN",
      "name": "Guangzhou",
+     "airports": [
+      "CAN"
+     ],
      "windows": [
       {
        "key": "CAN|2026-11-08|2026-11-07|2026-11-09",
@@ -801,6 +736,7 @@
        ],
        "route": "SIN-SGN-CAN",
        "stops": 1,
+       "airport": "CAN",
        "duration": 510,
        "nonstop_duration": 240,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDQ0FOGhwSCjIwMjYtMTEtMDkoAWoFEgNDQU5yBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
@@ -827,6 +763,7 @@
        ],
        "route": "SIN-SGN-CAN",
        "stops": 1,
+       "airport": "CAN",
        "duration": 515,
        "nonstop_duration": 240,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDYoAWoFEgNTSU5yBRIDQ0FOGhwSCjIwMjYtMTEtMDkoAWoFEgNDQU5yBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
@@ -853,6 +790,7 @@
        ],
        "route": "SIN-HKG-CAN",
        "stops": 1,
+       "airport": "CAN",
        "duration": null,
        "nonstop_duration": 240,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDQ0FOGhwSCjIwMjYtMTEtMTAoAWoFEgNDQU5yBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
@@ -879,6 +817,7 @@
        ],
        "route": "SIN-SGN-CAN",
        "stops": 1,
+       "airport": "CAN",
        "duration": 515,
        "nonstop_duration": 240,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDUoAWoFEgNTSU5yBRIDQ0FOGhwSCjIwMjYtMTEtMDkoAWoFEgNDQU5yBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
@@ -897,6 +836,9 @@
     {
      "code": "SZX",
      "name": "Shenzhen",
+     "airports": [
+      "SZX"
+     ],
      "windows": [
       {
        "key": "SZX|2026-11-08|2026-11-07|2026-11-09",
@@ -912,6 +854,7 @@
        ],
        "route": "SIN-HAK-SZX",
        "stops": 1,
+       "airport": "SZX",
        "duration": 770,
        "nonstop_duration": null,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDU1pYGhwSCjIwMjYtMTEtMDkoAWoFEgNTWlhyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
@@ -938,6 +881,7 @@
        ],
        "route": "SIN-HAK-SZX",
        "stops": 1,
+       "airport": "SZX",
        "duration": 770,
        "nonstop_duration": null,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDYoAWoFEgNTSU5yBRIDU1pYGhwSCjIwMjYtMTEtMDkoAWoFEgNTWlhyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
@@ -964,6 +908,7 @@
        ],
        "route": "SIN-HAK-SZX",
        "stops": 1,
+       "airport": "SZX",
        "duration": 770,
        "nonstop_duration": null,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDU1pYGhwSCjIwMjYtMTEtMTAoAWoFEgNTWlhyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
@@ -990,6 +935,7 @@
        ],
        "route": "SIN-HAK-SZX",
        "stops": 1,
+       "airport": "SZX",
        "duration": 770,
        "nonstop_duration": null,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDUoAWoFEgNTSU5yBRIDU1pYGhwSCjIwMjYtMTEtMDkoAWoFEgNTWlhyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
@@ -1008,6 +954,9 @@
     {
      "code": "HGH",
      "name": "Hangzhou",
+     "airports": [
+      "HGH"
+     ],
      "windows": [
       {
        "key": "HGH|2026-11-08|2026-11-07|2026-11-09",
@@ -1023,6 +972,7 @@
        ],
        "route": "SIN-HKG-HGH",
        "stops": 1,
+       "airport": "HGH",
        "duration": null,
        "nonstop_duration": null,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDSEdIGhwSCjIwMjYtMTEtMDkoAWoFEgNIR0hyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
@@ -1049,6 +999,7 @@
        ],
        "route": "SIN-HAK-HGH",
        "stops": 1,
+       "airport": "HGH",
        "duration": 1845,
        "nonstop_duration": null,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDYoAWoFEgNTSU5yBRIDSEdIGhwSCjIwMjYtMTEtMDkoAWoFEgNIR0hyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
@@ -1075,6 +1026,7 @@
        ],
        "route": "SIN-HAK-HGH",
        "stops": 1,
+       "airport": "HGH",
        "duration": 1845,
        "nonstop_duration": null,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDSEdIGhwSCjIwMjYtMTEtMTAoAWoFEgNIR0hyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
@@ -1101,6 +1053,7 @@
        ],
        "route": "SIN-HAK-HGH",
        "stops": 1,
+       "airport": "HGH",
        "duration": 1845,
        "nonstop_duration": null,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDUoAWoFEgNTSU5yBRIDSEdIGhwSCjIwMjYtMTEtMDkoAWoFEgNIR0hyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
@@ -1119,6 +1072,9 @@
     {
      "code": "NKG",
      "name": "Nanjing",
+     "airports": [
+      "NKG"
+     ],
      "windows": [
       {
        "key": "NKG|2026-11-08|2026-11-07|2026-11-09",
@@ -1134,6 +1090,7 @@
        ],
        "route": "SIN-HKG-NKG",
        "stops": 1,
+       "airport": "NKG",
        "duration": 535,
        "nonstop_duration": null,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDTktHGhwSCjIwMjYtMTEtMDkoAWoFEgNOS0dyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
@@ -1160,6 +1117,7 @@
        ],
        "route": "SIN-HAK-NKG",
        "stops": 1,
+       "airport": "NKG",
        "duration": 1860,
        "nonstop_duration": null,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDYoAWoFEgNTSU5yBRIDTktHGhwSCjIwMjYtMTEtMDkoAWoFEgNOS0dyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
@@ -1186,6 +1144,7 @@
        ],
        "route": "SIN-HAK-NKG",
        "stops": 1,
+       "airport": "NKG",
        "duration": 1860,
        "nonstop_duration": null,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDTktHGhwSCjIwMjYtMTEtMTAoAWoFEgNOS0dyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
@@ -1212,6 +1171,7 @@
        ],
        "route": "SIN-HAK-NKG",
        "stops": 1,
+       "airport": "NKG",
        "duration": 1860,
        "nonstop_duration": null,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDUoAWoFEgNTSU5yBRIDTktHGhwSCjIwMjYtMTEtMDkoAWoFEgNOS0dyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",

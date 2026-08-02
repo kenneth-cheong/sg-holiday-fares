@@ -445,6 +445,10 @@ let SLOT_OF = {};
 let DESTS = [];            // [{code, name, maxStops}] — owned by the reader, not the repo
 let LIVE = new Map();      // "DEST|depart|return" -> live lookup from the API
 
+/* A destination can cover more than one airport — Bangkok is served by both
+   Suvarnabhumi and Don Mueang, and the low-cost carriers only use the latter. */
+const airportsOf = dest => (dest.airports && dest.airports.length ? dest.airports : [dest.code]);
+
 function loadDestinations() {
   try {
     const saved = JSON.parse(localStorage.getItem(DEST_KEY) || 'null');
@@ -453,9 +457,11 @@ function loadDestinations() {
   // First visit: seed from whatever the daily sweep is already tracking.
   const seen = new Map();
   for (const holiday of (DATA?.holidays || [])) {
-    for (const dest of holiday.destinations) if (!seen.has(dest.code)) seen.set(dest.code, dest.name);
+    for (const dest of holiday.destinations) if (!seen.has(dest.code)) seen.set(dest.code, dest);
   }
-  DESTS = [...seen].map(([code, name]) => ({ code, name, maxStops: 1 }));
+  DESTS = [...seen.values()].map(dest => ({
+    code: dest.code, name: dest.name, airports: airportsOf(dest), maxStops: 1,
+  }));
 }
 
 function saveDestinations() {
@@ -741,7 +747,9 @@ function renderHoliday(holiday, maxLeave, currency, openByDefault) {
   const rowData = ranked.flatMap((entry, rank) => entry.windows.map(w => ({
     rank,
     name: entry.dest.name,
-    code: entry.dest.code,
+    // Show where you actually land, which for a multi-airport destination is
+    // not the destination's own code.
+    code: w.airport || entry.dest.code,
     label: w.label,
     depart: w.depart,
     now: w.current,
@@ -852,7 +860,7 @@ function syncDestinations() {
           depart: option.depart, 'return': option['return'], nights, leave_days: leave,
           label: `${fmtDay(parse(option.depart))}–${fmtDay(parse(option['return']))} (${nights} nights, ${leave ? leave + 'd leave' : 'no leave'})`,
           current: null, nonstop: null, airlines: [], route: null, stops: null,
-          duration: null, book: null, min: null, max: null, series: [],
+          airport: null, duration: null, book: null, min: null, max: null, series: [],
         });
       }
     }
@@ -898,9 +906,14 @@ async function refreshLive({ fresh = false, only = null } = {}) {
   // One request per holiday keeps each batch inside the API's per-call cap and
   // lets each card update as soon as its own prices land.
   await Promise.all(groups.map(async ({ holiday, windows }) => {
-    const queries = DESTS.flatMap(dest => windows.map(w => ({
-      dest: dest.code, depart: w.depart, ret: w['return'], maxStops: dest.maxStops ?? 1,
-    })));
+    // A destination may span several airports (Bangkok is BKK and DMK). Each is
+    // queried separately, then the cheapest is kept for the destination.
+    const owner = new Map();
+    for (const dest of DESTS) for (const code of airportsOf(dest)) owner.set(code, dest.code);
+
+    const queries = DESTS.flatMap(dest => airportsOf(dest).flatMap(airport => windows.map(w => ({
+      dest: airport, depart: w.depart, ret: w['return'], maxStops: dest.maxStops ?? 1,
+    }))));
     try {
       const response = await fetch(`${API}/fares`, {
         method: 'POST', headers: { 'content-type': 'application/json' },
@@ -909,11 +922,22 @@ async function refreshLive({ fresh = false, only = null } = {}) {
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const payload = await response.json();
 
+      // Collapse per-airport results down to one winner per destination window.
+      const winners = new Map();
       for (const result of payload.results || []) {
-        const w = index.get(`${result.dest}|${result.depart}|${result['return']}`);
+        const code = owner.get(result.dest) || result.dest;
+        const key = `${code}|${result.depart}|${result['return']}`;
+        const held = winners.get(key);
+        const better = result.best && (!held || !held.best || result.best.price < held.best.price);
+        if (!held || better) winners.set(key, { ...result, airport: result.dest });
+      }
+
+      for (const [key, result] of winners) {
+        const w = index.get(key);
         if (!w) continue;
-        LIVE.set(`${result.dest}|${result.depart}|${result['return']}`, result);
+        LIVE.set(key, result);
         w.book = result.book || w.book;
+        w.airport = result.airport;
         if (!result.best) { failed++; continue; }
         ok++;
         w.current = result.best.price;

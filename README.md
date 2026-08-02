@@ -188,8 +188,16 @@ Everything lives in `config.json`.
 | `alerts.min_observations` | Observations required before a relative alert can fire |
 | `alerts.default_drop_pct` | How far below the median counts as a deal |
 | `alerts.resend_after_days` | Cooldown before re-alerting an unchanged fare |
+| `destinations[].airports` | Optional. Airports this destination covers; each is priced and the cheapest wins |
 | `destinations[].max_stops` | `0` for nonstop only, `1` to allow a connection |
 | `destinations[].alert_below` | Absolute price target, in the configured currency |
+
+**A destination can span several airports.** Bangkok is configured as
+`"airports": ["BKK", "DMK"]`: both Suvarnabhumi and Don Mueang are priced for
+every window and the cheaper one wins, because the low-cost carriers only fly
+into Don Mueang and the gap runs to tens of dollars. It stays one destination —
+one chip, one chart series, one alert threshold — while the table and the
+booking link name the airport the winning fare actually lands at.
 
 **Tune `alert_below` after a week of data.** The shipped values are guesses; on
 the first run most destinations tripped their target, which is noise rather than

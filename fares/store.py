@@ -78,7 +78,9 @@ def _booking_link(row: dict) -> str | None:
         return None  # rows written before origin was recorded
     return booking_url(
         origin,
-        row["dest"],
+        # The link must open the airport the price was actually found at, which
+        # for a multi-airport destination is not the destination's own code.
+        row.get("airport") or row["dest"],
         date.fromisoformat(row["depart"]),
         date.fromisoformat(row["return"]),
         row.get("max_stops"),
@@ -110,7 +112,13 @@ def build_dashboard(history: list[dict], generated_at: datetime, today: date) ->
             {"name": latest["holiday"], "date": anchor, "destinations": {}},
         )
         dest = holiday["destinations"].setdefault(
-            latest["dest"], {"code": latest["dest"], "name": latest["dest_name"], "windows": []}
+            latest["dest"],
+            {
+                "code": latest["dest"],
+                "name": latest["dest_name"],
+                "airports": latest.get("airports") or [latest["dest"]],
+                "windows": [],
+            },
         )
 
         prices = [r["price"] for r in rows if r.get("price") is not None]
@@ -127,6 +135,7 @@ def build_dashboard(history: list[dict], generated_at: datetime, today: date) ->
                 "airlines": latest.get("airlines", []),
                 "route": latest.get("route"),
                 "stops": latest.get("stops"),
+                "airport": latest.get("airport") or latest["dest"],
                 "duration": latest.get("duration_minutes"),
                 "nonstop_duration": latest.get("nonstop_duration_minutes"),
                 "book": _booking_link(latest),
