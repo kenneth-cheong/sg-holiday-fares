@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-02T21:36:44",
+ "generated_at": "2026-08-02T22:25:57",
  "currency": "SGD",
  "holidays": [
   {
@@ -17,19 +17,22 @@
        "nights": 2,
        "leave_days": 0,
        "label": "Sat 7 Nov–Mon 9 Nov (2 nights, no leave)",
-       "current": 467,
+       "current": 375,
        "nonstop": 467,
        "airlines": [
-        "Scoot"
+        "Vietnam Airlines"
        ],
-       "route": "SIN-BKK",
-       "stops": 0,
-       "min": 467,
-       "max": 467,
+       "route": "SIN-SGN-BKK",
+       "stops": 1,
+       "duration": 1010,
+       "nonstop_duration": 165,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDQktLGhwSCjIwMjYtMTEtMDkoAWoFEgNCS0tyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
+       "min": 375,
+       "max": 375,
        "series": [
         {
          "on": "2026-08-02",
-         "price": 467
+         "price": 375
         }
        ]
       },
@@ -47,6 +50,9 @@
        ],
        "route": "SIN-KUL-BKK",
        "stops": 1,
+       "duration": 525,
+       "nonstop_duration": 150,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDYoAWoFEgNTSU5yBRIDQktLGhwSCjIwMjYtMTEtMDkoAWoFEgNCS0tyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 478,
        "max": 478,
        "series": [
@@ -70,6 +76,9 @@
        ],
        "route": "SIN-BKK",
        "stops": 0,
+       "duration": 165,
+       "nonstop_duration": 165,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDQktLGhwSCjIwMjYtMTEtMTAoAWoFEgNCS0tyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 424,
        "max": 424,
        "series": [
@@ -93,6 +102,9 @@
        ],
        "route": "SIN-KUL-BKK",
        "stops": 1,
+       "duration": 280,
+       "nonstop_duration": 155,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDUoAWoFEgNTSU5yBRIDQktLGhwSCjIwMjYtMTEtMDkoAWoFEgNCS0tyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 478,
        "max": 478,
        "series": [
@@ -103,7 +115,7 @@
        ]
       }
      ],
-     "cheapest": 424
+     "cheapest": 375
     },
     {
      "code": "HKT",
@@ -123,6 +135,9 @@
        ],
        "route": "SIN-HKT",
        "stops": 0,
+       "duration": 120,
+       "nonstop_duration": 120,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDSEtUGhwSCjIwMjYtMTEtMDkoAWoFEgNIS1RyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 411,
        "max": 411,
        "series": [
@@ -146,6 +161,9 @@
        ],
        "route": "SIN-HKT",
        "stops": 0,
+       "duration": 125,
+       "nonstop_duration": 125,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDYoAWoFEgNTSU5yBRIDSEtUGhwSCjIwMjYtMTEtMDkoAWoFEgNIS1RyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 374,
        "max": 374,
        "series": [
@@ -169,6 +187,9 @@
        ],
        "route": "SIN-HKT",
        "stops": 0,
+       "duration": 125,
+       "nonstop_duration": 125,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDSEtUGhwSCjIwMjYtMTEtMTAoAWoFEgNIS1RyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 266,
        "max": 266,
        "series": [
@@ -192,6 +213,9 @@
        ],
        "route": "SIN-HKT",
        "stops": 0,
+       "duration": 125,
+       "nonstop_duration": 125,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDUoAWoFEgNTSU5yBRIDSEtUGhwSCjIwMjYtMTEtMDkoAWoFEgNIS1RyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 344,
        "max": 344,
        "series": [
@@ -222,6 +246,9 @@
        ],
        "route": "SIN-DPS",
        "stops": 0,
+       "duration": 165,
+       "nonstop_duration": 165,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDRFBTGhwSCjIwMjYtMTEtMDkoAWoFEgNEUFNyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 285,
        "max": 285,
        "series": [
@@ -245,6 +272,9 @@
        ],
        "route": "SIN-DPS",
        "stops": 0,
+       "duration": 190,
+       "nonstop_duration": 190,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDYoAWoFEgNTSU5yBRIDRFBTGhwSCjIwMjYtMTEtMDkoAWoFEgNEUFNyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 429,
        "max": 429,
        "series": [
@@ -268,6 +298,9 @@
        ],
        "route": "SIN-DPS",
        "stops": 0,
+       "duration": 165,
+       "nonstop_duration": 165,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDRFBTGhwSCjIwMjYtMTEtMTAoAWoFEgNEUFNyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 285,
        "max": 285,
        "series": [
@@ -291,6 +324,9 @@
        ],
        "route": "SIN-DPS",
        "stops": 0,
+       "duration": 165,
+       "nonstop_duration": 165,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDUoAWoFEgNTSU5yBRIDRFBTGhwSCjIwMjYtMTEtMDkoAWoFEgNEUFNyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 285,
        "max": 285,
        "series": [
@@ -321,6 +357,9 @@
        ],
        "route": "SIN-KUL",
        "stops": 0,
+       "duration": 70,
+       "nonstop_duration": 70,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAGoFEgNTSU5yBRIDS1VMGhwSCjIwMjYtMTEtMDkoAGoFEgNLVUxyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 197,
        "max": 197,
        "series": [
@@ -344,6 +383,9 @@
        ],
        "route": "SIN-KUL",
        "stops": 0,
+       "duration": 65,
+       "nonstop_duration": 65,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDYoAGoFEgNTSU5yBRIDS1VMGhwSCjIwMjYtMTEtMDkoAGoFEgNLVUxyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 213,
        "max": 213,
        "series": [
@@ -367,6 +409,9 @@
        ],
        "route": "SIN-KUL",
        "stops": 0,
+       "duration": 70,
+       "nonstop_duration": 70,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAGoFEgNTSU5yBRIDS1VMGhwSCjIwMjYtMTEtMTAoAGoFEgNLVUxyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 171,
        "max": 171,
        "series": [
@@ -390,6 +435,9 @@
        ],
        "route": "SIN-KUL",
        "stops": 0,
+       "duration": 65,
+       "nonstop_duration": 65,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDUoAGoFEgNTSU5yBRIDS1VMGhwSCjIwMjYtMTEtMDkoAGoFEgNLVUxyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 186,
        "max": 186,
        "series": [
@@ -420,6 +468,9 @@
        ],
        "route": "SIN-PEN",
        "stops": 0,
+       "duration": 100,
+       "nonstop_duration": 100,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAGoFEgNTSU5yBRIDUEVOGhwSCjIwMjYtMTEtMDkoAGoFEgNQRU5yBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 283,
        "max": 283,
        "series": [
@@ -443,6 +494,9 @@
        ],
        "route": "SIN-PEN",
        "stops": 0,
+       "duration": 80,
+       "nonstop_duration": 80,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDYoAGoFEgNTSU5yBRIDUEVOGhwSCjIwMjYtMTEtMDkoAGoFEgNQRU5yBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 276,
        "max": 276,
        "series": [
@@ -466,6 +520,9 @@
        ],
        "route": "SIN-PEN",
        "stops": 0,
+       "duration": 75,
+       "nonstop_duration": 75,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAGoFEgNTSU5yBRIDUEVOGhwSCjIwMjYtMTEtMTAoAGoFEgNQRU5yBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 272,
        "max": 272,
        "series": [
@@ -489,6 +546,9 @@
        ],
        "route": "SIN-PEN",
        "stops": 0,
+       "duration": 75,
+       "nonstop_duration": 75,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDUoAGoFEgNTSU5yBRIDUEVOGhwSCjIwMjYtMTEtMDkoAGoFEgNQRU5yBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 257,
        "max": 257,
        "series": [
@@ -519,6 +579,9 @@
        ],
        "route": "SIN-CGK",
        "stops": 0,
+       "duration": 105,
+       "nonstop_duration": 105,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAGoFEgNTSU5yBRIDQ0dLGhwSCjIwMjYtMTEtMDkoAGoFEgNDR0tyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 227,
        "max": 227,
        "series": [
@@ -542,6 +605,9 @@
        ],
        "route": "SIN-CGK",
        "stops": 0,
+       "duration": 105,
+       "nonstop_duration": 105,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDYoAGoFEgNTSU5yBRIDQ0dLGhwSCjIwMjYtMTEtMDkoAGoFEgNDR0tyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 227,
        "max": 227,
        "series": [
@@ -565,6 +631,9 @@
        ],
        "route": "SIN-CGK",
        "stops": 0,
+       "duration": 105,
+       "nonstop_duration": 105,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAGoFEgNTSU5yBRIDQ0dLGhwSCjIwMjYtMTEtMTAoAGoFEgNDR0tyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 227,
        "max": 227,
        "series": [
@@ -588,6 +657,9 @@
        ],
        "route": "SIN-CGK",
        "stops": 0,
+       "duration": 120,
+       "nonstop_duration": 120,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDUoAGoFEgNTSU5yBRIDQ0dLGhwSCjIwMjYtMTEtMDkoAGoFEgNDR0tyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 194,
        "max": 194,
        "series": [
@@ -618,6 +690,9 @@
        ],
        "route": "SIN-SGN",
        "stops": 0,
+       "duration": 125,
+       "nonstop_duration": 125,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDU0dOGhwSCjIwMjYtMTEtMDkoAWoFEgNTR05yBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 330,
        "max": 330,
        "series": [
@@ -641,6 +716,9 @@
        ],
        "route": "SIN-SGN",
        "stops": 0,
+       "duration": 130,
+       "nonstop_duration": 130,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDYoAWoFEgNTSU5yBRIDU0dOGhwSCjIwMjYtMTEtMDkoAWoFEgNTR05yBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 330,
        "max": 330,
        "series": [
@@ -664,6 +742,9 @@
        ],
        "route": "SIN-SGN",
        "stops": 0,
+       "duration": 125,
+       "nonstop_duration": 125,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDU0dOGhwSCjIwMjYtMTEtMTAoAWoFEgNTR05yBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 291,
        "max": 291,
        "series": [
@@ -687,6 +768,9 @@
        ],
        "route": "SIN-SGN",
        "stops": 0,
+       "duration": 135,
+       "nonstop_duration": 135,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDUoAWoFEgNTSU5yBRIDU0dOGhwSCjIwMjYtMTEtMDkoAWoFEgNTR05yBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 272,
        "max": 272,
        "series": [
@@ -717,6 +801,9 @@
        ],
        "route": "SIN-HAN",
        "stops": 0,
+       "duration": 205,
+       "nonstop_duration": 205,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDSEFOGhwSCjIwMjYtMTEtMDkoAWoFEgNIQU5yBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 644,
        "max": 644,
        "series": [
@@ -740,6 +827,9 @@
        ],
        "route": "SIN-KUL-HAN",
        "stops": 1,
+       "duration": 315,
+       "nonstop_duration": 205,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDYoAWoFEgNTSU5yBRIDSEFOGhwSCjIwMjYtMTEtMDkoAWoFEgNIQU5yBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 697,
        "max": 697,
        "series": [
@@ -763,6 +853,9 @@
        ],
        "route": "SIN-HAN",
        "stops": 0,
+       "duration": 200,
+       "nonstop_duration": 200,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDSEFOGhwSCjIwMjYtMTEtMTAoAWoFEgNIQU5yBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 432,
        "max": 432,
        "series": [
@@ -786,6 +879,9 @@
        ],
        "route": "SIN-HAN",
        "stops": 0,
+       "duration": 200,
+       "nonstop_duration": 200,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDUoAWoFEgNTSU5yBRIDSEFOGhwSCjIwMjYtMTEtMDkoAWoFEgNIQU5yBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 345,
        "max": 345,
        "series": [
@@ -816,6 +912,9 @@
        ],
        "route": "SIN-MNL-TPE",
        "stops": 1,
+       "duration": 910,
+       "nonstop_duration": 275,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDVFBFGhwSCjIwMjYtMTEtMDkoAWoFEgNUUEVyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 393,
        "max": 393,
        "series": [
@@ -839,6 +938,9 @@
        ],
        "route": "SIN-SGN-TPE",
        "stops": 1,
+       "duration": 1505,
+       "nonstop_duration": 275,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDYoAWoFEgNTSU5yBRIDVFBFGhwSCjIwMjYtMTEtMDkoAWoFEgNUUEVyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 419,
        "max": 419,
        "series": [
@@ -862,6 +964,9 @@
        ],
        "route": "SIN-MNL-TPE",
        "stops": 1,
+       "duration": 910,
+       "nonstop_duration": 275,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDVFBFGhwSCjIwMjYtMTEtMTAoAWoFEgNUUEVyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 393,
        "max": 393,
        "series": [
@@ -885,6 +990,9 @@
        ],
        "route": "SIN-TPE",
        "stops": 0,
+       "duration": 275,
+       "nonstop_duration": 275,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDUoAWoFEgNTSU5yBRIDVFBFGhwSCjIwMjYtMTEtMDkoAWoFEgNUUEVyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 389,
        "max": 389,
        "series": [
@@ -915,6 +1023,9 @@
        ],
        "route": "SIN-BWN-HKG",
        "stops": 1,
+       "duration": 970,
+       "nonstop_duration": 240,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDSEtHGhwSCjIwMjYtMTEtMDkoAWoFEgNIS0dyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 410,
        "max": 410,
        "series": [
@@ -938,6 +1049,9 @@
        ],
        "route": "SIN-BWN-HKG",
        "stops": 1,
+       "duration": 2410,
+       "nonstop_duration": 240,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDYoAWoFEgNTSU5yBRIDSEtHGhwSCjIwMjYtMTEtMDkoAWoFEgNIS0dyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 430,
        "max": 430,
        "series": [
@@ -961,6 +1075,9 @@
        ],
        "route": "SIN-ILO-HKG",
        "stops": 1,
+       "duration": 1330,
+       "nonstop_duration": 250,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDSEtHGhwSCjIwMjYtMTEtMTAoAWoFEgNIS0dyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 513,
        "max": 513,
        "series": [
@@ -984,6 +1101,9 @@
        ],
        "route": "SIN-BWN-HKG",
        "stops": 1,
+       "duration": 960,
+       "nonstop_duration": 225,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDUoAWoFEgNTSU5yBRIDSEtHGhwSCjIwMjYtMTEtMDkoAWoFEgNIS0dyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 396,
        "max": 396,
        "series": [

@@ -65,10 +65,15 @@
   h1 { font-size: 22px; margin: 0; letter-spacing: -0.01em; }
   .meta { color: var(--text-muted); font-size: 13px; }
   #theme {
-    margin-left: auto; background: none; border: 1px solid var(--border); color: var(--text-secondary);
+    background: none; border: 1px solid var(--border); color: var(--text-secondary);
     border-radius: 8px; padding: 5px 11px; font: inherit; font-size: 13px; cursor: pointer;
   }
   #theme:hover { color: var(--text-primary); }
+  a.refresh {
+    margin-left: auto; color: var(--text-secondary); text-decoration: none; font-size: 13px;
+    border: 1px solid var(--border); border-radius: 8px; padding: 5px 11px;
+  }
+  a.refresh:hover { color: var(--text-primary); }
 
   .filters { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin: 18px 0 8px; }
   .filters label { font-size: 13px; color: var(--text-secondary); }
@@ -155,6 +160,35 @@
   .breaks .when { color: var(--text-secondary); }
   .breaks .cost { margin-left: auto; color: var(--text-muted); }
   .breaks .win { color: var(--good); font-weight: 600; }
+
+  /* ── Destination picker ───────────────────────────────────────────────── */
+  .picker { display: flex; flex-wrap: wrap; gap: 7px; margin: 10px 0 2px; }
+  .chip-toggle {
+    display: inline-flex; align-items: center; gap: 7px; cursor: pointer;
+    border: 1px solid var(--border); background: var(--surface-1); color: var(--text-muted);
+    border-radius: 999px; padding: 5px 12px; font: inherit; font-size: 13px;
+  }
+  .chip-toggle:hover { color: var(--text-primary); }
+  .chip-toggle[aria-pressed="true"] { color: var(--text-primary); border-color: var(--axis); }
+  .chip-toggle .swatch { width: 9px; height: 9px; border-radius: 50%; background: var(--axis); flex: none; }
+  .chip-toggle[aria-pressed="false"] { text-decoration: line-through; opacity: .62; }
+  .picker-actions { display: flex; gap: 14px; margin-top: 8px; font-size: 12px; }
+  .picker-actions button {
+    background: none; border: 0; padding: 0; font: inherit; color: var(--text-muted);
+    cursor: pointer; text-decoration: underline;
+  }
+  .picker-actions button:hover { color: var(--text-primary); }
+
+  a.book { color: var(--series-1); text-decoration: none; font-weight: 600; white-space: nowrap; }
+  a.book:hover { text-decoration: underline; }
+
+  /* ── Provenance ───────────────────────────────────────────────────────── */
+  .about { font-size: 13px; color: var(--text-secondary); }
+  .about p { margin: 0 0 10px; max-width: 74ch; }
+  .about dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; margin: 0 0 12px; }
+  .about dt { color: var(--text-muted); }
+  .about dd { margin: 0; }
+  .about .caveat { border-left: 2px solid var(--series-2); padding-left: 12px; margin: 12px 0; }
 </style>
 </head>
 <body>
@@ -162,6 +196,11 @@
   <header>
     <h1>Singapore holiday fares</h1>
     <span class="meta" id="meta"></span>
+    <!-- Triggering the sweep needs a credential, which must never live in a
+         public page. Linking to the workflow lets GitHub do the authenticating. -->
+    <a class="refresh" href="https://github.com/kenneth-cheong/sg-holiday-fares/actions/workflows/sweep.yml"
+       target="_blank" rel="noopener noreferrer"
+       title="Opens the workflow on GitHub — press Run workflow to re-check every fare now">Refresh ↗</a>
     <button id="theme" type="button">Theme</button>
   </header>
 
@@ -190,17 +229,70 @@
     </div>
   </section>
 
-  <div class="filters" id="filters" hidden>
-    <label for="leave">Annual leave</label>
-    <select id="leave">
-      <option value="9">Any</option>
-      <option value="0">None — public holidays only</option>
-      <option value="1">Up to 1 day</option>
-      <option value="2">Up to 2 days</option>
-    </select>
+  <div id="controls" hidden>
+    <div class="filters">
+      <label for="leave">Annual leave</label>
+      <select id="leave">
+        <option value="9">Any</option>
+        <option value="0">None — public holidays only</option>
+        <option value="1">Up to 1 day</option>
+        <option value="2">Up to 2 days</option>
+      </select>
+    </div>
+    <div class="picker" id="picker"></div>
+    <div class="picker-actions">
+      <button type="button" id="pick-all">Select all</button>
+      <button type="button" id="pick-none">Clear</button>
+      <span class="note" id="pick-note"></span>
+    </div>
   </div>
 
   <div id="out"></div>
+
+  <section class="holiday about" id="about">
+    <div class="htitle"><h2>Where these prices come from</h2></div>
+
+    <p>
+      Every price here is a <b>total round-trip fare for one adult in economy</b>,
+      read from Google Flights once a day and recorded so the trend can be seen.
+      It is the same data the Google Flights website shows you — the
+      <b>Open&nbsp;↗</b> link on each row reruns the exact search the price came
+      from, with the same dates, stop filter and currency.
+    </p>
+
+    <dl>
+      <dt>Source</dt><dd>Google Flights, via its internal search endpoint</dd>
+      <dt>Collected</dt><dd>Once daily at 09:15 SGT by a GitHub Actions job</dd>
+      <dt>Holidays</dt><dd>MOM's gazetted dates, from data.gov.sg</dd>
+      <dt>Journey time</dt><dd>Outbound only, layovers included, timezone-corrected</dd>
+      <dt>History</dt><dd>Committed to the repository — every observation is auditable</dd>
+    </dl>
+
+    <div class="caveat">
+      <p>
+        <b>These are indicative prices, not quotes.</b> Fares move hour to hour and
+        a daily snapshot cannot capture that, so treat a single point as weak
+        evidence and the trend as the signal. Always confirm the real price with
+        the airline before booking.
+      </p>
+      <p>
+        Google returns different inventory depending on where the request comes
+        from, and the collector does not run in Singapore. Prices stay comparable
+        to each other because every observation comes from the same place, but they
+        can differ from what you see booking at home.
+      </p>
+      <p>
+        Carrier and stop count describe the <b>outbound</b> journey. The price covers
+        both directions; the return itinerary is not part of the data.
+      </p>
+    </div>
+
+    <p>
+      Collection code, configuration and the full observation history are in the
+      <a class="book" href="https://github.com/kenneth-cheong/sg-holiday-fares"
+         target="_blank" rel="noopener noreferrer">repository&nbsp;↗</a>.
+    </p>
+  </section>
 </div>
 
 <script>
@@ -208,6 +300,13 @@ const SLOTS = 8;
 const fmtDay = d => d.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const parse = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+/* Outbound journey time including layovers. The underlying leg durations are
+   already timezone-corrected, so this is real elapsed time, not clock maths. */
+const fmtDuration = minutes => {
+  if (!minutes) return '—';
+  const h = Math.floor(minutes / 60), m = minutes % 60;
+  return h ? `${h}h ${String(m).padStart(2, '0')}m` : `${m}m`;
+};
 const median = xs => {
   if (!xs.length) return null;
   const s = [...xs].sort((a, b) => a - b), m = s.length >> 1;
@@ -231,14 +330,83 @@ function seriesFor(dest, maxLeave) {
   return { windows, points: [...byDate.entries()].map(([on, price]) => ({ on, price })).sort((a, b) => a.on < b.on ? -1 : 1) };
 }
 
-/* Colour follows the destination, never its rank. The slot is the destination's
-   fixed position in the payload, so changing the leave filter never repaints a
-   series that did not itself change. Slots are never cycled: destinations past
-   the eighth are table-only. */
+/* ── Destination selection ──────────────────────────────────────────────────
+   Colour follows the destination, never its rank. A destination claims a slot
+   when selected and keeps it until deselected, so toggling one never repaints
+   the others. Slots are never cycled — with only eight distinct series, any
+   further selections are listed in the table instead of charted. */
+const STORE_KEY = 'sgfares.destinations.v1';
+let SELECTED = new Set();
+let SLOT_OF = {};
+
+function allDestinations() {
+  const seen = new Map();
+  for (const holiday of DATA.holidays) {
+    for (const dest of holiday.destinations) if (!seen.has(dest.code)) seen.set(dest.code, dest.name);
+  }
+  return [...seen].map(([code, name]) => ({ code, name }));
+}
+
+function assignSlots() {
+  for (const code of Object.keys(SLOT_OF)) if (!SELECTED.has(code)) delete SLOT_OF[code];
+  const taken = new Set(Object.values(SLOT_OF));
+  for (const { code } of allDestinations()) {
+    if (!SELECTED.has(code) || code in SLOT_OF) continue;
+    for (let slot = 0; slot < SLOTS; slot++) {
+      if (!taken.has(slot)) { SLOT_OF[code] = slot; taken.add(slot); break; }
+    }
+  }
+}
+
+function loadSelection() {
+  const all = allDestinations();
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); } catch { /* private mode */ }
+
+  if (!saved) {
+    SELECTED = new Set(all.slice(0, SLOTS).map(d => d.code));
+    SLOT_OF = {};
+  } else {
+    SELECTED = new Set(saved.selected || []);
+    SLOT_OF = saved.slots || {};
+    // A destination added to config since the last visit opts in by default,
+    // otherwise it would be tracked and paid for but invisible.
+    const known = new Set(saved.known || []);
+    for (const { code } of all) if (!known.has(code)) SELECTED.add(code);
+  }
+  assignSlots();
+}
+
+function saveSelection() {
+  try {
+    localStorage.setItem(STORE_KEY, JSON.stringify({
+      selected: [...SELECTED], slots: SLOT_OF, known: allDestinations().map(d => d.code),
+    }));
+  } catch { /* nothing to do if storage is unavailable */ }
+}
+
+function renderPicker() {
+  document.getElementById('picker').innerHTML = allDestinations().map(dest => {
+    const on = SELECTED.has(dest.code);
+    const slot = SLOT_OF[dest.code];
+    const colour = slot === undefined ? 'var(--axis)' : `var(--series-${slot + 1})`;
+    return `<button class="chip-toggle" type="button" aria-pressed="${on}" data-code="${esc(dest.code)}"
+      title="${esc(on ? 'Showing ' + dest.name : 'Hidden — ' + dest.name)}">
+      <span class="swatch" style="background:${colour}"></span>${esc(dest.name)}</button>`;
+  }).join('');
+
+  const charted = Object.keys(SLOT_OF).length;
+  const extra = SELECTED.size - charted;
+  document.getElementById('pick-note').textContent = extra > 0
+    ? `${charted} charted · ${extra} in the table only (8 distinct series available)`
+    : `${charted} charted`;
+}
+
 function chartSeries(holiday, maxLeave) {
   return holiday.destinations
-    .map((dest, slot) => ({ code: dest.code, name: dest.name, slot, ...seriesFor(dest, maxLeave) }))
-    .filter(entry => entry.points.length && entry.slot < SLOTS);
+    .filter(dest => SELECTED.has(dest.code) && dest.code in SLOT_OF)
+    .map(dest => ({ code: dest.code, name: dest.name, slot: SLOT_OF[dest.code], ...seriesFor(dest, maxLeave) }))
+    .filter(entry => entry.points.length);
 }
 
 function lineChart(series, currency) {
@@ -336,7 +504,8 @@ function attachHover(root, series, currency) {
 
 function renderHoliday(holiday, maxLeave, currency) {
   const enriched = holiday.destinations
-    .map((dest, slot) => ({ dest, slot, ...seriesFor(dest, maxLeave) }))
+    .filter(dest => SELECTED.has(dest.code))
+    .map(dest => ({ dest, slot: SLOT_OF[dest.code], ...seriesFor(dest, maxLeave) }))
     .filter(entry => entry.points.length);
   if (!enriched.length) return '';
 
@@ -365,6 +534,8 @@ function renderHoliday(holiday, maxLeave, currency) {
       <td class="num">${w.min == null ? '—' : w.min.toLocaleString()}</td>
       <td>${esc((w.airlines || []).join(', ') || '—')}</td>
       <td>${w.stops === 0 ? 'nonstop' : w.stops == null ? '—' : w.stops + ' stop'}</td>
+      <td class="num">${esc(fmtDuration(w.duration))}</td>
+      <td>${w.book ? `<a class="book" href="${esc(w.book)}" target="_blank" rel="noopener noreferrer">Open ↗</a>` : '—'}</td>
     </tr>`;
   })).join('');
 
@@ -376,10 +547,10 @@ function renderHoliday(holiday, maxLeave, currency) {
     <p class="headline">Cheapest right now — ${esc(cheapest.dest.name)} at <b>${esc(currency)} ${cheapestPrice.toLocaleString()}</b>${delta}</p>
     <div class="chart">${lineChart(charted, currency)}<div class="tip"></div></div>
     <div class="legend">${legend}</div>
-    ${hidden > 0 ? `<p class="note">${hidden} further destination${hidden > 1 ? 's are' : ' is'} tracked but not charted — the palette has ${SLOTS} distinct series and they are never reused, so destinations past the ${SLOTS}th in <code>config.json</code> appear in the table only.</p>` : ''}
+    ${hidden > 0 ? `<p class="note">${hidden} selected destination${hidden > 1 ? 's appear' : ' appears'} in the table but not the chart — there are ${SLOTS} distinct series and they are never reused. Deselect one above to free a colour.</p>` : ''}
     <details><summary>All windows and destinations (${rows ? enriched.reduce((n, e) => n + e.windows.length, 0) : 0} rows)</summary>
       <div class="scroller"><table>
-        <thead><tr><th>Destination</th><th>Window</th><th class="num">Now</th><th class="num">Median</th><th class="num">Low</th><th>Carrier</th><th>Stops</th></tr></thead>
+        <thead><tr><th>Destination</th><th>Window</th><th class="num">Now</th><th class="num">Median</th><th class="num">Low</th><th>Carrier</th><th>Stops</th><th class="num">Journey</th><th>Google Flights</th></tr></thead>
         <tbody>${rows}</tbody>
       </table></div>
     </details>
@@ -506,6 +677,29 @@ document.getElementById('theme').addEventListener('click', () => {
 });
 document.getElementById('leave').addEventListener('change', render);
 
+function applySelection() {
+  assignSlots();
+  saveSelection();
+  renderPicker();
+  render();
+}
+
+document.getElementById('picker').addEventListener('click', event => {
+  const chip = event.target.closest('.chip-toggle');
+  if (!chip) return;
+  const code = chip.dataset.code;
+  if (SELECTED.has(code)) SELECTED.delete(code); else SELECTED.add(code);
+  applySelection();
+});
+document.getElementById('pick-all').addEventListener('click', () => {
+  SELECTED = new Set(allDestinations().map(d => d.code));
+  applySelection();
+});
+document.getElementById('pick-none').addEventListener('click', () => {
+  SELECTED = new Set();
+  applySelection();
+});
+
 fetch('data/dashboard.json', { cache: 'no-store' })
   .then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)))
   .then(payload => {
@@ -517,7 +711,9 @@ fetch('data/dashboard.json', { cache: 'no-store' })
         `<div class="empty">No upcoming holiday windows are being tracked yet. Run <code>python sweep.py</code> to collect the first observations.</div>`;
       return;
     }
-    document.getElementById('filters').hidden = false;
+    document.getElementById('controls').hidden = false;
+    loadSelection();
+    renderPicker();
     render();
   })
   .catch(err => {

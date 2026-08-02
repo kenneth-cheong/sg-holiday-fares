@@ -81,10 +81,57 @@ bridges both and buys **nine consecutive days off** — and no per-holiday view
 would show you that, because it only exists when the two are considered
 together.
 
-## Customising destinations
+## Choosing destinations
 
-Use `manage.py` rather than hand-editing JSON — it validates the airport code
-and writes each destination on one line, so a change is a one-line diff.
+There are two different things this could mean, and they are handled in
+different places.
+
+**What gets displayed** is a reader's choice, made on the dashboard. The
+destination picker toggles each one on or off and remembers it in the browser.
+A destination keeps its chart colour until you deselect it, so toggling one
+never repaints the others. Only eight distinct series exist and they are never
+reused, so any selection past the eighth appears in the table rather than the
+chart.
+
+**What gets tracked** lives in `config.json`, because the daily job reads it at
+runtime — a static page cannot change that. Edit it through the **Manage
+destinations** workflow in the Actions tab, which takes the code, name, stop
+limit and target as a form, or run the same thing locally:
+
+```bash
+python manage.py add HND Tokyo --max-stops 1 --target 800 --verify
+```
+
+`--verify` runs a single live query first and refuses a route that returns
+nothing, which catches typos and airports with no service from Singapore. Use
+`set` to retune, and `remove` to stop tracking — past observations stay in the
+history either way. Both paths write one destination per line, so a change is a
+one-line diff.
+
+## Refreshing on demand
+
+The sweep runs daily, but the **Refresh ↗** link in the dashboard header opens
+the workflow on GitHub where **Run workflow** re-checks every fare immediately —
+about five minutes end to end. Triggering it from the page itself would mean
+embedding a credential in a public site, which is why it links out to GitHub and
+lets GitHub do the authenticating.
+
+## Booking and journey time
+
+Each table row carries the outbound journey time and an **Open ↗** link that
+reruns the exact Google Flights search the price came from — same dates, same
+stop filter, same currency.
+
+The journey time is real elapsed time including layovers, not clock arithmetic:
+the underlying leg durations are already timezone-corrected, which matters
+because a Singapore–Bangkok flight lands 95 clock-minutes after departure but
+actually takes 155. It is worth reading next to the price. Over National Day
+2026 the cheapest Bangkok round trip was SGD 455 routed through Kuala Lumpur
+against SGD 726 nonstop — and the cheap one takes 8h 45m each way against 2h 30m.
+
+Booking links are derived when the dashboard is built rather than stored: at
+~160 characters per window they would add megabytes a year to the committed
+history and carry nothing the row does not already say.
 
 ```bash
 python manage.py list

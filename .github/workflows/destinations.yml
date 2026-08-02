@@ -1,0 +1,116 @@
+name: Manage destinations
+
+# A no-code way to change what gets tracked. The dashboard picker only controls
+# what is *displayed*; the daily sweep reads config.json from this repo, so
+# changing the tracked set has to happen here.
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "What to do"
+        type: choice
+        required: true
+        options: [add, remove, set]
+      code:
+        description: "IATA airport code, e.g. HND"
+        type: string
+        required: true
+      name:
+        description: "Display name (add only, e.g. Tokyo)"
+        type: string
+        required: false
+      max_stops:
+        description: "0 nonstop only, 1 one stop, 2 two stops, blank to leave unchanged"
+        type: choice
+        required: false
+        default: ""
+        options: ["", "0", "1", "2"]
+      target:
+        description: "Alert at or below this price; -1 clears it"
+        type: string
+        required: false
+      verify:
+        description: "Check the route with one live query before adding"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: destinations
+  cancel-in-progress: false
+
+jobs:
+  edit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Apply the change
+        env:
+          ACTION: ${{ inputs.action }}
+          CODE: ${{ inputs.code }}
+          NAME: ${{ inputs.name }}
+          MAX_STOPS: ${{ inputs.max_stops }}
+          TARGET: ${{ inputs.target }}
+          VERIFY: ${{ inputs.verify }}
+        run: |
+          set -euo pipefail
+          args=("$ACTION" "$CODE")
+
+          if [ "$ACTION" = "add" ]; then
+            if [ -z "$NAME" ]; then
+              echo "::error::'name' is required when adding a destination"
+              exit 1
+            fi
+            args+=("$NAME")
+            [ "$VERIFY" = "true" ] && args+=(--verify)
+          elif [ -n "$NAME" ]; then
+            args+=(--name "$NAME")
+          fi
+
+          [ -n "$MAX_STOPS" ] && args+=(--max-stops "$MAX_STOPS")
+          [ -n "$TARGET" ] && args+=(--target "$TARGET")
+
+          python manage.py "${args[@]}"
+          echo "--- destinations now tracked ---"
+          python manage.py list
+
+      - name: Commit config
+        run: |
+          git config user.name  "fare-sweep[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add config.json
+          if git diff --staged --quiet; then
+            echo "config.json unchanged"
+            exit 0
+          fi
+          git commit -m "Destinations: ${{ inputs.action }} ${{ inputs.code }}"
+          git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
+          git push
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "### Destinations"
+            echo ""
+            echo '```'
+            python manage.py list || true
+            echo '```'
+            echo ""
+            echo "The next daily sweep picks this up. Prices for a newly added"
+            echo "destination start accumulating from its first observation, so"
+            echo "percentage-drop alerts stay quiet until it has enough history."
+          } >> "$GITHUB_STEP_SUMMARY"

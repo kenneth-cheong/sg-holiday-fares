@@ -65,6 +65,27 @@ def save_state(state: dict, path: Path = STATE_PATH) -> None:
     path.write_text(json.dumps(state, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
+def _booking_link(row: dict) -> str | None:
+    """Derive the Google Flights link for a row rather than storing it.
+
+    At ~160 characters per observation, keeping these in the committed history
+    would add megabytes a year and carry no information the row lacks.
+    """
+    from .sources import booking_url
+
+    origin = row.get("origin")
+    if not origin:
+        return None  # rows written before origin was recorded
+    return booking_url(
+        origin,
+        row["dest"],
+        date.fromisoformat(row["depart"]),
+        date.fromisoformat(row["return"]),
+        row.get("max_stops"),
+        row.get("currency", "SGD"),
+    )
+
+
 def build_dashboard(history: list[dict], generated_at: datetime, today: date) -> dict:
     """Collapse the history into what the dashboard page needs.
 
@@ -106,6 +127,9 @@ def build_dashboard(history: list[dict], generated_at: datetime, today: date) ->
                 "airlines": latest.get("airlines", []),
                 "route": latest.get("route"),
                 "stops": latest.get("stops"),
+                "duration": latest.get("duration_minutes"),
+                "nonstop_duration": latest.get("nonstop_duration_minutes"),
+                "book": _booking_link(latest),
                 "min": min(prices) if prices else None,
                 "max": max(prices) if prices else None,
                 "series": [

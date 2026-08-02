@@ -68,6 +68,7 @@ def observe(source, origin, dest_cfg, window, currency, today, now):
         "key": store.observation_key(dest_cfg["code"], window.key),
         "holiday": window.name,
         "holiday_date": window.anchor.isoformat(),
+        "origin": origin,
         "dest": dest_cfg["code"],
         "dest_name": dest_cfg["name"],
         "depart": window.depart.isoformat(),
@@ -82,7 +83,9 @@ def observe(source, origin, dest_cfg, window, currency, today, now):
         "stops": None,
         "airlines": [],
         "route": None,
+        "duration_minutes": None,
         "nonstop_price": None,
+        "nonstop_duration_minutes": None,
         "error": None,
     }
 
@@ -104,7 +107,9 @@ def observe(source, origin, dest_cfg, window, currency, today, now):
         stops=best.stops,
         airlines=list(best.airlines),
         route=best.route,
+        duration_minutes=best.duration_minutes,
         nonstop_price=nonstop.price if nonstop else None,
+        nonstop_duration_minutes=nonstop.duration_minutes if nonstop else None,
     )
     return row, best, nonstop
 

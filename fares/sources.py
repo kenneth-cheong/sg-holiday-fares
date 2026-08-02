@@ -13,7 +13,7 @@ from __future__ import annotations
 import re
 import time
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, datetime
 from typing import Protocol
 
 
@@ -25,10 +25,49 @@ class Offer:
     stops: int
     route: str  # e.g. "SIN-KUL-BKK" for the outbound
     source: str
+    duration_minutes: int | None = None  # door-to-door for the outbound, layovers included
 
     @property
     def is_nonstop(self) -> bool:
         return self.stops == 0
+
+    @property
+    def duration_label(self) -> str:
+        if not self.duration_minutes:
+            return "—"
+        hours, minutes = divmod(self.duration_minutes, 60)
+        return f"{hours}h {minutes:02d}m" if hours else f"{minutes}m"
+
+
+def _leg_time(part) -> datetime | None:
+    """A leg endpoint as a naive local datetime. Times arrive as [h] or [h, m]."""
+    day, clock = getattr(part, "date", None), getattr(part, "time", None)
+    if not day or not clock:
+        return None
+    return datetime(day[0], day[1], day[2], clock[0], clock[1] if len(clock) > 1 else 0)
+
+
+def journey_minutes(legs) -> int | None:
+    """Total outbound journey time, flying plus layovers.
+
+    Leg durations are already timezone-correct — a 155-minute SIN-BKK hop shows
+    local clock times only 95 minutes apart — so they are summed as given.
+    Layovers are the only part needing arithmetic, and both ends of a layover
+    sit at the same airport, so naive local times are safe there.
+    """
+    if not legs:
+        return None
+
+    total = sum(leg.duration or 0 for leg in legs)
+    for previous, following in zip(legs, legs[1:]):
+        landed, leaves = _leg_time(previous.arrival), _leg_time(following.departure)
+        if landed is None or leaves is None:
+            return None
+        gap = (leaves - landed).total_seconds() / 60
+        if gap < 0:  # defensive: a malformed overnight connection
+            gap += 24 * 60
+        total += gap
+    return int(total)
 
 
 class FareSource(Protocol):
@@ -45,6 +84,48 @@ def _to_int(price) -> int | None:
         return int(price)
     digits = re.sub(r"[^0-9]", "", str(price or ""))
     return int(digits) if digits else None
+
+
+def _query(origin, dest, depart, ret, max_stops, currency, language):
+    from fast_flights import FlightQuery, Passengers, create_query
+
+    return create_query(
+        flights=[
+            FlightQuery(date=depart.isoformat(), from_airport=origin, to_airport=dest, max_stops=max_stops),
+            FlightQuery(date=ret.isoformat(), from_airport=dest, to_airport=origin, max_stops=max_stops),
+        ],
+        trip="round-trip",
+        seat="economy",
+        passengers=Passengers(adults=1),
+        currency=currency,
+        language=language,
+        max_stops=max_stops,
+    )
+
+
+def booking_url(
+    origin: str,
+    dest: str,
+    depart: date,
+    ret: date,
+    max_stops: int | None = None,
+    currency: str = "SGD",
+    language: str = "en-US",
+) -> str | None:
+    """A Google Flights link reproducing the exact search a price came from.
+
+    Built from the same encoded query the fetch uses, so the dates, stop filter
+    and currency all carry over. It lands on the search rather than one specific
+    itinerary — the fare data has no per-itinerary booking link — but the price
+    shown on arrival is the one that was recorded.
+
+    Derived rather than stored: at ~160 characters per window this would add
+    megabytes to the committed history over a year for no new information.
+    """
+    try:
+        return _query(origin, dest, depart, ret, max_stops, currency, language).url()
+    except Exception:
+        return None
 
 
 class GoogleFlightsSource:
@@ -70,25 +151,10 @@ class GoogleFlightsSource:
     def search(
         self, origin: str, dest: str, depart: date, ret: date, max_stops: int | None = None
     ) -> list[Offer]:
-        from fast_flights import FlightQuery, Passengers, create_query, get_flights
+        from fast_flights import get_flights
         from fast_flights.exceptions import FlightsNotFound
 
-        query = create_query(
-            flights=[
-                FlightQuery(
-                    date=depart.isoformat(), from_airport=origin, to_airport=dest, max_stops=max_stops
-                ),
-                FlightQuery(
-                    date=ret.isoformat(), from_airport=dest, to_airport=origin, max_stops=max_stops
-                ),
-            ],
-            trip="round-trip",
-            seat="economy",
-            passengers=Passengers(adults=1),
-            currency=self.currency,
-            language=self.language,
-            max_stops=max_stops,
-        )
+        query = _query(origin, dest, depart, ret, max_stops, self.currency, self.language)
 
         last_error: Exception | None = None
         for attempt in range(self.retries):
@@ -120,6 +186,7 @@ class GoogleFlightsSource:
                     stops=len(legs) - 1,
                     route="-".join(hops),
                     source=self.name,
+                    duration_minutes=journey_minutes(legs),
                 )
             )
 
