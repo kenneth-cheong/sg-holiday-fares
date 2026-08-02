@@ -13,11 +13,12 @@ Routes
 
 from __future__ import annotations
 
+import hmac
 import json
 import os
 import time
 from concurrent.futures import ThreadPoolExecutor
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 
 from fares.sources import GoogleFlightsSource, booking_url, pick_offers
 
@@ -31,6 +32,10 @@ WORKERS = int(os.environ.get("WORKERS", "8"))
 _CACHE: dict[str, tuple[float, dict]] = {}
 
 
+CONFIG_TABLE = os.environ.get("CONFIG_TABLE", "sg-holiday-fares-config")
+EDIT_KEY = os.environ.get("EDIT_KEY", "")
+
+
 def _cors(body: dict, status: int = 200) -> dict:
     return {
         "statusCode": status,
@@ -41,6 +46,72 @@ def _cors(body: dict, status: int = 200) -> dict:
         },
         "body": json.dumps(body),
     }
+
+
+def _config_table():
+    import boto3
+
+    return boto3.resource("dynamodb").Table(CONFIG_TABLE)
+
+
+def _read_destinations() -> dict:
+    try:
+        item = _config_table().get_item(Key={"id": "destinations"}).get("Item")
+    except Exception as exc:
+        return {"destinations": None, "error": f"{type(exc).__name__}: {exc}"[:160]}
+    if not item:
+        return {"destinations": None, "updated_at": None}
+    return {
+        "destinations": json.loads(item["payload"]),
+        "updated_at": item.get("updated_at"),
+        "writable": bool(EDIT_KEY),
+    }
+
+
+def _handle_destinations(event, method: str) -> dict:
+    if method == "GET":
+        return _cors({**_read_destinations(), "writable": bool(EDIT_KEY)})
+
+    # Writes are gated because the endpoint is public — the repository is public,
+    # so the URL is too. With no key configured the list stays read-only rather
+    # than silently accepting anonymous edits.
+    if not EDIT_KEY:
+        return _cors({"ok": False, "reason": "editing is disabled — no EDIT_KEY is set on the API"}, 503)
+
+    supplied = (event.get("headers") or {}).get("x-edit-key", "")
+    if not hmac.compare_digest(supplied, EDIT_KEY):
+        return _cors({"ok": False, "reason": "wrong or missing edit key"}, 403)
+
+    body = json.loads(event.get("body") or "{}")
+    destinations = body.get("destinations")
+    if not isinstance(destinations, list) or not destinations:
+        return _cors({"ok": False, "reason": "destinations must be a non-empty list"}, 400)
+    if len(destinations) > 40:
+        return _cors({"ok": False, "reason": "at most 40 destinations"}, 400)
+
+    cleaned = []
+    for entry in destinations:
+        code = str(entry.get("code", "")).upper()
+        if len(code) != 3 or not code.isalpha():
+            return _cors({"ok": False, "reason": f"bad airport code: {code or '(blank)'}"}, 400)
+        airports = [str(a).upper() for a in (entry.get("airports") or [code])]
+        if any(len(a) != 3 or not a.isalpha() for a in airports):
+            return _cors({"ok": False, "reason": f"bad airport list for {code}"}, 400)
+        cleaned.append({
+            "code": code,
+            "name": str(entry.get("name") or code)[:40],
+            "airports": airports,
+            "max_stops": entry.get("max_stops") if entry.get("max_stops") in (0, 1, 2, 3, None) else 1,
+            "alert_below": entry.get("alert_below") if isinstance(entry.get("alert_below"), int) else None,
+        })
+
+    stamp = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    _config_table().put_item(Item={
+        "id": "destinations",
+        "payload": json.dumps(cleaned),
+        "updated_at": stamp,
+    })
+    return _cors({"ok": True, "destinations": cleaned, "updated_at": stamp})
 
 
 def _offer_json(offer) -> dict | None:
@@ -171,6 +242,9 @@ def lambda_handler(event, context):
         return _cors({"ok": True})
 
     try:
+        if path.endswith("/destinations"):
+            return _handle_destinations(event, method)
+
         if path.endswith("/verify"):
             return _handle_verify(event.get("queryStringParameters") or {})
 

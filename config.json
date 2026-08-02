@@ -1,6 +1,7 @@
 {
   "origin": "SIN",
   "currency": "SGD",
+  "api": "https://rteq3k1msa.execute-api.ap-southeast-1.amazonaws.com",
   "search": {
     "min_lead_days": 14,
     "lookahead_days": 180,

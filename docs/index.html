@@ -110,6 +110,11 @@
     color: var(--text-muted); font-size: 18px; line-height: 1; transition: transform .15s;
   }
   details.card[open] > summary::after { transform: rotate(180deg); }
+  .card-refresh {
+    position: absolute; right: 42px; top: 15px; background: none; border: 0; cursor: pointer;
+    color: var(--text-muted); font-size: 15px; line-height: 1; padding: 2px 4px; border-radius: 6px;
+  }
+  .card-refresh:hover { color: var(--series-1); }
   details.card > summary:hover { background: color-mix(in srgb, var(--text-primary) 4%, transparent); }
   details.card > summary .htitle { padding-right: 26px; }
   details.card .card-body { padding-top: 4px; }
@@ -193,11 +198,39 @@
   th.sortable[aria-sort="ascending"], th.sortable[aria-sort="descending"] { color: var(--text-primary); }
   th .arrow { display: inline-block; width: 10px; font-size: 10px; }
   td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  /* Never colour alone: the arrow carries the same meaning for anyone who
+     cannot separate the hues. */
+  td.cheap { color: var(--good); font-weight: 650; }
+  td.cheap::after { content: ' ↓'; font-size: 10px; }
+  td.dear { color: var(--series-2); }
+  td.dear::after { content: ' ↑'; font-size: 10px; }
   td.name { display: flex; align-items: center; gap: 7px; }
   .scroller { overflow-x: auto; }
   .empty { color: var(--text-secondary); background: var(--surface-1); border: 1px solid var(--border);
            border-radius: 14px; padding: 28px; margin-top: 18px; }
   code { font-size: 12px; background: var(--grid); padding: 1px 5px; border-radius: 4px; }
+
+  /* On a phone a nine-column table is a horizontal-scroll puzzle, so each row
+     becomes its own block with the column name beside the value. */
+  @media (max-width: 680px) {
+    body { padding: 16px 12px 48px; }
+    #out { grid-template-columns: 1fr; }
+    .scroller table, .scroller thead, .scroller tbody, .scroller tr, .scroller td { display: block; width: 100%; }
+    .scroller thead { display: none; }
+    .scroller tr {
+      border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; margin-bottom: 10px;
+    }
+    .scroller td { border: 0; padding: 3px 0; text-align: left; display: flex; gap: 12px; }
+    .scroller td::before {
+      content: attr(data-label); color: var(--text-muted); font-size: 12px;
+      min-width: 96px; flex: none;
+    }
+    .scroller td.num { text-align: left; }
+    .scroller td.name { font-weight: 600; }
+    /* The expanded card's 26px figure breaks mid-phrase at this width. */
+    .headline b { font-size: 20px; }
+    .htitle { flex-direction: column; gap: 2px; }
+  }
 
   /* ── Leave planner calendar ───────────────────────────────────────────── */
   .months { display: grid; grid-template-columns: repeat(auto-fill, minmax(232px, 1fr)); gap: 18px; margin-top: 14px; }
@@ -252,7 +285,21 @@
   .chip-toggle[aria-pressed="true"] { color: var(--text-primary); border-color: var(--axis); }
   .chip-toggle .swatch { width: 9px; height: 9px; border-radius: 50%; background: var(--axis); flex: none; }
   .chip-toggle[aria-pressed="false"] { text-decoration: line-through; opacity: .62; }
-  .picker-head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; margin-top: 14px; }
+  /* Collapsed by default: the list is edited rarely but was occupying the top
+     of the page on every visit. */
+  .picker-panel > summary {
+    cursor: pointer; list-style: none; display: flex; align-items: baseline; gap: 14px;
+    flex-wrap: wrap; padding: 6px 0; margin-top: 10px;
+  }
+  .picker-panel > summary::-webkit-details-marker { display: none; }
+  .picker-panel > summary::before {
+    content: '⌄'; color: var(--text-muted); font-size: 15px; line-height: 1;
+    transition: transform .15s; display: inline-block;
+  }
+  .picker-panel[open] > summary::before { transform: rotate(180deg); }
+  .picker-panel > summary:hover .picker-title { color: var(--text-primary); }
+
+  .picker-head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; margin-top: 10px; }
   .picker-title { font-size: 13px; color: var(--text-secondary); font-weight: 600; }
   .picker-head .note { margin: 0; }
   .picker-head button {
@@ -288,6 +335,19 @@
   #add-go:hover { border-color: var(--axis); }
   #add-go[disabled] { opacity: .55; cursor: progress; }
   .add-msg { color: var(--text-muted); }
+  .sync { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; margin-top: 10px; font-size: 12px; }
+  .sync-state { color: var(--text-muted); }
+  .sync-state.ok { color: var(--good); }
+  .sync-form { display: flex; gap: 8px; align-items: center; }
+  .sync-form input {
+    font: inherit; font-size: 12px; padding: 4px 8px; border-radius: 7px;
+    border: 1px solid var(--border); background: var(--surface-1); color: var(--text-primary);
+  }
+  .sync-form button {
+    background: none; border: 0; padding: 0; font: inherit; font-size: 12px;
+    color: var(--text-muted); cursor: pointer; text-decoration: underline;
+  }
+  .sync-form button:hover { color: var(--text-primary); }
   .add-msg.bad { color: var(--series-8); }
   .add-msg.good { color: var(--good); }
 
@@ -325,14 +385,17 @@
       </select>
     </div>
 
-    <div class="picker-head">
-      <span class="picker-title">Destinations</span>
-      <span class="note" id="pick-note"></span>
-      <span class="live-status" id="live-status"></span>
-      <button type="button" id="pick-all">Select all</button>
-      <button type="button" id="pick-none">Clear</button>
-    </div>
-    <div class="picker" id="picker"></div>
+    <details class="picker-panel" id="picker-panel">
+      <summary>
+        <span class="picker-title">Destinations</span>
+        <span class="note" id="pick-note"></span>
+        <span class="live-status" id="live-status"></span>
+      </summary>
+      <div class="picker-head">
+        <button type="button" id="pick-all">Select all</button>
+        <button type="button" id="pick-none">Clear</button>
+      </div>
+      <div class="picker" id="picker"></div>
     <form class="add-dest" id="add-dest" autocomplete="off">
       <input id="add-code" maxlength="3" placeholder="IATA" aria-label="Airport code, e.g. HND" size="4">
       <input id="add-name" maxlength="28" placeholder="Name, e.g. Tokyo" aria-label="Destination name">
@@ -340,6 +403,16 @@
       <button type="submit" id="add-go">Add</button>
       <span class="add-msg" id="add-msg"></span>
     </form>
+
+    <div class="sync" id="sync">
+      <span class="sync-state" id="sync-state"></span>
+      <form class="sync-form" id="sync-form" autocomplete="off">
+        <input type="password" id="sync-key" placeholder="edit key" aria-label="Edit key" size="14">
+        <button type="submit">Save key</button>
+        <button type="button" id="sync-forget">Forget</button>
+      </form>
+    </div>
+    </details>
   </div>
 
   <div id="out"></div>
@@ -422,6 +495,7 @@
 <script>
 const SLOTS = 8;
 const fmtDay = d => d.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+const fmtWeekday = d => d.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const parse = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
 /* Outbound journey time including layovers. The underlying leg durations are
@@ -470,13 +544,42 @@ let LIVE = new Map();      // "DEST|depart|return" -> live lookup from the API
 /* A destination can cover more than one airport — Bangkok is served by both
    Suvarnabhumi and Don Mueang, and the low-cost carriers only use the latter. */
 const airportsOf = dest => (dest.airports && dest.airports.length ? dest.airports : [dest.code]);
+const KEY_STORE = 'sgfares.editkey.v1';
+let WRITABLE = false;   // the API accepts writes (an edit key is configured on it)
+let SHARED = false;     // this list came from the API rather than the browser
 
-function loadDestinations() {
+const editKey = () => { try { return localStorage.getItem(KEY_STORE) || ''; } catch { return ''; } };
+
+const toApi = list => list.map(d => ({
+  code: d.code, name: d.name, airports: airportsOf(d),
+  max_stops: d.maxStops ?? 1, alert_below: d.alertBelow ?? null,
+}));
+
+const fromApi = list => list.map(d => ({
+  code: d.code, name: d.name, airports: d.airports || [d.code],
+  maxStops: d.max_stops ?? 1, alertBelow: d.alert_below ?? null,
+}));
+
+/* The list lives on the API so the page and the nightly sweep agree on it.
+   Local storage is the fallback for offline use and for anyone without an edit
+   key, and the recorded snapshot seeds a first-ever visit. */
+async function loadDestinations() {
+  try {
+    const response = await fetch(`${API}/destinations`, { cache: 'no-store' });
+    const payload = await response.json();
+    WRITABLE = !!payload.writable;
+    if (Array.isArray(payload.destinations) && payload.destinations.length) {
+      DESTS = fromApi(payload.destinations);
+      SHARED = true;
+      return;
+    }
+  } catch { /* fall through to local */ }
+
   try {
     const saved = JSON.parse(localStorage.getItem(DEST_KEY) || 'null');
     if (Array.isArray(saved) && saved.length) { DESTS = saved; return; }
   } catch { /* private mode */ }
-  // First visit: seed from whatever the daily sweep is already tracking.
+
   const seen = new Map();
   for (const holiday of (DATA?.holidays || [])) {
     for (const dest of holiday.destinations) if (!seen.has(dest.code)) seen.set(dest.code, dest);
@@ -486,8 +589,25 @@ function loadDestinations() {
   }));
 }
 
-function saveDestinations() {
+async function saveDestinations() {
   try { localStorage.setItem(DEST_KEY, JSON.stringify(DESTS)); } catch { /* ignore */ }
+
+  const key = editKey();
+  if (!key) return { saved: false, reason: WRITABLE ? 'no-key' : 'read-only' };
+
+  try {
+    const response = await fetch(`${API}/destinations`, {
+      method: 'PUT',
+      headers: { 'content-type': 'application/json', 'x-edit-key': key },
+      body: JSON.stringify({ destinations: toApi(DESTS) }),
+    });
+    const payload = await response.json();
+    if (!response.ok) return { saved: false, reason: payload.reason || `HTTP ${response.status}` };
+    SHARED = true;
+    return { saved: true };
+  } catch (error) {
+    return { saved: false, reason: error.message };
+  }
 }
 
 function allDestinations() {
@@ -670,9 +790,24 @@ const COLUMNS = [
 ];
 let SORT = null;
 
+/* Is this price good? Judged against that window's own median rather than any
+   absolute figure, because SGD 600 is ordinary to Tokyo and dear to Bangkok.
+   Silent until there is history to compare against. */
+function verdict(now, med) {
+  if (now == null || !med) return '';
+  if (now <= med * 0.9) return 'cheap';
+  if (now >= med * 1.1) return 'dear';
+  return '';
+}
+
 function sortRows(list) {
   if (!SORT) {
-    list.sort((a, b) => a.rank - b.rank || (a.depart < b.depart ? -1 : a.depart > b.depart ? 1 : 0));
+    // Unpriced windows sink even in the default order — a row of dashes is not
+    // what anyone opened the table to read.
+    list.sort((a, b) =>
+      a.rank - b.rank
+      || (a.now == null) - (b.now == null)
+      || (a.depart < b.depart ? -1 : a.depart > b.depart ? 1 : 0));
     return;
   }
   const column = COLUMNS.find(c => c.key === SORT.key);
@@ -715,7 +850,9 @@ function renderHoliday(holiday, maxLeave, currency, openByDefault) {
   const dateLabel = parse(holiday.date).toLocaleDateString(undefined,
     { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   const head = `<div class="htitle"><h2>${esc(holiday.name)}</h2>
-      <span class="away">${esc(dateLabel)} · ${away} days away</span></div>`;
+      <span class="away">${esc(dateLabel)} · ${away} days away</span>
+      <button class="card-refresh" type="button" data-refresh="${esc(holiday.date)}"
+        title="Re-check prices for ${esc(holiday.name)}" aria-label="Refresh ${esc(holiday.name)}">⟳</button></div>`;
 
   const busy = LOADING.has(holiday.date);
   const isLive = enriched.some(entry => entry.windows.some(w => w.live));
@@ -726,7 +863,9 @@ function renderHoliday(holiday, maxLeave, currency, openByDefault) {
     if (busy) {
       const bars = [72, 58, 64, 50, 68, 54].map(w =>
         `<span class="skeleton" style="width:${w}px"></span>`).join('');
-      return `<details class="holiday card" data-anchor="${esc(holiday.date)}" open>
+      // Honours the open set rather than forcing open: refreshing a collapsed
+      // card should leave it collapsed.
+      return `<details class="holiday card" data-anchor="${esc(holiday.date)}"${openByDefault ? ' open' : ''}>
         <summary>${head}
           <p class="headline muted"><span class="spin"></span> Checking live prices from Singapore…</p>
           <div class="skeleton-row">${bars}</div>
@@ -785,16 +924,17 @@ function renderHoliday(holiday, maxLeave, currency, openByDefault) {
   })));
   sortRows(rowData);
 
+  // data-label drives the stacked mobile layout, where the header row is hidden.
   const rows = rowData.map(r => `<tr>
-      <td class="name">${esc(r.name)} <span class="meta">${esc(r.code)}</span></td>
-      <td>${esc(r.label)}</td>
-      <td class="num">${r.now == null ? '—' : esc(currency) + ' ' + r.now.toLocaleString()}</td>
-      <td class="num">${r.med == null ? '—' : r.med.toLocaleString()}</td>
-      <td class="num">${r.low == null ? '—' : r.low.toLocaleString()}</td>
-      <td>${esc(r.carrier || '—')}</td>
-      <td>${r.stops === 0 ? 'nonstop' : r.stops == null ? '—' : r.stops + ' stop'}</td>
-      <td class="num">${esc(fmtDuration(r.journey))}</td>
-      <td>${r.book ? `<a class="book" href="${esc(r.book)}" target="_blank" rel="noopener noreferrer">Open ↗</a>` : '—'}</td>
+      <td class="name" data-label="Destination">${esc(r.name)} <span class="meta">${esc(r.code)}</span></td>
+      <td data-label="Window">${esc(r.label)}</td>
+      <td class="num ${verdict(r.now, r.med)}" data-label="Now">${r.now == null ? '—' : esc(currency) + ' ' + r.now.toLocaleString()}</td>
+      <td class="num" data-label="Median">${r.med == null ? '—' : r.med.toLocaleString()}</td>
+      <td class="num" data-label="Low">${r.low == null ? '—' : r.low.toLocaleString()}</td>
+      <td data-label="Carrier">${esc(r.carrier || '—')}</td>
+      <td data-label="Stops">${r.stops === 0 ? 'nonstop' : r.stops == null ? '—' : r.stops + ' stop'}</td>
+      <td class="num" data-label="Journey">${esc(fmtDuration(r.journey))}</td>
+      <td data-label="Book">${r.book ? `<a class="book" href="${esc(r.book)}" target="_blank" rel="noopener noreferrer">Open ↗</a>` : '—'}</td>
     </tr>`).join('');
 
   return `<details class="holiday card" data-anchor="${esc(holiday.date)}"${openByDefault ? ' open' : ''}>
@@ -882,7 +1022,9 @@ function syncDestinations() {
         entry.windows.push({
           key: `${dest.code}|${holiday.date}|${option.depart}|${option['return']}`,
           depart: option.depart, 'return': option['return'], nights, leave_days: leave,
-          label: `${fmtDay(parse(option.depart))}–${fmtDay(parse(option['return']))} (${nights} nights, ${leave ? leave + 'd leave' : 'no leave'})`,
+          // Matches the label the sweep writes, weekday included, so recorded
+          // and synthesised windows read identically in the table.
+          label: `${fmtWeekday(parse(option.depart))}–${fmtWeekday(parse(option['return']))} (${nights} nights, ${leave ? leave + 'd leave' : 'no leave'})`,
           current: null, nonstop: null, airlines: [], route: null, stops: null,
           airport: null, duration: null, book: null, min: null, max: null, series: [],
         });
@@ -1030,6 +1172,12 @@ function render() {
     card.querySelector('summary').addEventListener('click', event => {
       event.preventDefault();
       const anchor = card.dataset.anchor;
+      // The refresh icon lives inside the summary, so it must not also toggle
+      // the card — you can re-price a holiday without opening it.
+      if (event.target.closest('.card-refresh')) {
+        refreshLive({ only: anchor, fresh: true });
+        return;
+      }
       if (OPEN.has(anchor)) OPEN.delete(anchor); else OPEN.add(anchor);
       if (OPEN.has(anchor) && !PRICED.has(anchor)) refreshLive({ only: anchor });
       else render();
@@ -1228,6 +1376,46 @@ function applySelection() {
   render();
 }
 
+/* Says plainly whether an edit reaches the nightly sweep or only this browser —
+   the difference decides whether a new destination ever gets a trend line or a
+   Telegram alert. */
+function renderSyncState(extra) {
+  const el = document.getElementById('sync-state');
+  if (!el) return;
+  const hasKey = !!editKey();
+  let text;
+  if (!WRITABLE) text = 'Shared list is read-only — no edit key is configured on the API.';
+  else if (!hasKey) text = 'Changes stay in this browser. Enter the edit key to sync them to the daily sweep.';
+  else text = SHARED ? 'Synced — the daily sweep uses this list.' : 'Edit key saved. Your next change syncs to the daily sweep.';
+  el.textContent = extra ? `${text} ${extra}` : text;
+  el.className = `sync-state${hasKey && WRITABLE ? ' ok' : ''}`;
+  document.getElementById('sync-form').hidden = !WRITABLE;
+}
+
+async function persistDestinations(note) {
+  const outcome = await saveDestinations();
+  if (outcome.saved) renderSyncState(note ? `(${note})` : '');
+  else if (outcome.reason && !['no-key', 'read-only'].includes(outcome.reason)) {
+    renderSyncState(`Sync failed: ${outcome.reason}.`);
+  } else renderSyncState();
+  return outcome;
+}
+
+document.getElementById('sync-form').addEventListener('submit', event => {
+  event.preventDefault();
+  const field = document.getElementById('sync-key');
+  const value = field.value.trim();
+  if (!value) return;
+  try { localStorage.setItem(KEY_STORE, value); } catch { /* ignore */ }
+  field.value = '';
+  persistDestinations('list pushed');
+});
+
+document.getElementById('sync-forget').addEventListener('click', () => {
+  try { localStorage.removeItem(KEY_STORE); } catch { /* ignore */ }
+  renderSyncState('Key removed from this browser.');
+});
+
 document.getElementById('picker').addEventListener('click', event => {
   const remove = event.target.closest('.chip-remove');
   if (remove) {
@@ -1239,8 +1427,8 @@ document.getElementById('picker').addEventListener('click', event => {
     for (const holiday of DATA.holidays) {
       holiday.destinations = holiday.destinations.filter(d => d.code !== code);
     }
-    saveDestinations();
     applySelection();
+    persistDestinations();
     return;
   }
 
@@ -1274,13 +1462,15 @@ document.getElementById('add-dest').addEventListener('submit', async event => {
     const result = await response.json();
     if (!result.ok) return say(result.reason || 'no route found', 'bad');
 
-    DESTS.push({ code, name: name || code, maxStops: document.getElementById('add-nonstop').checked ? 0 : 1 });
+    DESTS.push({
+      code, name: name || code, airports: [code],
+      maxStops: document.getElementById('add-nonstop').checked ? 0 : 1, alertBelow: null,
+    });
     SELECTED.add(code);
-    saveDestinations();
     codeInput.value = nameInput.value = '';
     say(`added — cheapest sample SGD ${result.sample_price.toLocaleString()} on ${result.airlines.join(', ')}`, 'good');
     applySelection();
-    refreshLive();
+    await persistDestinations();
   } catch (error) {
     say(`could not reach the price service (${error.message})`, 'bad');
   } finally {
@@ -1303,7 +1493,7 @@ const grab = path => fetch(path, { cache: 'no-store' })
    from the plan, so kicking it off when only the dashboard has arrived produced
    an empty run whenever plan.json happened to land second. */
 Promise.all([grab('data/dashboard.json'), grab('data/plan.json').catch(() => null)])
-  .then(([dashboard, plan]) => {
+  .then(async ([dashboard, plan]) => {
     DATA = dashboard;
     document.getElementById('meta').textContent =
       `updated ${new Date(dashboard.generated_at).toLocaleString()} · prices in ${dashboard.currency}`;
@@ -1316,9 +1506,10 @@ Promise.all([grab('data/dashboard.json'), grab('data/plan.json').catch(() => nul
     }
 
     document.getElementById('controls').hidden = false;
-    loadDestinations();
+    await loadDestinations();
     loadSelection();
     renderPicker();
+    renderSyncState();
     // Deliberately no live fetch here. The page opens on the recorded snapshot
     // and only queries Google when a specific holiday is asked for. The card
     // set is still built now — it is local work, and it used to happen as a

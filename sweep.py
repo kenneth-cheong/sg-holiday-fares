@@ -16,6 +16,7 @@ import json
 import os
 import sys
 import time
+import urllib.request
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
@@ -37,6 +38,30 @@ def parse_args(argv=None):
     parser.add_argument("--offline-holidays", action="store_true", help="use the cached holiday list")
     parser.add_argument("--today", type=date.fromisoformat, help="override today's date (testing)")
     return parser.parse_args(argv)
+
+
+def load_destinations(config: dict) -> tuple[list[dict], str]:
+    """Destinations come from the API when it has a list, else from config.json.
+
+    The dashboard writes the list to the API, so this is what lets a change made
+    on the page reach the daily sweep. config.json stays the fallback, so the
+    sweep still runs if the API is down or was never populated.
+    """
+    api = config.get("api")
+    if not api:
+        return config["destinations"], "config.json"
+
+    try:
+        with urllib.request.urlopen(f"{api.rstrip('/')}/destinations", timeout=15) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+    except Exception as exc:
+        print(f"[destinations] API unreachable ({type(exc).__name__}); using config.json")
+        return config["destinations"], "config.json"
+
+    stored = payload.get("destinations")
+    if not stored:
+        return config["destinations"], "config.json (API has no list yet)"
+    return stored, f"API, saved {payload.get('updated_at')}"
 
 
 def build_plan(config: dict, today: date, min_lead_override: int | None):
@@ -136,8 +161,10 @@ def run(args) -> int:
     now = datetime.now()
 
     holidays, holiday_source, candidates = build_plan(config, today, args.min_lead_days)
+    config["destinations"], dest_source = load_destinations(config)
 
     print(f"holidays: {len(holidays)} loaded from {holiday_source}")
+    print(f"dests:    {len(config['destinations'])} from {dest_source}")
 
     # The leave planner is independent of fares, so it is refreshed before any
     # network work and survives a sweep that finds nothing to price.
