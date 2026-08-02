@@ -1,0 +1,664 @@
+{
+ "range": {
+  "start": "2026-08-02",
+  "end": "2027-12-25"
+ },
+ "holidays": {
+  "2026-08-09": "National Day",
+  "2026-08-10": "National Day (Observed)",
+  "2026-11-08": "Deepavali",
+  "2026-11-09": "Deepavali (Observed)",
+  "2026-12-25": "Christmas Day",
+  "2027-01-01": "New Year’s Day",
+  "2027-02-06": "Chinese New Year",
+  "2027-02-07": "Chinese New Year",
+  "2027-02-08": "Chinese New Year (Observed)",
+  "2027-03-10": "Hari Raya Puasa",
+  "2027-03-26": "Good Friday",
+  "2027-05-01": "Labour Day",
+  "2027-05-17": "Hari Raya Haji",
+  "2027-05-20": "Vesak Day",
+  "2027-08-09": "National Day",
+  "2027-10-28": "Deepavali",
+  "2027-12-25": "Christmas Day"
+ },
+ "breaks": [
+  {
+   "name": "National Day",
+   "start": "2026-08-08",
+   "end": "2026-08-10",
+   "anchor": "2026-08-09",
+   "options": [
+    {
+     "leave_days": 0,
+     "depart": "2026-08-08",
+     "return": "2026-08-10",
+     "days_off": 3,
+     "value": null,
+     "leave_dates": []
+    },
+    {
+     "leave_days": 1,
+     "depart": "2026-08-07",
+     "return": "2026-08-10",
+     "days_off": 4,
+     "value": 4.0,
+     "leave_dates": [
+      "2026-08-07"
+     ]
+    },
+    {
+     "leave_days": 2,
+     "depart": "2026-08-06",
+     "return": "2026-08-10",
+     "days_off": 5,
+     "value": 2.5,
+     "leave_dates": [
+      "2026-08-06",
+      "2026-08-07"
+     ]
+    },
+    {
+     "leave_days": 3,
+     "depart": "2026-08-05",
+     "return": "2026-08-10",
+     "days_off": 6,
+     "value": 2.0,
+     "leave_dates": [
+      "2026-08-05",
+      "2026-08-06",
+      "2026-08-07"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Deepavali",
+   "start": "2026-11-07",
+   "end": "2026-11-09",
+   "anchor": "2026-11-08",
+   "options": [
+    {
+     "leave_days": 0,
+     "depart": "2026-11-07",
+     "return": "2026-11-09",
+     "days_off": 3,
+     "value": null,
+     "leave_dates": []
+    },
+    {
+     "leave_days": 1,
+     "depart": "2026-11-06",
+     "return": "2026-11-09",
+     "days_off": 4,
+     "value": 4.0,
+     "leave_dates": [
+      "2026-11-06"
+     ]
+    },
+    {
+     "leave_days": 2,
+     "depart": "2026-11-05",
+     "return": "2026-11-09",
+     "days_off": 5,
+     "value": 2.5,
+     "leave_dates": [
+      "2026-11-05",
+      "2026-11-06"
+     ]
+    },
+    {
+     "leave_days": 3,
+     "depart": "2026-11-04",
+     "return": "2026-11-09",
+     "days_off": 6,
+     "value": 2.0,
+     "leave_dates": [
+      "2026-11-04",
+      "2026-11-05",
+      "2026-11-06"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Christmas Day",
+   "start": "2026-12-25",
+   "end": "2026-12-27",
+   "anchor": "2026-12-25",
+   "options": [
+    {
+     "leave_days": 0,
+     "depart": "2026-12-25",
+     "return": "2026-12-27",
+     "days_off": 3,
+     "value": null,
+     "leave_dates": []
+    },
+    {
+     "leave_days": 1,
+     "depart": "2026-12-24",
+     "return": "2026-12-27",
+     "days_off": 4,
+     "value": 4.0,
+     "leave_dates": [
+      "2026-12-24"
+     ]
+    },
+    {
+     "leave_days": 2,
+     "depart": "2026-12-23",
+     "return": "2026-12-27",
+     "days_off": 5,
+     "value": 2.5,
+     "leave_dates": [
+      "2026-12-23",
+      "2026-12-24"
+     ]
+    },
+    {
+     "leave_days": 3,
+     "depart": "2026-12-22",
+     "return": "2026-12-27",
+     "days_off": 6,
+     "value": 2.0,
+     "leave_dates": [
+      "2026-12-22",
+      "2026-12-23",
+      "2026-12-24"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "New Year’s Day",
+   "start": "2027-01-01",
+   "end": "2027-01-03",
+   "anchor": "2027-01-01",
+   "options": [
+    {
+     "leave_days": 0,
+     "depart": "2027-01-01",
+     "return": "2027-01-03",
+     "days_off": 3,
+     "value": null,
+     "leave_dates": []
+    },
+    {
+     "leave_days": 1,
+     "depart": "2026-12-31",
+     "return": "2027-01-03",
+     "days_off": 4,
+     "value": 4.0,
+     "leave_dates": [
+      "2026-12-31"
+     ]
+    },
+    {
+     "leave_days": 2,
+     "depart": "2026-12-30",
+     "return": "2027-01-03",
+     "days_off": 5,
+     "value": 2.5,
+     "leave_dates": [
+      "2026-12-30",
+      "2026-12-31"
+     ]
+    },
+    {
+     "leave_days": 3,
+     "depart": "2026-12-29",
+     "return": "2027-01-03",
+     "days_off": 6,
+     "value": 2.0,
+     "leave_dates": [
+      "2026-12-29",
+      "2026-12-30",
+      "2026-12-31"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Chinese New Year",
+   "start": "2027-02-06",
+   "end": "2027-02-08",
+   "anchor": "2027-02-06",
+   "options": [
+    {
+     "leave_days": 0,
+     "depart": "2027-02-06",
+     "return": "2027-02-08",
+     "days_off": 3,
+     "value": null,
+     "leave_dates": []
+    },
+    {
+     "leave_days": 1,
+     "depart": "2027-02-05",
+     "return": "2027-02-08",
+     "days_off": 4,
+     "value": 4.0,
+     "leave_dates": [
+      "2027-02-05"
+     ]
+    },
+    {
+     "leave_days": 2,
+     "depart": "2027-02-04",
+     "return": "2027-02-08",
+     "days_off": 5,
+     "value": 2.5,
+     "leave_dates": [
+      "2027-02-04",
+      "2027-02-05"
+     ]
+    },
+    {
+     "leave_days": 3,
+     "depart": "2027-02-03",
+     "return": "2027-02-08",
+     "days_off": 6,
+     "value": 2.0,
+     "leave_dates": [
+      "2027-02-03",
+      "2027-02-04",
+      "2027-02-05"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Hari Raya Puasa",
+   "start": "2027-03-10",
+   "end": "2027-03-10",
+   "anchor": "2027-03-10",
+   "options": [
+    {
+     "leave_days": 0,
+     "depart": "2027-03-10",
+     "return": "2027-03-10",
+     "days_off": 1,
+     "value": null,
+     "leave_dates": []
+    },
+    {
+     "leave_days": 1,
+     "depart": "2027-03-09",
+     "return": "2027-03-10",
+     "days_off": 2,
+     "value": 2.0,
+     "leave_dates": [
+      "2027-03-09"
+     ]
+    },
+    {
+     "leave_days": 2,
+     "depart": "2027-03-06",
+     "return": "2027-03-10",
+     "days_off": 5,
+     "value": 2.5,
+     "leave_dates": [
+      "2027-03-08",
+      "2027-03-09"
+     ]
+    },
+    {
+     "leave_days": 3,
+     "depart": "2027-03-05",
+     "return": "2027-03-10",
+     "days_off": 6,
+     "value": 2.0,
+     "leave_dates": [
+      "2027-03-05",
+      "2027-03-08",
+      "2027-03-09"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Good Friday",
+   "start": "2027-03-26",
+   "end": "2027-03-28",
+   "anchor": "2027-03-26",
+   "options": [
+    {
+     "leave_days": 0,
+     "depart": "2027-03-26",
+     "return": "2027-03-28",
+     "days_off": 3,
+     "value": null,
+     "leave_dates": []
+    },
+    {
+     "leave_days": 1,
+     "depart": "2027-03-25",
+     "return": "2027-03-28",
+     "days_off": 4,
+     "value": 4.0,
+     "leave_dates": [
+      "2027-03-25"
+     ]
+    },
+    {
+     "leave_days": 2,
+     "depart": "2027-03-24",
+     "return": "2027-03-28",
+     "days_off": 5,
+     "value": 2.5,
+     "leave_dates": [
+      "2027-03-24",
+      "2027-03-25"
+     ]
+    },
+    {
+     "leave_days": 3,
+     "depart": "2027-03-23",
+     "return": "2027-03-28",
+     "days_off": 6,
+     "value": 2.0,
+     "leave_dates": [
+      "2027-03-23",
+      "2027-03-24",
+      "2027-03-25"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Labour Day",
+   "start": "2027-05-01",
+   "end": "2027-05-02",
+   "anchor": "2027-05-01",
+   "options": [
+    {
+     "leave_days": 0,
+     "depart": "2027-05-01",
+     "return": "2027-05-02",
+     "days_off": 2,
+     "value": null,
+     "leave_dates": []
+    },
+    {
+     "leave_days": 1,
+     "depart": "2027-04-30",
+     "return": "2027-05-02",
+     "days_off": 3,
+     "value": 3.0,
+     "leave_dates": [
+      "2027-04-30"
+     ]
+    },
+    {
+     "leave_days": 2,
+     "depart": "2027-04-29",
+     "return": "2027-05-02",
+     "days_off": 4,
+     "value": 2.0,
+     "leave_dates": [
+      "2027-04-29",
+      "2027-04-30"
+     ]
+    },
+    {
+     "leave_days": 3,
+     "depart": "2027-04-28",
+     "return": "2027-05-02",
+     "days_off": 5,
+     "value": 1.67,
+     "leave_dates": [
+      "2027-04-28",
+      "2027-04-29",
+      "2027-04-30"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Hari Raya Haji",
+   "start": "2027-05-15",
+   "end": "2027-05-17",
+   "anchor": "2027-05-17",
+   "options": [
+    {
+     "leave_days": 0,
+     "depart": "2027-05-15",
+     "return": "2027-05-17",
+     "days_off": 3,
+     "value": null,
+     "leave_dates": []
+    },
+    {
+     "leave_days": 1,
+     "depart": "2027-05-14",
+     "return": "2027-05-17",
+     "days_off": 4,
+     "value": 4.0,
+     "leave_dates": [
+      "2027-05-14"
+     ]
+    },
+    {
+     "leave_days": 2,
+     "depart": "2027-05-15",
+     "return": "2027-05-20",
+     "days_off": 6,
+     "value": 3.0,
+     "leave_dates": [
+      "2027-05-18",
+      "2027-05-19"
+     ]
+    },
+    {
+     "leave_days": 3,
+     "depart": "2027-05-15",
+     "return": "2027-05-23",
+     "days_off": 9,
+     "value": 3.0,
+     "leave_dates": [
+      "2027-05-18",
+      "2027-05-19",
+      "2027-05-21"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Vesak Day",
+   "start": "2027-05-20",
+   "end": "2027-05-20",
+   "anchor": "2027-05-20",
+   "options": [
+    {
+     "leave_days": 0,
+     "depart": "2027-05-20",
+     "return": "2027-05-20",
+     "days_off": 1,
+     "value": null,
+     "leave_dates": []
+    },
+    {
+     "leave_days": 1,
+     "depart": "2027-05-20",
+     "return": "2027-05-23",
+     "days_off": 4,
+     "value": 4.0,
+     "leave_dates": [
+      "2027-05-21"
+     ]
+    },
+    {
+     "leave_days": 2,
+     "depart": "2027-05-15",
+     "return": "2027-05-20",
+     "days_off": 6,
+     "value": 3.0,
+     "leave_dates": [
+      "2027-05-18",
+      "2027-05-19"
+     ]
+    },
+    {
+     "leave_days": 3,
+     "depart": "2027-05-15",
+     "return": "2027-05-23",
+     "days_off": 9,
+     "value": 3.0,
+     "leave_dates": [
+      "2027-05-18",
+      "2027-05-19",
+      "2027-05-21"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "National Day",
+   "start": "2027-08-07",
+   "end": "2027-08-09",
+   "anchor": "2027-08-09",
+   "options": [
+    {
+     "leave_days": 0,
+     "depart": "2027-08-07",
+     "return": "2027-08-09",
+     "days_off": 3,
+     "value": null,
+     "leave_dates": []
+    },
+    {
+     "leave_days": 1,
+     "depart": "2027-08-06",
+     "return": "2027-08-09",
+     "days_off": 4,
+     "value": 4.0,
+     "leave_dates": [
+      "2027-08-06"
+     ]
+    },
+    {
+     "leave_days": 2,
+     "depart": "2027-08-05",
+     "return": "2027-08-09",
+     "days_off": 5,
+     "value": 2.5,
+     "leave_dates": [
+      "2027-08-05",
+      "2027-08-06"
+     ]
+    },
+    {
+     "leave_days": 3,
+     "depart": "2027-08-04",
+     "return": "2027-08-09",
+     "days_off": 6,
+     "value": 2.0,
+     "leave_dates": [
+      "2027-08-04",
+      "2027-08-05",
+      "2027-08-06"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Deepavali",
+   "start": "2027-10-28",
+   "end": "2027-10-28",
+   "anchor": "2027-10-28",
+   "options": [
+    {
+     "leave_days": 0,
+     "depart": "2027-10-28",
+     "return": "2027-10-28",
+     "days_off": 1,
+     "value": null,
+     "leave_dates": []
+    },
+    {
+     "leave_days": 1,
+     "depart": "2027-10-28",
+     "return": "2027-10-31",
+     "days_off": 4,
+     "value": 4.0,
+     "leave_dates": [
+      "2027-10-29"
+     ]
+    },
+    {
+     "leave_days": 2,
+     "depart": "2027-10-27",
+     "return": "2027-10-31",
+     "days_off": 5,
+     "value": 2.5,
+     "leave_dates": [
+      "2027-10-27",
+      "2027-10-29"
+     ]
+    },
+    {
+     "leave_days": 3,
+     "depart": "2027-10-23",
+     "return": "2027-10-28",
+     "days_off": 6,
+     "value": 2.0,
+     "leave_dates": [
+      "2027-10-25",
+      "2027-10-26",
+      "2027-10-27"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Christmas Day",
+   "start": "2027-12-25",
+   "end": "2027-12-26",
+   "anchor": "2027-12-25",
+   "options": [
+    {
+     "leave_days": 0,
+     "depart": "2027-12-25",
+     "return": "2027-12-26",
+     "days_off": 2,
+     "value": null,
+     "leave_dates": []
+    },
+    {
+     "leave_days": 1,
+     "depart": "2027-12-24",
+     "return": "2027-12-26",
+     "days_off": 3,
+     "value": 3.0,
+     "leave_dates": [
+      "2027-12-24"
+     ]
+    },
+    {
+     "leave_days": 2,
+     "depart": "2027-12-23",
+     "return": "2027-12-26",
+     "days_off": 4,
+     "value": 2.0,
+     "leave_dates": [
+      "2027-12-23",
+      "2027-12-24"
+     ]
+    },
+    {
+     "leave_days": 3,
+     "depart": "2027-12-22",
+     "return": "2027-12-26",
+     "days_off": 5,
+     "value": 1.67,
+     "leave_dates": [
+      "2027-12-22",
+      "2027-12-23",
+      "2027-12-24"
+     ]
+    }
+   ]
+  }
+ ]
+}

@@ -14,6 +14,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 HISTORY_PATH = REPO_ROOT / "docs" / "data" / "history.jsonl"
 DASHBOARD_PATH = REPO_ROOT / "docs" / "data" / "dashboard.json"
+PLAN_PATH = REPO_ROOT / "docs" / "data" / "plan.json"
 STATE_PATH = REPO_ROOT / "data" / "alert_state.json"
 
 
@@ -133,5 +134,10 @@ def build_dashboard(history: list[dict], generated_at: datetime, today: date) ->
 
 
 def write_dashboard(payload: dict, path: Path = DASHBOARD_PATH) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+
+
+def write_plan(payload: dict, path: Path = PLAN_PATH) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")

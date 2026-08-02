@@ -59,6 +59,50 @@ Enable **Settings → Pages → Deploy from branch**, folder `/docs`. The page r
 python3 -m http.server -d docs 8000
 ```
 
+## When to go
+
+`plan.py` answers the scheduling question on its own, with no fare data
+involved — which holidays are worth spending annual leave on, and exactly which
+days to book off.
+
+```bash
+python plan.py --months 12
+```
+
+It prints every break, what each leave budget buys, a best-value ranking, and a
+marked-up calendar (`H` public holiday, `L` suggested leave, `·` weekend). The
+same view is on the dashboard, where a leave-budget control re-marks the
+calendar live.
+
+The point is that not all holidays are equal. Every ordinary long weekend
+returns four days off for one day of leave. But Hari Raya Haji (Mon 17 May 2027)
+and Vesak Day (Thu 20 May 2027) fall in the same week, so three days of leave
+bridges both and buys **nine consecutive days off** — and no per-holiday view
+would show you that, because it only exists when the two are considered
+together.
+
+## Customising destinations
+
+Use `manage.py` rather than hand-editing JSON — it validates the airport code
+and writes each destination on one line, so a change is a one-line diff.
+
+```bash
+python manage.py list
+```
+
+```bash
+python manage.py add HND Tokyo --max-stops 1 --target 800
+```
+
+`--verify` runs a single live query first and refuses to add a route that
+returns nothing, which catches typos and airports with no service from
+Singapore. Use `set` to retune a target, and `remove` to stop tracking (past
+observations stay in the history).
+
+Order matters past the eighth entry: the dashboard charts the first eight
+destinations and lists the rest in the table, because the categorical palette
+has eight distinct series and never reuses them.
+
 ## Configuration
 
 Everything lives in `config.json`.
@@ -87,15 +131,18 @@ if the trip is only three days.
 ## Layout
 
 ```
-sweep.py              orchestrator and CLI
+sweep.py              fare sweep: orchestrator and CLI
+plan.py               leave planner: recommended dates + terminal calendar
+manage.py             add / remove / retune destinations
 fares/holidays.py     data.gov.sg fetch + cached fallback
 fares/windows.py      holidays -> candidate (depart, return) pairs
+fares/planner.py      holidays -> what each leave budget buys
 fares/sources.py      FareSource interface + Google Flights implementation
-fares/store.py        JSONL history, alert state, dashboard payload
+fares/store.py        JSONL history, alert state, dashboard + plan payloads
 fares/alerts.py       baseline, thresholds, re-alert suppression
 fares/notify.py       Telegram delivery
-docs/index.html       dashboard (GitHub Pages)
-docs/data/            history.jsonl + dashboard.json, written by the sweep
+docs/index.html       dashboard and calendar (GitHub Pages)
+docs/data/            history.jsonl, dashboard.json, plan.json — written by the sweep
 ```
 
 ```bash

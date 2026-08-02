@@ -1,7 +1,6 @@
 {
   "origin": "SIN",
   "currency": "SGD",
-
   "search": {
     "min_lead_days": 14,
     "lookahead_days": 180,
@@ -11,7 +10,6 @@
     "max_windows_per_holiday": 4,
     "pause_between_queries": 1.0
   },
-
   "alerts": {
     "min_observations": 5,
     "baseline_lookback": 30,
@@ -19,7 +17,6 @@
     "resend_after_days": 7,
     "resend_if_cheaper_pct": 5
   },
-
   "_targets": "alert_below values sit ~15% under the cheapest fare actually seen for Deepavali 2026 on 2 Aug 2026, so day one is quiet and only a real drop speaks up. Retune once a few weeks of history exist.",
 
   "destinations": [

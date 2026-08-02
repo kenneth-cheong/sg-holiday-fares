@@ -16,12 +16,12 @@ import json
 import os
 import sys
 import time
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 from fares import alerts as alerting
 from fares import holidays as holiday_data
-from fares import notify, store, windows
+from fares import notify, planner, store, windows
 from fares.sources import GoogleFlightsSource, pick_offers
 
 REPO_ROOT = Path(__file__).resolve().parent
@@ -118,6 +118,14 @@ def run(args) -> int:
     holidays, holiday_source, candidates = build_plan(config, today, args.min_lead_days)
 
     print(f"holidays: {len(holidays)} loaded from {holiday_source}")
+
+    # The leave planner is independent of fares, so it is refreshed before any
+    # network work and survives a sweep that finds nothing to price.
+    if not args.dry_run:
+        horizon = min(today + timedelta(days=550), max(holidays))
+        store.write_plan(planner.to_payload(holidays, today, horizon))
+        print(f"plan:     rebuilt through {horizon}")
+
     if not candidates:
         print("no travel windows inside the booking horizon — nothing to do")
         return 0
