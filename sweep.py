@@ -181,7 +181,10 @@ def run(args) -> int:
     for window in candidates:
         print(f"  · {window.name}: {window.label}")
 
-    source = GoogleFlightsSource(currency=config["currency"])
+    # A full sweep is ~120 sequential queries, the highest-volume caller of the
+    # three (manage.py and the Lambda are single lookups), so it gets one extra
+    # retry against the transient FlightsNotFound failures.
+    source = GoogleFlightsSource(currency=config["currency"], retries=3)
     history = store.load_history()
     state = store.load_state()
     alert_cfg = config["alerts"]

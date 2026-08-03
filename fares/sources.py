@@ -165,13 +165,24 @@ class GoogleFlightsSource:
 
         query = _query(origin, dest, depart, ret, max_stops, self.currency, self.language)
 
+        # FlightsNotFound is not reliable evidence a route has no service. It is
+        # also what fast-flights raises when Google's own JSON payload carries
+        # `errorHasStatus: true` — observed in practice on routes that priced
+        # fine minutes earlier, in a pattern (fails from the first query,
+        # spread evenly across every destination) that looks like transient
+        # rate-limiting rather than a real absence of flights. Retried the same
+        # as any other failure rather than accepted on the first attempt.
         last_error: Exception | None = None
         for attempt in range(self.retries):
             try:
                 results = list(get_flights(query))
                 break
-            except FlightsNotFound:
-                return []
+            except FlightsNotFound as exc:
+                last_error = exc
+                if attempt < self.retries - 1:
+                    time.sleep(2 * (attempt + 1))
+                else:
+                    return []
             except Exception as exc:  # network blips, upstream shape changes
                 last_error = exc
                 if attempt < self.retries - 1:
