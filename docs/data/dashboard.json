@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-03T02:26:43",
+ "generated_at": "2026-08-03T02:32:58",
  "currency": "SGD",
  "holidays": [
   {
@@ -50,17 +50,15 @@
        "nights": 3,
        "leave_days": 1,
        "label": "Fri 6 Nov–Mon 9 Nov (3 nights, 1d leave)",
-       "current": 425,
-       "nonstop": 425,
-       "airlines": [
-        "Thai Lion Air"
-       ],
-       "route": "SIN-DMK",
-       "stops": 0,
-       "airport": "DMK",
-       "duration": 150,
-       "nonstop_duration": 150,
-       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDYoAWoFEgNTSU5yBRIDRE1LGhwSCjIwMjYtMTEtMDkoAWoFEgNETUtyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
+       "current": null,
+       "nonstop": null,
+       "airlines": [],
+       "route": null,
+       "stops": null,
+       "airport": "BKK",
+       "duration": null,
+       "nonstop_duration": null,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDYoAWoFEgNTSU5yBRIDQktLGhwSCjIwMjYtMTEtMDkoAWoFEgNCS0tyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 388,
        "max": 425,
        "series": [
@@ -110,6 +108,10 @@
         {
          "on": "2026-08-03",
          "price": 357
+        },
+        {
+         "on": "2026-08-03",
+         "price": 357
         }
        ]
       },
@@ -145,6 +147,10 @@
         {
          "on": "2026-08-03",
          "price": 374
+        },
+        {
+         "on": "2026-08-03",
+         "price": 374
         }
        ]
       }
@@ -165,16 +171,14 @@
        "nights": 2,
        "leave_days": 0,
        "label": "Sat 7 Nov–Mon 9 Nov (2 nights, no leave)",
-       "current": 393,
-       "nonstop": 537,
-       "airlines": [
-        "Cebu Pacific"
-       ],
-       "route": "SIN-MNL-TPE",
-       "stops": 1,
+       "current": null,
+       "nonstop": null,
+       "airlines": [],
+       "route": null,
+       "stops": null,
        "airport": "TPE",
-       "duration": 910,
-       "nonstop_duration": 275,
+       "duration": null,
+       "nonstop_duration": null,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDVFBFGhwSCjIwMjYtMTEtMDkoAWoFEgNUUEVyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 393,
        "max": 393,
@@ -229,20 +233,26 @@
        "nights": 3,
        "leave_days": 1,
        "label": "Sat 7 Nov–Tue 10 Nov (3 nights, 1d leave)",
-       "current": null,
-       "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "current": 393,
+       "nonstop": 537,
+       "airlines": [
+        "Cebu Pacific"
+       ],
+       "route": "SIN-MNL-TPE",
+       "stops": 1,
        "airport": "TPE",
-       "duration": null,
-       "nonstop_duration": null,
+       "duration": 910,
+       "nonstop_duration": 275,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDVFBFGhwSCjIwMjYtMTEtMTAoAWoFEgNUUEVyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 393,
        "max": 393,
        "series": [
         {
          "on": "2026-08-02",
+         "price": 393
+        },
+        {
+         "on": "2026-08-03",
          "price": 393
         },
         {
@@ -258,16 +268,14 @@
        "nights": 4,
        "leave_days": 2,
        "label": "Thu 5 Nov–Mon 9 Nov (4 nights, 2d leave)",
-       "current": 389,
-       "nonstop": 389,
-       "airlines": [
-        "Scoot"
-       ],
-       "route": "SIN-TPE",
-       "stops": 0,
+       "current": null,
+       "nonstop": null,
+       "airlines": [],
+       "route": null,
+       "stops": null,
        "airport": "TPE",
-       "duration": 275,
-       "nonstop_duration": 275,
+       "duration": null,
+       "nonstop_duration": null,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDUoAWoFEgNTSU5yBRIDVFBFGhwSCjIwMjYtMTEtMDkoAWoFEgNUUEVyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 389,
        "max": 389,
@@ -287,7 +295,7 @@
        ]
       }
      ],
-     "cheapest": 389
+     "cheapest": 393
     },
     {
      "code": "HKG",
@@ -332,16 +340,14 @@
        "nights": 3,
        "leave_days": 1,
        "label": "Fri 6 Nov–Mon 9 Nov (3 nights, 1d leave)",
-       "current": 383,
-       "nonstop": 521,
-       "airlines": [
-        "Royal Brunei"
-       ],
-       "route": "SIN-BWN-HKG",
-       "stops": 1,
+       "current": null,
+       "nonstop": null,
+       "airlines": [],
+       "route": null,
+       "stops": null,
        "airport": "HKG",
-       "duration": 2410,
-       "nonstop_duration": 240,
+       "duration": null,
+       "nonstop_duration": null,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDYoAWoFEgNTSU5yBRIDSEtHGhwSCjIwMjYtMTEtMDkoAWoFEgNIS0dyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 383,
        "max": 430,
@@ -396,6 +402,10 @@
         {
          "on": "2026-08-03",
          "price": 513
+        },
+        {
+         "on": "2026-08-03",
+         "price": 513
         }
        ]
       },
@@ -406,16 +416,14 @@
        "nights": 4,
        "leave_days": 2,
        "label": "Thu 5 Nov–Mon 9 Nov (4 nights, 2d leave)",
-       "current": 396,
-       "nonstop": 521,
-       "airlines": [
-        "Royal Brunei"
-       ],
-       "route": "SIN-BWN-HKG",
-       "stops": 1,
+       "current": null,
+       "nonstop": null,
+       "airlines": [],
+       "route": null,
+       "stops": null,
        "airport": "HKG",
-       "duration": 960,
-       "nonstop_duration": 225,
+       "duration": null,
+       "nonstop_duration": null,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDUoAWoFEgNTSU5yBRIDSEtHGhwSCjIwMjYtMTEtMDkoAWoFEgNIS0dyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 396,
        "max": 396,
@@ -435,7 +443,7 @@
        ]
       }
      ],
-     "cheapest": 383
+     "cheapest": 513
     },
     {
      "code": "HND",
@@ -451,16 +459,14 @@
        "nights": 2,
        "leave_days": 0,
        "label": "Sat 7 Nov–Mon 9 Nov (2 nights, no leave)",
-       "current": 1148,
-       "nonstop": 1484,
-       "airlines": [
-        "Garuda Indonesia"
-       ],
-       "route": "SIN-CGK-HND",
-       "stops": 1,
+       "current": null,
+       "nonstop": null,
+       "airlines": [],
+       "route": null,
+       "stops": null,
        "airport": "HND",
-       "duration": 725,
-       "nonstop_duration": 400,
+       "duration": null,
+       "nonstop_duration": null,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDSE5EGhwSCjIwMjYtMTEtMDkoAWoFEgNITkRyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 913,
        "max": 1148,
@@ -486,16 +492,14 @@
        "nights": 3,
        "leave_days": 1,
        "label": "Fri 6 Nov–Mon 9 Nov (3 nights, 1d leave)",
-       "current": 677,
-       "nonstop": 1693,
-       "airlines": [
-        "Vietjet"
-       ],
-       "route": "SIN-SGN-HND",
-       "stops": 1,
+       "current": null,
+       "nonstop": null,
+       "airlines": [],
+       "route": null,
+       "stops": null,
        "airport": "HND",
-       "duration": 1710,
-       "nonstop_duration": 395,
+       "duration": null,
+       "nonstop_duration": null,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDYoAWoFEgNTSU5yBRIDSE5EGhwSCjIwMjYtMTEtMDkoAWoFEgNITkRyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 677,
        "max": 677,
@@ -546,6 +550,10 @@
         {
          "on": "2026-08-03",
          "price": 822
+        },
+        {
+         "on": "2026-08-03",
+         "price": 822
         }
        ]
       },
@@ -556,16 +564,14 @@
        "nights": 4,
        "leave_days": 2,
        "label": "Thu 5 Nov–Mon 9 Nov (4 nights, 2d leave)",
-       "current": 677,
-       "nonstop": 1441,
-       "airlines": [
-        "Vietjet"
-       ],
-       "route": "SIN-SGN-HND",
-       "stops": 1,
+       "current": null,
+       "nonstop": null,
+       "airlines": [],
+       "route": null,
+       "stops": null,
        "airport": "HND",
-       "duration": 1710,
-       "nonstop_duration": 395,
+       "duration": null,
+       "nonstop_duration": null,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDUoAWoFEgNTSU5yBRIDSE5EGhwSCjIwMjYtMTEtMDkoAWoFEgNITkRyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 677,
        "max": 677,
@@ -585,7 +591,7 @@
        ]
       }
      ],
-     "cheapest": 677
+     "cheapest": 822
     },
     {
      "code": "ICN",
@@ -688,6 +694,10 @@
         {
          "on": "2026-08-03",
          "price": 416
+        },
+        {
+         "on": "2026-08-03",
+         "price": 416
         }
        ]
       },
@@ -698,16 +708,14 @@
        "nights": 4,
        "leave_days": 2,
        "label": "Thu 5 Nov–Mon 9 Nov (4 nights, 2d leave)",
-       "current": 415,
-       "nonstop": 908,
-       "airlines": [
-        "Vietjet"
-       ],
-       "route": "SIN-HAN-ICN",
-       "stops": 1,
+       "current": null,
+       "nonstop": null,
+       "airlines": [],
+       "route": null,
+       "stops": null,
        "airport": "ICN",
-       "duration": 810,
-       "nonstop_duration": 375,
+       "duration": null,
+       "nonstop_duration": null,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDUoAWoFEgNTSU5yBRIDSUNOGhwSCjIwMjYtMTEtMDkoAWoFEgNJQ05yBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 414,
        "max": 415,
@@ -727,7 +735,7 @@
        ]
       }
      ],
-     "cheapest": 415
+     "cheapest": 416
     },
     {
      "code": "PEK",
@@ -760,6 +768,10 @@
         {
          "on": "2026-08-02",
          "price": 661
+        },
+        {
+         "on": "2026-08-03",
+         "price": 584
         },
         {
          "on": "2026-08-03",
@@ -836,6 +848,10 @@
         {
          "on": "2026-08-03",
          "price": 584
+        },
+        {
+         "on": "2026-08-03",
+         "price": 584
         }
        ]
       },
@@ -846,16 +862,14 @@
        "nights": 4,
        "leave_days": 2,
        "label": "Thu 5 Nov–Mon 9 Nov (4 nights, 2d leave)",
-       "current": 465,
-       "nonstop": 897,
-       "airlines": [
-        "Cathay Pacific"
-       ],
-       "route": "SIN-HKG-PEK",
-       "stops": 1,
+       "current": null,
+       "nonstop": null,
+       "airlines": [],
+       "route": null,
+       "stops": null,
        "airport": "PEK",
        "duration": null,
-       "nonstop_duration": 365,
+       "nonstop_duration": null,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDUoAWoFEgNTSU5yBRIDUEVLGhwSCjIwMjYtMTEtMDkoAWoFEgNQRUtyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 465,
        "max": 484,
@@ -871,7 +885,7 @@
        ]
       }
      ],
-     "cheapest": 465
+     "cheapest": 584
     },
     {
      "code": "CAN",
@@ -904,6 +918,10 @@
         {
          "on": "2026-08-02",
          "price": 451
+        },
+        {
+         "on": "2026-08-03",
+         "price": 436
         },
         {
          "on": "2026-08-03",
@@ -980,6 +998,10 @@
         {
          "on": "2026-08-03",
          "price": 436
+        },
+        {
+         "on": "2026-08-03",
+         "price": 436
         }
        ]
       },
@@ -990,16 +1012,14 @@
        "nights": 4,
        "leave_days": 2,
        "label": "Thu 5 Nov–Mon 9 Nov (4 nights, 2d leave)",
-       "current": 418,
-       "nonstop": 1133,
-       "airlines": [
-        "Vietjet"
-       ],
-       "route": "SIN-HAN-CAN",
-       "stops": 1,
+       "current": null,
+       "nonstop": null,
+       "airlines": [],
+       "route": null,
+       "stops": null,
        "airport": "CAN",
-       "duration": 615,
-       "nonstop_duration": 240,
+       "duration": null,
+       "nonstop_duration": null,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDUoAWoFEgNTSU5yBRIDQ0FOGhwSCjIwMjYtMTEtMDkoAWoFEgNDQU5yBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 418,
        "max": 451,
@@ -1023,7 +1043,7 @@
        ]
       }
      ],
-     "cheapest": 418
+     "cheapest": 436
     },
     {
      "code": "SZX",
@@ -1039,13 +1059,15 @@
        "nights": 2,
        "leave_days": 0,
        "label": "Sat 7 Nov–Mon 9 Nov (2 nights, no leave)",
-       "current": null,
+       "current": 535,
        "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "airlines": [
+        "Hainan"
+       ],
+       "route": "SIN-HAK-SZX",
+       "stops": 1,
        "airport": "SZX",
-       "duration": null,
+       "duration": 770,
        "nonstop_duration": null,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDcoAWoFEgNTSU5yBRIDU1pYGhwSCjIwMjYtMTEtMDkoAWoFEgNTWlhyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 535,
@@ -1053,6 +1075,10 @@
        "series": [
         {
          "on": "2026-08-02",
+         "price": 535
+        },
+        {
+         "on": "2026-08-03",
          "price": 535
         },
         {
@@ -1117,6 +1143,10 @@
        "series": [
         {
          "on": "2026-08-02",
+         "price": 505
+        },
+        {
+         "on": "2026-08-03",
          "price": 505
         },
         {
@@ -1200,6 +1230,10 @@
         {
          "on": "2026-08-03",
          "price": 503
+        },
+        {
+         "on": "2026-08-03",
+         "price": 503
         }
        ]
       },
@@ -1264,6 +1298,10 @@
         {
          "on": "2026-08-03",
          "price": 496
+        },
+        {
+         "on": "2026-08-03",
+         "price": 496
         }
        ]
       },
@@ -1274,15 +1312,13 @@
        "nights": 4,
        "leave_days": 2,
        "label": "Thu 5 Nov–Mon 9 Nov (4 nights, 2d leave)",
-       "current": 496,
+       "current": null,
        "nonstop": null,
-       "airlines": [
-        "Hainan"
-       ],
-       "route": "SIN-HAK-HGH",
-       "stops": 1,
+       "airlines": [],
+       "route": null,
+       "stops": null,
        "airport": "HGH",
-       "duration": 1845,
+       "duration": null,
        "nonstop_duration": null,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTEtMDUoAWoFEgNTSU5yBRIDSEdIGhwSCjIwMjYtMTEtMDkoAWoFEgNIR0hyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 496,
@@ -1348,6 +1384,10 @@
         {
          "on": "2026-08-03",
          "price": 554
+        },
+        {
+         "on": "2026-08-03",
+         "price": 554
         }
        ]
       },
@@ -1403,6 +1443,10 @@
        "series": [
         {
          "on": "2026-08-02",
+         "price": 496
+        },
+        {
+         "on": "2026-08-03",
          "price": 496
         },
         {
@@ -1489,6 +1533,10 @@
         {
          "on": "2026-08-03",
          "price": 438
+        },
+        {
+         "on": "2026-08-03",
+         "price": 438
         }
        ]
       },
@@ -1499,18 +1547,24 @@
        "nights": 3,
        "leave_days": 1,
        "label": "Thu 24 Dec–Sun 27 Dec (3 nights, 1d leave)",
-       "current": null,
-       "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
-       "airport": "BKK",
-       "duration": null,
-       "nonstop_duration": null,
-       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTItMjQoAWoFEgNTSU5yBRIDQktLGhwSCjIwMjYtMTItMjcoAWoFEgNCS0tyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
+       "current": 438,
+       "nonstop": 438,
+       "airlines": [
+        "Thai Lion Air"
+       ],
+       "route": "SIN-DMK",
+       "stops": 0,
+       "airport": "DMK",
+       "duration": 150,
+       "nonstop_duration": 150,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTItMjQoAWoFEgNTSU5yBRIDRE1LGhwSCjIwMjYtMTItMjcoAWoFEgNETUtyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 438,
        "max": 438,
        "series": [
+        {
+         "on": "2026-08-03",
+         "price": 438
+        },
         {
          "on": "2026-08-03",
          "price": 438
@@ -1524,18 +1578,24 @@
        "nights": 3,
        "leave_days": 1,
        "label": "Fri 25 Dec–Mon 28 Dec (3 nights, 1d leave)",
-       "current": null,
-       "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
-       "airport": "BKK",
-       "duration": null,
-       "nonstop_duration": null,
-       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTItMjUoAWoFEgNTSU5yBRIDQktLGhwSCjIwMjYtMTItMjgoAWoFEgNCS0tyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
+       "current": 438,
+       "nonstop": 438,
+       "airlines": [
+        "Thai Lion Air"
+       ],
+       "route": "SIN-DMK",
+       "stops": 0,
+       "airport": "DMK",
+       "duration": 150,
+       "nonstop_duration": 150,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTItMjUoAWoFEgNTSU5yBRIDRE1LGhwSCjIwMjYtMTItMjgoAWoFEgNETUtyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 438,
        "max": 438,
        "series": [
+        {
+         "on": "2026-08-03",
+         "price": 438
+        },
         {
          "on": "2026-08-03",
          "price": 438
@@ -1563,6 +1623,10 @@
        "min": 438,
        "max": 438,
        "series": [
+        {
+         "on": "2026-08-03",
+         "price": 438
+        },
         {
          "on": "2026-08-03",
          "price": 438
@@ -1611,6 +1675,10 @@
         {
          "on": "2026-08-03",
          "price": 589
+        },
+        {
+         "on": "2026-08-03",
+         "price": 589
         }
        ]
       },
@@ -1642,6 +1710,10 @@
         {
          "on": "2026-08-03",
          "price": 589
+        },
+        {
+         "on": "2026-08-03",
+         "price": 589
         }
        ]
       },
@@ -1652,18 +1724,25 @@
        "nights": 3,
        "leave_days": 1,
        "label": "Fri 25 Dec–Mon 28 Dec (3 nights, 1d leave)",
-       "current": null,
-       "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "current": 629,
+       "nonstop": 753,
+       "airlines": [
+        "Vietjet"
+       ],
+       "route": "SIN-HAN-TPE",
+       "stops": 1,
        "airport": "TPE",
-       "duration": null,
-       "nonstop_duration": null,
+       "duration": 1215,
+       "nonstop_duration": 275,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTItMjUoAWoFEgNTSU5yBRIDVFBFGhwSCjIwMjYtMTItMjgoAWoFEgNUUEVyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
-       "min": null,
-       "max": null,
-       "series": []
+       "min": 629,
+       "max": 629,
+       "series": [
+        {
+         "on": "2026-08-03",
+         "price": 629
+        }
+       ]
       },
       {
        "key": "TPE|2026-12-25|2026-12-23|2026-12-27",
@@ -1686,6 +1765,10 @@
        "min": 659,
        "max": 659,
        "series": [
+        {
+         "on": "2026-08-03",
+         "price": 659
+        },
         {
          "on": "2026-08-03",
          "price": 659
@@ -1734,6 +1817,10 @@
         {
          "on": "2026-08-03",
          "price": 575
+        },
+        {
+         "on": "2026-08-03",
+         "price": 575
         }
        ]
       },
@@ -1765,6 +1852,10 @@
         {
          "on": "2026-08-03",
          "price": 611
+        },
+        {
+         "on": "2026-08-03",
+         "price": 611
         }
        ]
       },
@@ -1775,18 +1866,24 @@
        "nights": 3,
        "leave_days": 1,
        "label": "Fri 25 Dec–Mon 28 Dec (3 nights, 1d leave)",
-       "current": null,
-       "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "current": 430,
+       "nonstop": 769,
+       "airlines": [
+        "Royal Brunei"
+       ],
+       "route": "SIN-BWN-HKG",
+       "stops": 1,
        "airport": "HKG",
-       "duration": null,
-       "nonstop_duration": null,
+       "duration": 2410,
+       "nonstop_duration": 230,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTItMjUoAWoFEgNTSU5yBRIDSEtHGhwSCjIwMjYtMTItMjgoAWoFEgNIS0dyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 430,
        "max": 430,
        "series": [
+        {
+         "on": "2026-08-03",
+         "price": 430
+        },
         {
          "on": "2026-08-03",
          "price": 430
@@ -1821,11 +1918,15 @@
         {
          "on": "2026-08-03",
          "price": 611
+        },
+        {
+         "on": "2026-08-03",
+         "price": 611
         }
        ]
       }
      ],
-     "cheapest": 575
+     "cheapest": 430
     },
     {
      "code": "HND",
@@ -1862,6 +1963,10 @@
         {
          "on": "2026-08-03",
          "price": 1342
+        },
+        {
+         "on": "2026-08-03",
+         "price": 1342
         }
        ]
       },
@@ -1872,18 +1977,24 @@
        "nights": 3,
        "leave_days": 1,
        "label": "Thu 24 Dec–Sun 27 Dec (3 nights, 1d leave)",
-       "current": null,
-       "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "current": 1029,
+       "nonstop": 2342,
+       "airlines": [
+        "Vietjet"
+       ],
+       "route": "SIN-SGN-HND",
+       "stops": 1,
        "airport": "HND",
-       "duration": null,
-       "nonstop_duration": null,
+       "duration": 1865,
+       "nonstop_duration": 390,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTItMjQoAWoFEgNTSU5yBRIDSE5EGhwSCjIwMjYtMTItMjcoAWoFEgNITkRyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 1029,
        "max": 1029,
        "series": [
+        {
+         "on": "2026-08-03",
+         "price": 1029
+        },
         {
          "on": "2026-08-03",
          "price": 1029
@@ -1911,6 +2022,10 @@
        "min": 1029,
        "max": 1029,
        "series": [
+        {
+         "on": "2026-08-03",
+         "price": 1029
+        },
         {
          "on": "2026-08-03",
          "price": 1029
@@ -1949,6 +2064,10 @@
         {
          "on": "2026-08-03",
          "price": 1174
+        },
+        {
+         "on": "2026-08-03",
+         "price": 1174
         }
        ]
       }
@@ -1969,18 +2088,24 @@
        "nights": 2,
        "leave_days": 0,
        "label": "Fri 25 Dec–Sun 27 Dec (2 nights, no leave)",
-       "current": null,
-       "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "current": 549,
+       "nonstop": 1102,
+       "airlines": [
+        "Vietjet"
+       ],
+       "route": "SIN-HAN-ICN",
+       "stops": 1,
        "airport": "ICN",
-       "duration": null,
-       "nonstop_duration": null,
+       "duration": 810,
+       "nonstop_duration": 405,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTItMjUoAWoFEgNTSU5yBRIDSUNOGhwSCjIwMjYtMTItMjcoAWoFEgNJQ05yBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 549,
        "max": 549,
        "series": [
+        {
+         "on": "2026-08-03",
+         "price": 549
+        },
         {
          "on": "2026-08-03",
          "price": 549
@@ -1994,18 +2119,24 @@
        "nights": 3,
        "leave_days": 1,
        "label": "Thu 24 Dec–Sun 27 Dec (3 nights, 1d leave)",
-       "current": null,
-       "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "current": 502,
+       "nonstop": 1195,
+       "airlines": [
+        "Vietjet"
+       ],
+       "route": "SIN-DAD-ICN",
+       "stops": 1,
        "airport": "ICN",
-       "duration": null,
-       "nonstop_duration": null,
+       "duration": 1575,
+       "nonstop_duration": 385,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTItMjQoAWoFEgNTSU5yBRIDSUNOGhwSCjIwMjYtMTItMjcoAWoFEgNJQ05yBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 502,
        "max": 502,
        "series": [
+        {
+         "on": "2026-08-03",
+         "price": 502
+        },
         {
          "on": "2026-08-03",
          "price": 502
@@ -2019,18 +2150,25 @@
        "nights": 3,
        "leave_days": 1,
        "label": "Fri 25 Dec–Mon 28 Dec (3 nights, 1d leave)",
-       "current": null,
-       "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "current": 531,
+       "nonstop": 1102,
+       "airlines": [
+        "Vietjet"
+       ],
+       "route": "SIN-HAN-ICN",
+       "stops": 1,
        "airport": "ICN",
-       "duration": null,
-       "nonstop_duration": null,
+       "duration": 810,
+       "nonstop_duration": 405,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTItMjUoAWoFEgNTSU5yBRIDSUNOGhwSCjIwMjYtMTItMjgoAWoFEgNJQ05yBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
-       "min": null,
-       "max": null,
-       "series": []
+       "min": 531,
+       "max": 531,
+       "series": [
+        {
+         "on": "2026-08-03",
+         "price": 531
+        }
+       ]
       },
       {
        "key": "ICN|2026-12-25|2026-12-23|2026-12-27",
@@ -2060,6 +2198,10 @@
         {
          "on": "2026-08-03",
          "price": 502
+        },
+        {
+         "on": "2026-08-03",
+         "price": 502
         }
        ]
       }
@@ -2080,18 +2222,26 @@
        "nights": 2,
        "leave_days": 0,
        "label": "Fri 25 Dec–Sun 27 Dec (2 nights, no leave)",
-       "current": null,
-       "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "current": 954,
+       "nonstop": 2131,
+       "airlines": [
+        "Shenzhen",
+        "Air China"
+       ],
+       "route": "SIN-SZX-PEK",
+       "stops": 1,
        "airport": "PEK",
-       "duration": null,
-       "nonstop_duration": null,
+       "duration": 960,
+       "nonstop_duration": 375,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTItMjUoAWoFEgNTSU5yBRIDUEVLGhwSCjIwMjYtMTItMjcoAWoFEgNQRUtyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
-       "min": null,
-       "max": null,
-       "series": []
+       "min": 954,
+       "max": 954,
+       "series": [
+        {
+         "on": "2026-08-03",
+         "price": 954
+        }
+       ]
       },
       {
        "key": "PEK|2026-12-25|2026-12-24|2026-12-27",
@@ -2100,18 +2250,24 @@
        "nights": 3,
        "leave_days": 1,
        "label": "Thu 24 Dec–Sun 27 Dec (3 nights, 1d leave)",
-       "current": null,
-       "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "current": 1054,
+       "nonstop": 1402,
+       "airlines": [
+        "THAI"
+       ],
+       "route": "SIN-BKK-PEK",
+       "stops": 1,
        "airport": "PEK",
-       "duration": null,
-       "nonstop_duration": null,
+       "duration": 805,
+       "nonstop_duration": 370,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTItMjQoAWoFEgNTSU5yBRIDUEVLGhwSCjIwMjYtMTItMjcoAWoFEgNQRUtyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 1054,
        "max": 1054,
        "series": [
+        {
+         "on": "2026-08-03",
+         "price": 1054
+        },
         {
          "on": "2026-08-03",
          "price": 1054
@@ -2145,14 +2301,16 @@
        "nights": 4,
        "leave_days": 2,
        "label": "Wed 23 Dec–Sun 27 Dec (4 nights, 2d leave)",
-       "current": null,
-       "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "current": 1054,
+       "nonstop": 1402,
+       "airlines": [
+        "THAI"
+       ],
+       "route": "SIN-BKK-PEK",
+       "stops": 1,
        "airport": "PEK",
-       "duration": null,
-       "nonstop_duration": null,
+       "duration": 1130,
+       "nonstop_duration": 370,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTItMjMoAWoFEgNTSU5yBRIDUEVLGhwSCjIwMjYtMTItMjcoAWoFEgNQRUtyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 1054,
        "max": 1054,
@@ -2160,11 +2318,15 @@
         {
          "on": "2026-08-03",
          "price": 1054
+        },
+        {
+         "on": "2026-08-03",
+         "price": 1054
         }
        ]
       }
      ],
-     "cheapest": null
+     "cheapest": 954
     },
     {
      "code": "CAN",
@@ -2201,6 +2363,10 @@
         {
          "on": "2026-08-03",
          "price": 498
+        },
+        {
+         "on": "2026-08-03",
+         "price": 498
         }
        ]
       },
@@ -2211,18 +2377,24 @@
        "nights": 3,
        "leave_days": 1,
        "label": "Thu 24 Dec–Sun 27 Dec (3 nights, 1d leave)",
-       "current": null,
-       "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "current": 498,
+       "nonstop": 1278,
+       "airlines": [
+        "Vietjet"
+       ],
+       "route": "SIN-SGN-CAN",
+       "stops": 1,
        "airport": "CAN",
-       "duration": null,
-       "nonstop_duration": null,
+       "duration": 515,
+       "nonstop_duration": 240,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTItMjQoAWoFEgNTSU5yBRIDQ0FOGhwSCjIwMjYtMTItMjcoAWoFEgNDQU5yBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 498,
        "max": 498,
        "series": [
+        {
+         "on": "2026-08-03",
+         "price": 498
+        },
         {
          "on": "2026-08-03",
          "price": 498
@@ -2253,6 +2425,10 @@
         {
          "on": "2026-08-03",
          "price": 555
+        },
+        {
+         "on": "2026-08-03",
+         "price": 555
         }
        ]
       },
@@ -2277,6 +2453,10 @@
        "min": 549,
        "max": 549,
        "series": [
+        {
+         "on": "2026-08-03",
+         "price": 549
+        },
         {
          "on": "2026-08-03",
          "price": 549
@@ -2330,6 +2510,10 @@
         {
          "on": "2026-08-03",
          "price": 636
+        },
+        {
+         "on": "2026-08-03",
+         "price": 636
         }
        ]
       },
@@ -2355,6 +2539,10 @@
        "min": 636,
        "max": 636,
        "series": [
+        {
+         "on": "2026-08-03",
+         "price": 636
+        },
         {
          "on": "2026-08-03",
          "price": 636
@@ -2390,6 +2578,10 @@
         {
          "on": "2026-08-03",
          "price": 636
+        },
+        {
+         "on": "2026-08-03",
+         "price": 636
         }
        ]
       },
@@ -2400,13 +2592,16 @@
        "nights": 4,
        "leave_days": 2,
        "label": "Wed 23 Dec–Sun 27 Dec (4 nights, 2d leave)",
-       "current": null,
+       "current": 604,
        "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "airlines": [
+        "THAI",
+        "Shenzhen"
+       ],
+       "route": "SIN-BKK-SZX",
+       "stops": 1,
        "airport": "SZX",
-       "duration": null,
+       "duration": 660,
        "nonstop_duration": null,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTItMjMoAWoFEgNTSU5yBRIDU1pYGhwSCjIwMjYtMTItMjcoAWoFEgNTWlhyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 604,
@@ -2415,11 +2610,15 @@
         {
          "on": "2026-08-03",
          "price": 604
+        },
+        {
+         "on": "2026-08-03",
+         "price": 604
         }
        ]
       }
      ],
-     "cheapest": 636
+     "cheapest": 604
     },
     {
      "code": "HGH",
@@ -2435,11 +2634,13 @@
        "nights": 2,
        "leave_days": 0,
        "label": "Fri 25 Dec–Sun 27 Dec (2 nights, no leave)",
-       "current": null,
+       "current": 868,
        "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "airlines": [
+        "Cathay Pacific"
+       ],
+       "route": "SIN-HKG-HGH",
+       "stops": 1,
        "airport": "HGH",
        "duration": null,
        "nonstop_duration": null,
@@ -2447,6 +2648,10 @@
        "min": 868,
        "max": 868,
        "series": [
+        {
+         "on": "2026-08-03",
+         "price": 868
+        },
         {
          "on": "2026-08-03",
          "price": 868
@@ -2481,6 +2686,10 @@
         {
          "on": "2026-08-03",
          "price": 855
+        },
+        {
+         "on": "2026-08-03",
+         "price": 855
         }
        ]
       },
@@ -2508,6 +2717,10 @@
         {
          "on": "2026-08-03",
          "price": 868
+        },
+        {
+         "on": "2026-08-03",
+         "price": 868
         }
        ]
       },
@@ -2518,13 +2731,16 @@
        "nights": 4,
        "leave_days": 2,
        "label": "Wed 23 Dec–Sun 27 Dec (4 nights, 2d leave)",
-       "current": null,
+       "current": 828,
        "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "airlines": [
+        "AirAsia",
+        "AirAsia X"
+       ],
+       "route": "SIN-KUL-HGH",
+       "stops": 1,
        "airport": "HGH",
-       "duration": null,
+       "duration": 1465,
        "nonstop_duration": null,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTItMjMoAWoFEgNTSU5yBRIDSEdIGhwSCjIwMjYtMTItMjcoAWoFEgNIR0hyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 828,
@@ -2533,11 +2749,15 @@
         {
          "on": "2026-08-03",
          "price": 828
+        },
+        {
+         "on": "2026-08-03",
+         "price": 828
         }
        ]
       }
      ],
-     "cheapest": 855
+     "cheapest": 828
     },
     {
      "code": "NKG",
@@ -2553,18 +2773,25 @@
        "nights": 2,
        "leave_days": 0,
        "label": "Fri 25 Dec–Sun 27 Dec (2 nights, no leave)",
-       "current": null,
+       "current": 938,
        "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "airlines": [
+        "Cathay Pacific"
+       ],
+       "route": "SIN-HKG-NKG",
+       "stops": 1,
        "airport": "NKG",
        "duration": null,
        "nonstop_duration": null,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTItMjUoAWoFEgNTSU5yBRIDTktHGhwSCjIwMjYtMTItMjcoAWoFEgNOS0dyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
-       "min": null,
-       "max": null,
-       "series": []
+       "min": 938,
+       "max": 938,
+       "series": [
+        {
+         "on": "2026-08-03",
+         "price": 938
+        }
+       ]
       },
       {
        "key": "NKG|2026-12-25|2026-12-24|2026-12-27",
@@ -2594,6 +2821,10 @@
         {
          "on": "2026-08-03",
          "price": 1028
+        },
+        {
+         "on": "2026-08-03",
+         "price": 1028
         }
        ]
       },
@@ -2604,11 +2835,13 @@
        "nights": 3,
        "leave_days": 1,
        "label": "Fri 25 Dec–Mon 28 Dec (3 nights, 1d leave)",
-       "current": null,
+       "current": 938,
        "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "airlines": [
+        "Cathay Pacific"
+       ],
+       "route": "SIN-HKG-NKG",
+       "stops": 1,
        "airport": "NKG",
        "duration": null,
        "nonstop_duration": null,
@@ -2616,6 +2849,10 @@
        "min": 938,
        "max": 938,
        "series": [
+        {
+         "on": "2026-08-03",
+         "price": 938
+        },
         {
          "on": "2026-08-03",
          "price": 938
@@ -2648,7 +2885,7 @@
        ]
       }
      ],
-     "cheapest": 1028
+     "cheapest": 938
     }
    ]
   },
@@ -2671,18 +2908,24 @@
        "nights": 2,
        "leave_days": 0,
        "label": "Fri 1 Jan–Sun 3 Jan (2 nights, no leave)",
-       "current": null,
-       "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
-       "airport": "BKK",
-       "duration": null,
-       "nonstop_duration": null,
-       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjctMDEtMDEoAWoFEgNTSU5yBRIDQktLGhwSCjIwMjctMDEtMDMoAWoFEgNCS0tyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
+       "current": 438,
+       "nonstop": 438,
+       "airlines": [
+        "Thai Lion Air"
+       ],
+       "route": "SIN-DMK",
+       "stops": 0,
+       "airport": "DMK",
+       "duration": 150,
+       "nonstop_duration": 150,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjctMDEtMDEoAWoFEgNTSU5yBRIDRE1LGhwSCjIwMjctMDEtMDMoAWoFEgNETUtyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 438,
        "max": 438,
        "series": [
+        {
+         "on": "2026-08-03",
+         "price": 438
+        },
         {
          "on": "2026-08-03",
          "price": 438
@@ -2713,6 +2956,10 @@
         {
          "on": "2026-08-03",
          "price": 488
+        },
+        {
+         "on": "2026-08-03",
+         "price": 488
         }
        ]
       },
@@ -2723,18 +2970,24 @@
        "nights": 3,
        "leave_days": 1,
        "label": "Fri 1 Jan–Mon 4 Jan (3 nights, 1d leave)",
-       "current": null,
-       "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
-       "airport": "BKK",
-       "duration": null,
-       "nonstop_duration": null,
-       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjctMDEtMDEoAWoFEgNTSU5yBRIDQktLGhwSCjIwMjctMDEtMDQoAWoFEgNCS0tyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
+       "current": 390,
+       "nonstop": 390,
+       "airlines": [
+        "Thai AirAsia"
+       ],
+       "route": "SIN-DMK",
+       "stops": 0,
+       "airport": "DMK",
+       "duration": 145,
+       "nonstop_duration": 145,
+       "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjctMDEtMDEoAWoFEgNTSU5yBRIDRE1LGhwSCjIwMjctMDEtMDQoAWoFEgNETUtyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 390,
        "max": 390,
        "series": [
+        {
+         "on": "2026-08-03",
+         "price": 390
+        },
         {
          "on": "2026-08-03",
          "price": 390
@@ -2773,11 +3026,15 @@
         {
          "on": "2026-08-03",
          "price": 514
+        },
+        {
+         "on": "2026-08-03",
+         "price": 514
         }
        ]
       }
      ],
-     "cheapest": 488
+     "cheapest": 390
     },
     {
      "code": "TPE",
@@ -2793,18 +3050,24 @@
        "nights": 2,
        "leave_days": 0,
        "label": "Fri 1 Jan–Sun 3 Jan (2 nights, no leave)",
-       "current": null,
-       "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "current": 535,
+       "nonstop": 535,
+       "airlines": [
+        "Scoot"
+       ],
+       "route": "SIN-TPE",
+       "stops": 0,
        "airport": "TPE",
-       "duration": null,
-       "nonstop_duration": null,
+       "duration": 275,
+       "nonstop_duration": 275,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjctMDEtMDEoAWoFEgNTSU5yBRIDVFBFGhwSCjIwMjctMDEtMDMoAWoFEgNUUEVyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 535,
        "max": 535,
        "series": [
+        {
+         "on": "2026-08-03",
+         "price": 535
+        },
         {
          "on": "2026-08-03",
          "price": 535
@@ -2835,6 +3098,10 @@
         {
          "on": "2026-08-03",
          "price": 580
+        },
+        {
+         "on": "2026-08-03",
+         "price": 580
         }
        ]
       },
@@ -2845,18 +3112,24 @@
        "nights": 3,
        "leave_days": 1,
        "label": "Fri 1 Jan–Mon 4 Jan (3 nights, 1d leave)",
-       "current": null,
-       "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "current": 363,
+       "nonstop": 363,
+       "airlines": [
+        "Scoot"
+       ],
+       "route": "SIN-TPE",
+       "stops": 0,
        "airport": "TPE",
-       "duration": null,
-       "nonstop_duration": null,
+       "duration": 275,
+       "nonstop_duration": 275,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjctMDEtMDEoAWoFEgNTSU5yBRIDVFBFGhwSCjIwMjctMDEtMDQoAWoFEgNUUEVyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 363,
        "max": 363,
        "series": [
+        {
+         "on": "2026-08-03",
+         "price": 363
+        },
         {
          "on": "2026-08-03",
          "price": 363
@@ -2887,11 +3160,15 @@
         {
          "on": "2026-08-03",
          "price": 604
+        },
+        {
+         "on": "2026-08-03",
+         "price": 604
         }
        ]
       }
      ],
-     "cheapest": 580
+     "cheapest": 363
     },
     {
      "code": "HKG",
@@ -2907,18 +3184,24 @@
        "nights": 2,
        "leave_days": 0,
        "label": "Fri 1 Jan–Sun 3 Jan (2 nights, no leave)",
-       "current": null,
-       "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "current": 578,
+       "nonstop": 727,
+       "airlines": [
+        "THAI"
+       ],
+       "route": "SIN-BKK-HKG",
+       "stops": 1,
        "airport": "HKG",
-       "duration": null,
-       "nonstop_duration": null,
+       "duration": 885,
+       "nonstop_duration": 230,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjctMDEtMDEoAWoFEgNTSU5yBRIDSEtHGhwSCjIwMjctMDEtMDMoAWoFEgNIS0dyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 578,
        "max": 578,
        "series": [
+        {
+         "on": "2026-08-03",
+         "price": 578
+        },
         {
          "on": "2026-08-03",
          "price": 578
@@ -2949,6 +3232,10 @@
         {
          "on": "2026-08-03",
          "price": 565
+        },
+        {
+         "on": "2026-08-03",
+         "price": 565
         }
        ]
       },
@@ -2959,18 +3246,24 @@
        "nights": 3,
        "leave_days": 1,
        "label": "Fri 1 Jan–Mon 4 Jan (3 nights, 1d leave)",
-       "current": null,
-       "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "current": 552,
+       "nonstop": 553,
+       "airlines": [
+        "Royal Brunei"
+       ],
+       "route": "SIN-BWN-HKG",
+       "stops": 1,
        "airport": "HKG",
-       "duration": null,
-       "nonstop_duration": null,
+       "duration": 2410,
+       "nonstop_duration": 230,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjctMDEtMDEoAWoFEgNTSU5yBRIDSEtHGhwSCjIwMjctMDEtMDQoAWoFEgNIS0dyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 552,
        "max": 552,
        "series": [
+        {
+         "on": "2026-08-03",
+         "price": 552
+        },
         {
          "on": "2026-08-03",
          "price": 552
@@ -3005,11 +3298,15 @@
         {
          "on": "2026-08-03",
          "price": 565
+        },
+        {
+         "on": "2026-08-03",
+         "price": 565
         }
        ]
       }
      ],
-     "cheapest": 565
+     "cheapest": 552
     },
     {
      "code": "HND",
@@ -3025,18 +3322,24 @@
        "nights": 2,
        "leave_days": 0,
        "label": "Fri 1 Jan–Sun 3 Jan (2 nights, no leave)",
-       "current": null,
-       "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "current": 1282,
+       "nonstop": 1806,
+       "airlines": [
+        "EVA Air"
+       ],
+       "route": "SIN-TPE-HND",
+       "stops": 1,
        "airport": "HND",
-       "duration": null,
-       "nonstop_duration": null,
+       "duration": 1095,
+       "nonstop_duration": 395,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjctMDEtMDEoAWoFEgNTSU5yBRIDSE5EGhwSCjIwMjctMDEtMDMoAWoFEgNITkRyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 1282,
        "max": 1282,
        "series": [
+        {
+         "on": "2026-08-03",
+         "price": 1282
+        },
         {
          "on": "2026-08-03",
          "price": 1282
@@ -3050,18 +3353,24 @@
        "nights": 3,
        "leave_days": 1,
        "label": "Thu 31 Dec–Sun 3 Jan (3 nights, 1d leave)",
-       "current": null,
-       "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "current": 1071,
+       "nonstop": 1583,
+       "airlines": [
+        "Vietjet"
+       ],
+       "route": "SIN-SGN-HND",
+       "stops": 1,
        "airport": "HND",
-       "duration": null,
-       "nonstop_duration": null,
+       "duration": 1710,
+       "nonstop_duration": 400,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTItMzEoAWoFEgNTSU5yBRIDSE5EGhwSCjIwMjctMDEtMDMoAWoFEgNITkRyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 1071,
        "max": 1071,
        "series": [
+        {
+         "on": "2026-08-03",
+         "price": 1071
+        },
         {
          "on": "2026-08-03",
          "price": 1071
@@ -3075,14 +3384,17 @@
        "nights": 3,
        "leave_days": 1,
        "label": "Fri 1 Jan–Mon 4 Jan (3 nights, 1d leave)",
-       "current": null,
-       "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "current": 1099,
+       "nonstop": 1677,
+       "airlines": [
+        "AirAsia",
+        "AirAsia X"
+       ],
+       "route": "SIN-KUL-HND",
+       "stops": 1,
        "airport": "HND",
-       "duration": null,
-       "nonstop_duration": null,
+       "duration": 570,
+       "nonstop_duration": 395,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjctMDEtMDEoAWoFEgNTSU5yBRIDSE5EGhwSCjIwMjctMDEtMDQoAWoFEgNITkRyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 1099,
        "max": 1100,
@@ -3090,6 +3402,10 @@
         {
          "on": "2026-08-03",
          "price": 1100
+        },
+        {
+         "on": "2026-08-03",
+         "price": 1099
         },
         {
          "on": "2026-08-03",
@@ -3121,6 +3437,10 @@
         {
          "on": "2026-08-03",
          "price": 976
+        },
+        {
+         "on": "2026-08-03",
+         "price": 976
         }
        ]
       }
@@ -3141,18 +3461,24 @@
        "nights": 2,
        "leave_days": 0,
        "label": "Fri 1 Jan–Sun 3 Jan (2 nights, no leave)",
-       "current": null,
-       "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "current": 445,
+       "nonstop": 997,
+       "airlines": [
+        "Vietjet"
+       ],
+       "route": "SIN-HAN-ICN",
+       "stops": 1,
        "airport": "ICN",
-       "duration": null,
-       "nonstop_duration": null,
+       "duration": 810,
+       "nonstop_duration": 405,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjctMDEtMDEoAWoFEgNTSU5yBRIDSUNOGhwSCjIwMjctMDEtMDMoAWoFEgNJQ05yBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 445,
        "max": 445,
        "series": [
+        {
+         "on": "2026-08-03",
+         "price": 445
+        },
         {
          "on": "2026-08-03",
          "price": 445
@@ -3166,18 +3492,25 @@
        "nights": 3,
        "leave_days": 1,
        "label": "Thu 31 Dec–Sun 3 Jan (3 nights, 1d leave)",
-       "current": null,
-       "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "current": 445,
+       "nonstop": 940,
+       "airlines": [
+        "Vietjet"
+       ],
+       "route": "SIN-HAN-ICN",
+       "stops": 1,
        "airport": "ICN",
-       "duration": null,
-       "nonstop_duration": null,
+       "duration": 810,
+       "nonstop_duration": 395,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTItMzEoAWoFEgNTSU5yBRIDSUNOGhwSCjIwMjctMDEtMDMoAWoFEgNJQ05yBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
-       "min": null,
-       "max": null,
-       "series": []
+       "min": 445,
+       "max": 445,
+       "series": [
+        {
+         "on": "2026-08-03",
+         "price": 445
+        }
+       ]
       },
       {
        "key": "ICN|2027-01-01|2027-01-01|2027-01-04",
@@ -3186,18 +3519,24 @@
        "nights": 3,
        "leave_days": 1,
        "label": "Fri 1 Jan–Mon 4 Jan (3 nights, 1d leave)",
-       "current": null,
-       "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "current": 391,
+       "nonstop": 891,
+       "airlines": [
+        "Vietjet"
+       ],
+       "route": "SIN-HAN-ICN",
+       "stops": 1,
        "airport": "ICN",
-       "duration": null,
-       "nonstop_duration": null,
+       "duration": 810,
+       "nonstop_duration": 390,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjctMDEtMDEoAWoFEgNTSU5yBRIDSUNOGhwSCjIwMjctMDEtMDQoAWoFEgNJQ05yBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 391,
        "max": 391,
        "series": [
+        {
+         "on": "2026-08-03",
+         "price": 391
+        },
         {
          "on": "2026-08-03",
          "price": 391
@@ -3232,11 +3571,15 @@
         {
          "on": "2026-08-03",
          "price": 580
+        },
+        {
+         "on": "2026-08-03",
+         "price": 580
         }
        ]
       }
      ],
-     "cheapest": 580
+     "cheapest": 391
     },
     {
      "code": "PEK",
@@ -3273,6 +3616,10 @@
         {
          "on": "2026-08-03",
          "price": 1018
+        },
+        {
+         "on": "2026-08-03",
+         "price": 1018
         }
        ]
       },
@@ -3283,18 +3630,26 @@
        "nights": 3,
        "leave_days": 1,
        "label": "Thu 31 Dec–Sun 3 Jan (3 nights, 1d leave)",
-       "current": null,
-       "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "current": 865,
+       "nonstop": 1549,
+       "airlines": [
+        "Shenzhen",
+        "Air China"
+       ],
+       "route": "SIN-SZX-PEK",
+       "stops": 1,
        "airport": "PEK",
-       "duration": null,
-       "nonstop_duration": null,
+       "duration": 960,
+       "nonstop_duration": 375,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTItMzEoAWoFEgNTSU5yBRIDUEVLGhwSCjIwMjctMDEtMDMoAWoFEgNQRUtyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
-       "min": null,
-       "max": null,
-       "series": []
+       "min": 865,
+       "max": 865,
+       "series": [
+        {
+         "on": "2026-08-03",
+         "price": 865
+        }
+       ]
       },
       {
        "key": "PEK|2027-01-01|2027-01-01|2027-01-04",
@@ -3303,18 +3658,24 @@
        "nights": 3,
        "leave_days": 1,
        "label": "Fri 1 Jan–Mon 4 Jan (3 nights, 1d leave)",
-       "current": null,
-       "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "current": 742,
+       "nonstop": 1402,
+       "airlines": [
+        "Cathay Pacific"
+       ],
+       "route": "SIN-HKG-PEK",
+       "stops": 1,
        "airport": "PEK",
-       "duration": null,
-       "nonstop_duration": null,
+       "duration": 560,
+       "nonstop_duration": 375,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjctMDEtMDEoAWoFEgNTSU5yBRIDUEVLGhwSCjIwMjctMDEtMDQoAWoFEgNQRUtyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 742,
        "max": 742,
        "series": [
+        {
+         "on": "2026-08-03",
+         "price": 742
+        },
         {
          "on": "2026-08-03",
          "price": 742
@@ -3350,11 +3711,15 @@
         {
          "on": "2026-08-03",
          "price": 865
+        },
+        {
+         "on": "2026-08-03",
+         "price": 865
         }
        ]
       }
      ],
-     "cheapest": 865
+     "cheapest": 742
     },
     {
      "code": "CAN",
@@ -3370,17 +3735,19 @@
        "nights": 2,
        "leave_days": 0,
        "label": "Fri 1 Jan–Sun 3 Jan (2 nights, no leave)",
-       "current": null,
-       "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "current": 451,
+       "nonstop": 642,
+       "airlines": [
+        "Vietjet"
+       ],
+       "route": "SIN-SGN-CAN",
+       "stops": 1,
        "airport": "CAN",
-       "duration": null,
-       "nonstop_duration": null,
+       "duration": 515,
+       "nonstop_duration": 250,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjctMDEtMDEoAWoFEgNTSU5yBRIDQ0FOGhwSCjIwMjctMDEtMDMoAWoFEgNDQU5yBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 394,
-       "max": 394,
+       "max": 451,
        "series": [
         {
          "on": "2026-08-03",
@@ -3389,6 +3756,10 @@
         {
          "on": "2026-08-03",
          "price": 394
+        },
+        {
+         "on": "2026-08-03",
+         "price": 451
         }
        ]
       },
@@ -3399,18 +3770,25 @@
        "nights": 3,
        "leave_days": 1,
        "label": "Thu 31 Dec–Sun 3 Jan (3 nights, 1d leave)",
-       "current": null,
-       "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "current": 642,
+       "nonstop": 642,
+       "airlines": [
+        "China Southern"
+       ],
+       "route": "SIN-CAN",
+       "stops": 0,
        "airport": "CAN",
-       "duration": null,
-       "nonstop_duration": null,
+       "duration": 245,
+       "nonstop_duration": 245,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTItMzEoAWoFEgNTSU5yBRIDQ0FOGhwSCjIwMjctMDEtMDMoAWoFEgNDQU5yBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
-       "min": null,
-       "max": null,
-       "series": []
+       "min": 642,
+       "max": 642,
+       "series": [
+        {
+         "on": "2026-08-03",
+         "price": 642
+        }
+       ]
       },
       {
        "key": "CAN|2027-01-01|2027-01-01|2027-01-04",
@@ -3419,18 +3797,24 @@
        "nights": 3,
        "leave_days": 1,
        "label": "Fri 1 Jan–Mon 4 Jan (3 nights, 1d leave)",
-       "current": null,
-       "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "current": 451,
+       "nonstop": 571,
+       "airlines": [
+        "Vietjet"
+       ],
+       "route": "SIN-SGN-CAN",
+       "stops": 1,
        "airport": "CAN",
-       "duration": null,
-       "nonstop_duration": null,
+       "duration": 515,
+       "nonstop_duration": 255,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjctMDEtMDEoAWoFEgNTSU5yBRIDQ0FOGhwSCjIwMjctMDEtMDQoAWoFEgNDQU5yBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 451,
        "max": 451,
        "series": [
+        {
+         "on": "2026-08-03",
+         "price": 451
+        },
         {
          "on": "2026-08-03",
          "price": 451
@@ -3448,7 +3832,7 @@
        "nights": 4,
        "leave_days": 2,
        "label": "Wed 30 Dec–Sun 3 Jan (4 nights, 2d leave)",
-       "current": 394,
+       "current": 451,
        "nonstop": 642,
        "airlines": [
         "Vietjet"
@@ -3460,7 +3844,7 @@
        "nonstop_duration": 245,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTItMzAoAWoFEgNTSU5yBRIDQ0FOGhwSCjIwMjctMDEtMDMoAWoFEgNDQU5yBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 394,
-       "max": 394,
+       "max": 451,
        "series": [
         {
          "on": "2026-08-03",
@@ -3469,11 +3853,15 @@
         {
          "on": "2026-08-03",
          "price": 394
+        },
+        {
+         "on": "2026-08-03",
+         "price": 451
         }
        ]
       }
      ],
-     "cheapest": 394
+     "cheapest": 451
     },
     {
      "code": "SZX",
@@ -3489,18 +3877,24 @@
        "nights": 2,
        "leave_days": 0,
        "label": "Fri 1 Jan–Sun 3 Jan (2 nights, no leave)",
-       "current": null,
+       "current": 624,
        "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "airlines": [
+        "Malaysia Airlines"
+       ],
+       "route": "SIN-KUL-SZX",
+       "stops": 1,
        "airport": "SZX",
-       "duration": null,
+       "duration": 590,
        "nonstop_duration": null,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjctMDEtMDEoAWoFEgNTSU5yBRIDU1pYGhwSCjIwMjctMDEtMDMoAWoFEgNTWlhyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 624,
        "max": 624,
        "series": [
+        {
+         "on": "2026-08-03",
+         "price": 624
+        },
         {
          "on": "2026-08-03",
          "price": 624
@@ -3514,18 +3908,25 @@
        "nights": 3,
        "leave_days": 1,
        "label": "Thu 31 Dec–Sun 3 Jan (3 nights, 1d leave)",
-       "current": null,
+       "current": 769,
        "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "airlines": [
+        "Thai Lion Air"
+       ],
+       "route": "SIN-DMK-SZX",
+       "stops": 1,
        "airport": "SZX",
-       "duration": null,
+       "duration": 855,
        "nonstop_duration": null,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTItMzEoAWoFEgNTSU5yBRIDU1pYGhwSCjIwMjctMDEtMDMoAWoFEgNTWlhyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
-       "min": null,
-       "max": null,
-       "series": []
+       "min": 769,
+       "max": 769,
+       "series": [
+        {
+         "on": "2026-08-03",
+         "price": 769
+        }
+       ]
       },
       {
        "key": "SZX|2027-01-01|2027-01-01|2027-01-04",
@@ -3534,18 +3935,24 @@
        "nights": 3,
        "leave_days": 1,
        "label": "Fri 1 Jan–Mon 4 Jan (3 nights, 1d leave)",
-       "current": null,
+       "current": 624,
        "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "airlines": [
+        "Malaysia Airlines"
+       ],
+       "route": "SIN-KUL-SZX",
+       "stops": 1,
        "airport": "SZX",
-       "duration": null,
+       "duration": 590,
        "nonstop_duration": null,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjctMDEtMDEoAWoFEgNTSU5yBRIDU1pYGhwSCjIwMjctMDEtMDQoAWoFEgNTWlhyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 624,
        "max": 624,
        "series": [
+        {
+         "on": "2026-08-03",
+         "price": 624
+        },
         {
          "on": "2026-08-03",
          "price": 624
@@ -3580,11 +3987,15 @@
         {
          "on": "2026-08-03",
          "price": 794
+        },
+        {
+         "on": "2026-08-03",
+         "price": 794
         }
        ]
       }
      ],
-     "cheapest": 794
+     "cheapest": 624
     },
     {
      "code": "HGH",
@@ -3600,18 +4011,24 @@
        "nights": 2,
        "leave_days": 0,
        "label": "Fri 1 Jan–Sun 3 Jan (2 nights, no leave)",
-       "current": null,
+       "current": 681,
        "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "airlines": [
+        "China Southern"
+       ],
+       "route": "SIN-CAN-HGH",
+       "stops": 1,
        "airport": "HGH",
-       "duration": null,
+       "duration": 495,
        "nonstop_duration": null,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjctMDEtMDEoAWoFEgNTSU5yBRIDSEdIGhwSCjIwMjctMDEtMDMoAWoFEgNIR0hyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 681,
        "max": 681,
        "series": [
+        {
+         "on": "2026-08-03",
+         "price": 681
+        },
         {
          "on": "2026-08-03",
          "price": 681
@@ -3625,18 +4042,26 @@
        "nights": 3,
        "leave_days": 1,
        "label": "Thu 31 Dec–Sun 3 Jan (3 nights, 1d leave)",
-       "current": null,
+       "current": 667,
        "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "airlines": [
+        "Chongqing Airlines",
+        "China Southern"
+       ],
+       "route": "SIN-CKG-HGH",
+       "stops": 1,
        "airport": "HGH",
-       "duration": null,
+       "duration": 1200,
        "nonstop_duration": null,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTItMzEoAWoFEgNTSU5yBRIDSEdIGhwSCjIwMjctMDEtMDMoAWoFEgNIR0hyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
-       "min": null,
-       "max": null,
-       "series": []
+       "min": 667,
+       "max": 667,
+       "series": [
+        {
+         "on": "2026-08-03",
+         "price": 667
+        }
+       ]
       },
       {
        "key": "HGH|2027-01-01|2027-01-01|2027-01-04",
@@ -3645,18 +4070,24 @@
        "nights": 3,
        "leave_days": 1,
        "label": "Fri 1 Jan–Mon 4 Jan (3 nights, 1d leave)",
-       "current": null,
+       "current": 681,
        "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "airlines": [
+        "China Southern"
+       ],
+       "route": "SIN-CAN-HGH",
+       "stops": 1,
        "airport": "HGH",
-       "duration": null,
+       "duration": 495,
        "nonstop_duration": null,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjctMDEtMDEoAWoFEgNTSU5yBRIDSEdIGhwSCjIwMjctMDEtMDQoAWoFEgNIR0hyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 681,
        "max": 681,
        "series": [
+        {
+         "on": "2026-08-03",
+         "price": 681
+        },
         {
          "on": "2026-08-03",
          "price": 681
@@ -3691,11 +4122,15 @@
         {
          "on": "2026-08-03",
          "price": 681
+        },
+        {
+         "on": "2026-08-03",
+         "price": 681
         }
        ]
       }
      ],
-     "cheapest": 681
+     "cheapest": 667
     },
     {
      "code": "NKG",
@@ -3711,18 +4146,24 @@
        "nights": 2,
        "leave_days": 0,
        "label": "Fri 1 Jan–Sun 3 Jan (2 nights, no leave)",
-       "current": null,
+       "current": 769,
        "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "airlines": [
+        "China Southern"
+       ],
+       "route": "SIN-CAN-NKG",
+       "stops": 1,
        "airport": "NKG",
-       "duration": null,
+       "duration": 525,
        "nonstop_duration": null,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjctMDEtMDEoAWoFEgNTSU5yBRIDTktHGhwSCjIwMjctMDEtMDMoAWoFEgNOS0dyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 769,
        "max": 769,
        "series": [
+        {
+         "on": "2026-08-03",
+         "price": 769
+        },
         {
          "on": "2026-08-03",
          "price": 769
@@ -3740,18 +4181,24 @@
        "nights": 3,
        "leave_days": 1,
        "label": "Thu 31 Dec–Sun 3 Jan (3 nights, 1d leave)",
-       "current": null,
+       "current": 769,
        "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "airlines": [
+        "China Southern"
+       ],
+       "route": "SIN-CAN-NKG",
+       "stops": 1,
        "airport": "NKG",
-       "duration": null,
+       "duration": 605,
        "nonstop_duration": null,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjYtMTItMzEoAWoFEgNTSU5yBRIDTktHGhwSCjIwMjctMDEtMDMoAWoFEgNOS0dyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 769,
        "max": 769,
        "series": [
+        {
+         "on": "2026-08-03",
+         "price": 769
+        },
         {
          "on": "2026-08-03",
          "price": 769
@@ -3765,18 +4212,24 @@
        "nights": 3,
        "leave_days": 1,
        "label": "Fri 1 Jan–Mon 4 Jan (3 nights, 1d leave)",
-       "current": null,
+       "current": 681,
        "nonstop": null,
-       "airlines": [],
-       "route": null,
-       "stops": null,
+       "airlines": [
+        "China Southern"
+       ],
+       "route": "SIN-CAN-NKG",
+       "stops": 1,
        "airport": "NKG",
-       "duration": null,
+       "duration": 525,
        "nonstop_duration": null,
        "book": "https://www.google.com/travel/flights/search?tfs=GhwSCjIwMjctMDEtMDEoAWoFEgNTSU5yBRIDTktHGhwSCjIwMjctMDEtMDQoAWoFEgNOS0dyBRIDU0lOQgEBSAGYAQE=&hl=en-US&curr=SGD",
        "min": 681,
        "max": 681,
        "series": [
+        {
+         "on": "2026-08-03",
+         "price": 681
+        },
         {
          "on": "2026-08-03",
          "price": 681
@@ -3807,11 +4260,15 @@
         {
          "on": "2026-08-03",
          "price": 769
+        },
+        {
+         "on": "2026-08-03",
+         "price": 769
         }
        ]
       }
      ],
-     "cheapest": 769
+     "cheapest": 681
     }
    ]
   }
