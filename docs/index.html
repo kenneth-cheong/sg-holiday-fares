@@ -182,18 +182,33 @@
   @media (max-width: 680px) {
     body { padding: 16px 12px 48px; }
     #out { grid-template-columns: 1fr; }
-    .scroller table, .scroller thead, .scroller tbody, .scroller tr, .scroller td { display: block; width: 100%; }
-    .scroller thead { display: none; }
-    .scroller tr {
+    /* Scoped to .stack-table specifically, not the whole .scroller — the
+       flex-date matrix also lives inside a .scroller (for its own horizontal
+       scroll) but must keep its real grid layout, not stack into a list. */
+    table.stack-table, .stack-table thead, .stack-table tbody, .stack-table tr, .stack-table td { display: block; width: 100%; }
+    .stack-table thead { display: none; }
+    .stack-table tr {
       border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; margin-bottom: 10px;
     }
-    .scroller td { border: 0; padding: 3px 0; text-align: left; display: flex; gap: 12px; }
-    .scroller td::before {
+    .stack-table td { border: 0; padding: 3px 0; text-align: left; display: flex; gap: 12px; }
+    .stack-table td::before {
       content: attr(data-label); color: var(--text-muted); font-size: 12px;
       min-width: 96px; flex: none;
     }
-    .scroller td.num { text-align: left; }
-    .scroller td.name { font-weight: 600; }
+    .stack-table td.num { text-align: left; }
+    .stack-table td.name { font-weight: 600; }
+    /* The matrix keeps a real (scrollable) grid rather than stacking. A
+       descendant selector like ".stack-table tr" matches these elements too,
+       however deeply nested — it does not stop at the flex-matrix boundary —
+       so the fix has to explicitly restore real table display, and it has to
+       come after the .stack-table rules above for the equal-specificity tie
+       to resolve in its favour. */
+    .flex-matrix-wrap { max-width: calc(100vw - 56px); }
+    table.flex-matrix { display: table; width: auto; }
+    .flex-matrix thead { display: table-header-group; }
+    .flex-matrix tbody { display: table-row-group; }
+    .flex-matrix tr { display: table-row; border: 0; padding: 0; margin: 0; }
+    .flex-matrix th, .flex-matrix td { display: table-cell; }
     .headline b { font-size: 20px; }
     .htitle { flex-direction: column; gap: 2px; }
   }
@@ -335,6 +350,37 @@
   .custom-outcome .detail { color: var(--text-secondary); font-size: 13px; }
   .custom-outcome.error { color: var(--text-secondary); font-size: 13px; }
 
+  /* Multi-destination results: a plain results table, each row expandable
+     into its own ±3-day flex-date matrix. */
+  .custom-results { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 13px; }
+  .custom-results th { text-align: left; padding: 6px 9px; color: var(--text-muted); font-weight: 600; font-size: 12px; }
+  .custom-results th.num { text-align: right; }
+  .custom-results td { padding: 8px 9px; border-top: 1px solid var(--grid); }
+  .custom-results td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .custom-results tr.dest-row { cursor: pointer; }
+  .custom-results tr.dest-row:hover { background: color-mix(in srgb, var(--text-primary) 4%, transparent); }
+  .custom-results tr.dest-row.expanded { background: color-mix(in srgb, var(--text-primary) 4%, transparent); }
+  .custom-results .expand-hint { color: var(--text-muted); font-size: 11px; }
+  .custom-results .err-row td { color: var(--text-muted); }
+  .matrix-row td { padding: 10px 9px 16px; border-top: none; }
+
+  .flex-matrix-wrap { overflow-x: auto; }
+  .flex-matrix { border-collapse: collapse; font-size: 12px; margin-top: 6px; }
+  .flex-matrix caption { text-align: left; color: var(--text-muted); font-size: 12px; margin-bottom: 6px; caption-side: top; }
+  .flex-matrix th, .flex-matrix td {
+    padding: 5px 8px; text-align: center; border: 1px solid var(--grid); font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .flex-matrix th { color: var(--text-muted); font-weight: 600; font-size: 11px; background: var(--page); }
+  .flex-matrix th.corner { background: transparent; border: 0; }
+  .flex-matrix td.na { color: var(--text-muted); }
+  .flex-matrix td.searched { outline: 2px solid var(--axis); outline-offset: -2px; font-weight: 650; }
+  .flex-matrix td.cheapest { background: color-mix(in srgb, var(--good) 16%, transparent); color: var(--good); font-weight: 650; }
+  .flex-matrix-loading { display: flex; align-items: center; gap: 8px; color: var(--text-muted); font-size: 12px; margin-top: 8px; }
+  /* These chips are remove-only, not toggleable, unlike the tracked-destination
+     ones the same classes were written for. */
+  #custom-chips .chip-toggle { cursor: default; }
+
   .sync { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; margin-top: 10px; font-size: 12px; }
   .sync-state { color: var(--text-muted); }
   .sync-state.ok { color: var(--good); }
@@ -421,11 +467,12 @@
   <section class="holiday" id="custom-search" hidden>
     <div class="htitle">
       <h2>Check any dates</h2>
-      <span class="away">Not tied to a holiday — any destination, any depart/return</span>
+      <span class="away">Not tied to a holiday — any destinations, any depart/return</span>
     </div>
+    <div class="picker" id="custom-chips"></div>
     <form class="custom-form" id="custom-form" autocomplete="off">
       <div class="typeahead" id="custom-dest-search">
-        <input type="text" id="custom-dest-input" placeholder="Destination…" autocomplete="off"
+        <input type="text" id="custom-dest-input" placeholder="Add a destination…" autocomplete="off"
                aria-autocomplete="list" aria-expanded="false" role="combobox" aria-controls="custom-dest-results">
         <ul class="ta-list" id="custom-dest-results" role="listbox" hidden></ul>
       </div>
@@ -812,21 +859,26 @@ document.addEventListener('click', event => {
   if (!document.getElementById('dest-search').contains(event.target)) { MATCHES = []; ACTIVE = -1; renderResults(); }
 });
 
-/* ═══ Custom date search — one price, any destination, any dates ═══
+/* ═══ Custom date search — several destinations, one date pair, live ═══
    Deliberately separate from the tracked-destinations typeahead above: this
-   one searches every airport regardless of whether it is already tracked (you
-   may want a one-off check on a place you already track), and a result here
-   is never added to the destination list — it is a single lookup, not a
-   subscription. */
+   one searches every airport not already added to the custom list (rather
+   than every airport not already tracked), and a result here is never added
+   to the destination list — it is a one-off lookup, not a subscription. */
 let CUSTOM_MATCHES = [];
 let CUSTOM_ACTIVE = -1;
-let CUSTOM_CODE = null;   // the airport actually picked from the dropdown, not just typed text
+let CUSTOM_DESTS = [];        // [{code, city}] queued for the next search
+let CUSTOM_RESULTS = [];      // [{code, city, best, nonstop, book, error}] from the last search
+let CUSTOM_BASE = null;       // {depart, ret, maxStops} the last search actually used
+const CUSTOM_MATRIX = new Map();  // dest code -> flex-date grid, cached until the next base search
+let CUSTOM_MATRIX_OPEN = null;    // dest code whose matrix row is currently expanded
 
 function searchAllAirports(query) {
   const q = query.trim().toLowerCase();
   if (!q) return [];
+  const chosen = new Set(CUSTOM_DESTS.map(d => d.code));
   const starts = [], contains = [];
   for (const a of AIRPORTS) {
+    if (chosen.has(a.code)) continue;
     const hay = `${a.city} ${a.country} ${a.name} ${a.code}`.toLowerCase();
     if (a.code.toLowerCase() === q || a.city.toLowerCase().startsWith(q)) starts.push(a);
     else if (hay.includes(q)) contains.push(a);
@@ -847,15 +899,29 @@ function renderCustomResults() {
     </li>`).join('');
 }
 
-function chooseCustomAirport(airport) {
-  CUSTOM_CODE = airport.code;
-  document.getElementById('custom-dest-input').value = `${airport.city} (${airport.code})`;
-  CUSTOM_MATCHES = []; CUSTOM_ACTIVE = -1; renderCustomResults();
+function renderCustomChips() {
+  document.getElementById('custom-chips').innerHTML = CUSTOM_DESTS.map(d => `<span class="chip-wrap">
+      <span class="chip-toggle" aria-pressed="true"><span class="swatch" style="background:${colorFor(d.code)}"></span>${esc(d.city)}</span>
+      <button class="chip-remove" type="button" data-remove="${esc(d.code)}" aria-label="${esc('Remove ' + d.city)}">×</button>
+    </span>`).join('');
 }
+
+function chooseCustomAirport(airport) {
+  if (!CUSTOM_DESTS.some(d => d.code === airport.code)) CUSTOM_DESTS.push({ code: airport.code, city: airport.city });
+  document.getElementById('custom-dest-input').value = '';
+  CUSTOM_MATCHES = []; CUSTOM_ACTIVE = -1; renderCustomResults();
+  renderCustomChips();
+}
+
+document.getElementById('custom-chips').addEventListener('click', event => {
+  const remove = event.target.closest('.chip-remove');
+  if (!remove) return;
+  CUSTOM_DESTS = CUSTOM_DESTS.filter(d => d.code !== remove.dataset.remove);
+  renderCustomChips();
+});
 
 const customDestInput = document.getElementById('custom-dest-input');
 customDestInput.addEventListener('input', () => {
-  CUSTOM_CODE = null; // typing invalidates whatever was previously picked
   CUSTOM_MATCHES = searchAllAirports(customDestInput.value);
   CUSTOM_ACTIVE = -1;
   renderCustomResults();
@@ -880,15 +946,155 @@ document.getElementById('custom-depart').addEventListener('change', event => {
   document.getElementById('custom-return').min = event.target.value;
 });
 
+function friendlyFailure(found) {
+  // "no offers" is a genuine empty result; anything else is the fare source
+  // itself failing (the same fast_flights parser gap documented in the
+  // README) — worth a plainer message than the raw exception, with a manual
+  // fallback since a booking link is generated regardless of whether the
+  // price lookup itself succeeded.
+  const reason = found?.error && found.error.startsWith('no offers')
+    ? 'No fares found for those dates.'
+    : "couldn't be priced — may be a route the fare source can't parse";
+  const fallback = found?.book
+    ? ` <a class="book" href="${esc(found.book)}" target="_blank" rel="noopener noreferrer">Try Google Flights ↗</a>` : '';
+  return { reason, fallback };
+}
+
+function renderCustomTable() {
+  const result = document.getElementById('custom-result');
+  const ok = CUSTOM_RESULTS.filter(r => r.best);
+  const failed = CUSTOM_RESULTS.filter(r => !r.best);
+  ok.sort((a, b) => a.best.price - b.best.price);
+
+  const okRows = ok.map(r => {
+    const open = CUSTOM_MATRIX_OPEN === r.code;
+    const matrixRow = open ? `<tr class="matrix-row"><td colspan="7">${renderMatrixCell(r)}</td></tr>` : '';
+    return `<tr class="dest-row${open ? ' expanded' : ''}" data-code="${esc(r.code)}">
+        <td data-label="Destination">${esc(r.city)} <span class="meta">${esc(r.code)}</span></td>
+        <td class="num" data-label="Price">${esc(CURRENCY)} ${r.best.price.toLocaleString()}</td>
+        <td data-label="Carrier">${esc((r.best.airlines || []).join(', ') || '—')}</td>
+        <td data-label="Stops">${r.best.stops === 0 ? 'nonstop' : r.best.stops == null ? '—' : r.best.stops + ' stop'}</td>
+        <td class="num" data-label="Journey">${esc(fmtDuration(r.best.duration))}</td>
+        <td data-label="Google Flights">${r.book ? `<a class="book" href="${esc(r.book)}" target="_blank" rel="noopener noreferrer">Open ↗</a>` : '—'}</td>
+        <td class="expand-hint" data-label="Flex dates">${open ? 'hide ±3d ▴' : '±3 days ▾'}</td>
+      </tr>${matrixRow}`;
+  }).join('');
+
+  const failedRows = failed.map(r => {
+    const { reason, fallback } = friendlyFailure(r);
+    return `<tr class="err-row"><td data-label="Destination">${esc(r.city)} <span class="meta">${esc(r.code)}</span></td>
+        <td colspan="6" data-label="">${esc(reason)}${fallback}</td></tr>`;
+  }).join('');
+
+  result.innerHTML = `<div class="scroller"><table class="custom-results stack-table">
+      <thead><tr><th>Destination</th><th class="num">Price</th><th>Carrier</th><th>Stops</th><th class="num">Journey</th><th>Google Flights</th><th></th></tr></thead>
+      <tbody>${okRows}${failedRows}</tbody>
+    </table></div>`;
+}
+
+document.getElementById('custom-result').addEventListener('click', event => {
+  if (event.target.closest('a')) return; // let booking links behave normally
+  const row = event.target.closest('tr.dest-row');
+  if (!row) return;
+  const code = row.dataset.code;
+  CUSTOM_MATRIX_OPEN = CUSTOM_MATRIX_OPEN === code ? null : code;
+  renderCustomTable();
+  if (CUSTOM_MATRIX_OPEN === code && !CUSTOM_MATRIX.has(code)) fetchFlexMatrix(code);
+});
+
+const FLEX_SPAN = 3; // ± this many days on both depart and return
+function addDays(dateStr, n) {
+  const d = parse(dateStr);
+  d.setDate(d.getDate() + n);
+  return iso(d);
+}
+
+function renderMatrixCell(entry) {
+  if (!CUSTOM_MATRIX.has(entry.code)) {
+    return `<div class="flex-matrix-loading"><span class="spin"></span> Checking ${FLEX_SPAN * 2 + 1}×${FLEX_SPAN * 2 + 1} nearby dates…</div>`;
+  }
+  const grid = CUSTOM_MATRIX.get(entry.code); // Map "dOff,rOff" -> price|null
+  let cheapest = Infinity;
+  for (const price of grid.values()) if (price != null && price < cheapest) cheapest = price;
+
+  const offsets = [];
+  for (let i = -FLEX_SPAN; i <= FLEX_SPAN; i++) offsets.push(i);
+
+  const header = offsets.map(r => `<th>${esc(fmtDay(addDaysDate(CUSTOM_BASE.ret, r)))}</th>`).join('');
+  const rows = offsets.map(dOff => {
+    const cells = offsets.map(rOff => {
+      const price = grid.get(`${dOff},${rOff}`);
+      const classes = [];
+      if (dOff === 0 && rOff === 0) classes.push('searched');
+      if (price != null && price === cheapest) classes.push('cheapest');
+      if (price == null) classes.push('na');
+      return `<td class="${classes.join(' ')}">${price != null ? price.toLocaleString() : '—'}</td>`;
+    }).join('');
+    return `<tr><th>${esc(fmtDay(addDaysDate(CUSTOM_BASE.depart, dOff)))}</th>${cells}</tr>`;
+  }).join('');
+
+  return `<div class="flex-matrix-wrap"><table class="flex-matrix">
+      <caption>${esc(entry.city)} — depart (rows) × return (columns), ${esc(CURRENCY)}. Outlined = your search, green = cheapest of this grid.</caption>
+      <thead><tr><th class="corner"></th>${header}</tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>`;
+}
+
+const addDaysDate = (dateStr, n) => parse(addDays(dateStr, n));
+
+async function fetchFlexMatrix(code) {
+  const entry = CUSTOM_RESULTS.find(r => r.code === code);
+  if (!entry || !CUSTOM_BASE) return;
+
+  const queries = [];
+  const offsets = [];
+  for (let i = -FLEX_SPAN; i <= FLEX_SPAN; i++) offsets.push(i);
+  for (const dOff of offsets) {
+    for (const rOff of offsets) {
+      const depart = addDays(CUSTOM_BASE.depart, dOff);
+      const ret = addDays(CUSTOM_BASE.ret, rOff);
+      if (ret <= depart) continue; // no same-day or backwards round trips
+      queries.push({ dest: code, depart, ret, maxStops: CUSTOM_BASE.maxStops, _dOff: dOff, _rOff: rOff });
+    }
+  }
+
+  try {
+    const response = await fetch(`${API}/fares`, {
+      method: 'POST', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        origin: 'SIN', currency: CURRENCY,
+        queries: queries.map(({ _dOff, _rOff, ...q }) => q),
+      }),
+    });
+    const payload = await response.json();
+    const results = payload.results || [];
+
+    const grid = new Map();
+    // Match each response back to the offset that produced it — the API
+    // itself only knows dates, not which grid cell asked for them.
+    queries.forEach((q, i) => {
+      const price = results[i]?.best?.price ?? null;
+      grid.set(`${q._dOff},${q._rOff}`, price);
+    });
+    CUSTOM_MATRIX.set(code, grid);
+  } catch (error) {
+    CUSTOM_MATRIX.set(code, new Map()); // render as all-blank rather than stuck loading forever
+    console.warn('flex matrix failed', error);
+  }
+
+  if (CUSTOM_MATRIX_OPEN === code) renderCustomTable();
+}
+
 document.getElementById('custom-form').addEventListener('submit', async event => {
   event.preventDefault();
   const result = document.getElementById('custom-result');
   const button = document.getElementById('custom-go');
   const depart = document.getElementById('custom-depart').value;
   const ret = document.getElementById('custom-return').value;
+  const maxStops = document.getElementById('custom-nonstop').checked ? 0 : null;
 
-  if (!CUSTOM_CODE) {
-    result.innerHTML = `<div class="custom-outcome error">Pick a destination from the dropdown list first.</div>`;
+  if (!CUSTOM_DESTS.length) {
+    result.innerHTML = `<div class="custom-outcome error">Add at least one destination first.</div>`;
     return;
   }
   if (!depart || !ret) {
@@ -901,6 +1107,8 @@ document.getElementById('custom-form').addEventListener('submit', async event =>
   }
 
   button.disabled = true;
+  CUSTOM_MATRIX.clear();
+  CUSTOM_MATRIX_OPEN = null;
   result.innerHTML = `<div class="custom-outcome"><span class="spin"></span> Checking live prices from Singapore…</div>`;
 
   try {
@@ -908,38 +1116,19 @@ document.getElementById('custom-form').addEventListener('submit', async event =>
       method: 'POST', headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
         origin: 'SIN', currency: CURRENCY,
-        queries: [{
-          dest: CUSTOM_CODE, depart, ret,
-          maxStops: document.getElementById('custom-nonstop').checked ? 0 : null,
-        }],
+        queries: CUSTOM_DESTS.map(d => ({ dest: d.code, depart, ret, maxStops })),
       }),
     });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const payload = await response.json();
-    const found = (payload.results || [])[0];
+    const byCode = new Map((payload.results || []).map(r => [r.dest, r]));
 
-    if (!found || !found.best) {
-      // "no offers" is a genuine empty result; anything else is the fare
-      // source itself failing (the same fast_flights parser gap documented
-      // in the README) — worth a plainer message than the raw exception, and
-      // a manual fallback since a booking link is generated either way.
-      const reason = found?.error && found.error.startsWith('no offers')
-        ? 'No fares found for those dates.'
-        : "Couldn't price this route right now — it may be one the fare source can't parse.";
-      const fallback = found?.book
-        ? ` <a class="book" href="${esc(found.book)}" target="_blank" rel="noopener noreferrer">Try Google Flights directly ↗</a>` : '';
-      result.innerHTML = `<div class="custom-outcome error">${esc(reason)}${fallback}</div>`;
-      return;
-    }
-
-    const best = found.best;
-    result.innerHTML = `<div class="custom-outcome">
-      <span class="price">${esc(CURRENCY)} ${best.price.toLocaleString()}</span>
-      <span class="detail">${esc((best.airlines || []).join(', ') || 'unknown carrier')}</span>
-      <span class="detail">${best.stops === 0 ? 'nonstop' : best.stops == null ? '' : best.stops + ' stop'}</span>
-      <span class="detail">${esc(fmtDuration(best.duration))}</span>
-      ${found.book ? `<a class="book" href="${esc(found.book)}" target="_blank" rel="noopener noreferrer">Open ↗</a>` : ''}
-    </div>`;
+    CUSTOM_BASE = { depart, ret, maxStops };
+    CUSTOM_RESULTS = CUSTOM_DESTS.map(d => {
+      const found = byCode.get(d.code);
+      return { code: d.code, city: d.city, best: found?.best || null, book: found?.book || null, error: found?.error || null };
+    });
+    renderCustomTable();
   } catch (error) {
     result.innerHTML = `<div class="custom-outcome error">Could not reach the price service (${esc(error.message)}).</div>`;
   } finally {
@@ -1194,7 +1383,7 @@ function renderHoliday(brk, maxLeave, openByDefault) {
       <div class="mini">${mini}</div>
     </summary>
     <div class="card-body">
-      <div class="scroller"><table>
+      <div class="scroller"><table class="stack-table">
         <thead><tr>${tableHead()}</tr></thead>
         <tbody>${rowsHtml}</tbody>
       </table></div>

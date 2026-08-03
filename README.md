@@ -73,12 +73,20 @@ Nothing about a price is stored. Reload the page and every card starts fresh —
 there is no trend, no "cheaper than usual" comparison, no history to fall
 back on. What you see is what Google returns for that exact search, right now.
 
-**Check any dates**, above the holiday cards, is a single free-standing
-lookup — any destination (searched the same way, but from the full airport
-list regardless of what you already track), any depart/return dates, not tied
-to a holiday window at all. It calls the same `/fares` endpoint with one
-query and shows the result inline; nothing about it is added to your tracked
-destinations or remembered anywhere.
+**Check any dates**, above the holiday cards, is a free-standing lookup — one
+or more destinations (searched the same way, but from the full airport list
+regardless of what you already track), one depart/return date pair, not tied
+to a holiday window at all. Add as many destinations as you want with the same
+search box before hitting Search; results come back as a table sorted
+cheapest-first, one batched call to `/fares` covering all of them at once.
+Nothing here is added to your tracked destinations or remembered anywhere.
+
+Click any result row to expand a ±3-day flex-date matrix underneath it —
+depart date as rows, return date as columns, your original search outlined and
+the cheapest combination in the grid highlighted. It is a second, separate
+`/fares` call (up to 49 queries, skipping same-day-or-backwards combinations),
+fetched once per destination and cached until the next base search, so
+re-expanding an already-checked destination is instant.
 
 ## Choosing destinations
 
