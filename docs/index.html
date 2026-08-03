@@ -776,7 +776,6 @@ let LIVE = new Map();      // "CODE|depart|return" -> latest API result
 const PRICED = new Set();  // holiday anchors that have been queried at least once
 const LOADING = new Set(); // holiday anchors with a lookup in flight
 const OPEN = new Set();    // holiday anchors currently expanded
-let SEEDED = false;
 
 function windowsForBreak(brk, maxLeave = 3) {
   return brk.options
@@ -1024,12 +1023,6 @@ function render() {
   const out = document.getElementById('out');
   const maxLeave = Number(document.getElementById('leave').value);
 
-  if (!SEEDED) {
-    SEEDED = true;
-    const first = PLAN.breaks.find(b => inHorizon(b.anchor));
-    if (first) OPEN.add(first.anchor);
-  }
-
   out.innerHTML = PLAN.breaks.map(brk => renderHoliday(brk, maxLeave, OPEN.has(brk.anchor))).join('')
     || `<div class="empty">No upcoming holidays found.</div>`;
 
@@ -1216,7 +1209,7 @@ Promise.all([grab('data/plan.json'), loadAirports(), loadDestinations()])
     renderPicker();
     renderSyncState();
     render();
-    refreshLive();
+    setLiveStatus('open a holiday for live prices', false);
   })
   .catch(err => {
     document.getElementById('out').innerHTML =

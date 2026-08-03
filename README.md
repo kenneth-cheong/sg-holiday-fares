@@ -64,11 +64,10 @@ destination's current lowest return fare. Click a card to expand it into the
 full window-by-window table; click the **⟳** on a card's header to re-check
 its prices without expanding it.
 
-**Every** future public holiday gets a card. Holidays inside the booking
-horizon (14–180 days out) are priced when the page loads; anything further
-away is priced the moment you open it, because airlines generally do not
-publish fares much beyond eleven months and pricing a dozen holidays eagerly
-on every visit would be hundreds of lookups for no reason.
+**Every** future public holiday gets a card, and nothing is priced until you
+ask for it. Opening a card fetches that holiday's prices on the spot; nothing
+loads eagerly on page open, so visiting the page costs nothing until you
+actually click something.
 
 Nothing about a price is stored. Reload the page and every card starts fresh —
 there is no trend, no "cheaper than usual" comparison, no history to fall
