@@ -21,7 +21,7 @@
   "_targets": "alert_below is set from the cheapest fare actually observed for each destination, so day one is quiet and only a real drop speaks up. Retune once a few weeks of history exist.",
 
   "destinations": [
-    { "code": "BKK", "name": "Bangkok",   "max_stops": 1, "alert_below": 5000, "airports": ["BKK", "DMK"] },
+    { "code": "BKK", "name": "Bangkok",   "max_stops": 1, "alert_below": 280, "airports": ["BKK", "DMK"] },
     { "code": "TPE", "name": "Taipei",    "max_stops": 1, "alert_below": 330 },
     { "code": "HKG", "name": "Hong Kong", "max_stops": 1, "alert_below": 340 },
     { "code": "HND", "name": "Tokyo",     "max_stops": 1, "alert_below": 580 },
