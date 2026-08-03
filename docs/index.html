@@ -19,6 +19,10 @@
     --good: #006300;
     --series-1: #2a78d6; --series-2: #eb6834; --series-3: #1baf7a; --series-4: #eda100;
     --series-5: #e87ba4; --series-6: #008300; --series-7: #4a3aa7; --series-8: #e34948;
+    /* Flex-matrix heatmap: green (cheapest) through amber to dark red (priciest).
+       Kept at a similar mid-dark lightness across all three stops so white cell
+       text stays readable at any point on the scale, not just the endpoints. */
+    --heat-cheap: #1f9d5c; --heat-mid: #a8720f; --heat-expensive: #8a2323;
   }
   @media (prefers-color-scheme: dark) {
     :root:where(:not([data-theme="light"])) {
@@ -34,6 +38,7 @@
       --good: #0ca30c;
       --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70; --series-4: #c98500;
       --series-5: #d55181; --series-6: #008300; --series-7: #9085e9; --series-8: #e66767;
+      --heat-cheap: #22a866; --heat-mid: #b98426; --heat-expensive: #9a3030;
     }
   }
   :root[data-theme="dark"] {
@@ -49,6 +54,7 @@
     --good: #0ca30c;
     --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70; --series-4: #c98500;
     --series-5: #d55181; --series-6: #008300; --series-7: #9085e9; --series-8: #e66767;
+    --heat-cheap: #22a866; --heat-mid: #b98426; --heat-expensive: #9a3030;
   }
 
   * { box-sizing: border-box; }
@@ -374,9 +380,18 @@
   .flex-matrix th { color: var(--text-muted); font-weight: 600; font-size: 11px; background: var(--page); }
   .flex-matrix th.corner { background: transparent; border: 0; }
   .flex-matrix td.na { color: var(--text-muted); }
-  .flex-matrix td.searched { outline: 2px solid var(--axis); outline-offset: -2px; font-weight: 650; }
-  .flex-matrix td.cheapest { background: color-mix(in srgb, var(--good) 16%, transparent); color: var(--good); font-weight: 650; }
+  /* Colour itself comes from an inline style per cell (a computed point on the
+     heat gradient, not a fixed value CSS can express) — these two classes
+     layer identity on top of it: an outline for "this is what you searched",
+     bold for "this is the single cheapest cell", visible on any background. */
+  .flex-matrix td.searched { outline: 2px solid var(--text-primary); outline-offset: -2px; }
+  .flex-matrix td.cheapest { font-weight: 700; }
   .flex-matrix-loading { display: flex; align-items: center; gap: 8px; color: var(--text-muted); font-size: 12px; margin-top: 8px; }
+  .heat-legend { display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 11px; color: var(--text-muted); }
+  .heat-legend .bar {
+    width: 120px; height: 8px; border-radius: 4px;
+    background: linear-gradient(to right, var(--heat-cheap), var(--heat-mid), var(--heat-expensive));
+  }
   /* These chips are remove-only, not toggleable, unlike the tracked-destination
      ones the same classes were written for. */
   #custom-chips .chip-toggle { cursor: default; }
@@ -1009,13 +1024,33 @@ function addDays(dateStr, n) {
   return iso(d);
 }
 
+/* Where a price sits between the grid's cheapest and priciest, as a style
+   string ready to drop straight into a cell — green at rank 0, amber at the
+   midpoint, dark red at rank 1, via two chained color-mix()es rather than an
+   RGB blend (mixing green toward red directly passes through a muddy brown,
+   not amber). White text throughout: the three stops are held to a similar
+   mid-dark lightness in the palette specifically so this one colour choice
+   stays readable at any point on the scale — see the --heat-* comment above. */
+function heatStyle(rank) {
+  const [from, to, local] = rank <= 0.5
+    ? ['--heat-cheap', '--heat-mid', rank / 0.5]
+    : ['--heat-mid', '--heat-expensive', (rank - 0.5) / 0.5];
+  const pct = Math.round(local * 100);
+  return `background: color-mix(in srgb, var(${from}) ${100 - pct}%, var(${to}) ${pct}%); color: #fff;`;
+}
+
 function renderMatrixCell(entry) {
   if (!CUSTOM_MATRIX.has(entry.code)) {
     return `<div class="flex-matrix-loading"><span class="spin"></span> Checking ${FLEX_SPAN * 2 + 1}×${FLEX_SPAN * 2 + 1} nearby dates…</div>`;
   }
   const grid = CUSTOM_MATRIX.get(entry.code); // Map "dOff,rOff" -> price|null
-  let cheapest = Infinity;
-  for (const price of grid.values()) if (price != null && price < cheapest) cheapest = price;
+  let cheapest = Infinity, priciest = -Infinity;
+  for (const price of grid.values()) {
+    if (price == null) continue;
+    if (price < cheapest) cheapest = price;
+    if (price > priciest) priciest = price;
+  }
+  const span = priciest - cheapest; // 0 when every priced cell matches — avoid a /0
 
   const offsets = [];
   for (let i = -FLEX_SPAN; i <= FLEX_SPAN; i++) offsets.push(i);
@@ -1024,20 +1059,26 @@ function renderMatrixCell(entry) {
   const rows = offsets.map(dOff => {
     const cells = offsets.map(rOff => {
       const price = grid.get(`${dOff},${rOff}`);
+      if (price == null) {
+        const searched = dOff === 0 && rOff === 0 ? ' searched' : '';
+        return `<td class="na${searched}">—</td>`;
+      }
+      const rank = span === 0 ? 0 : (price - cheapest) / span;
       const classes = [];
       if (dOff === 0 && rOff === 0) classes.push('searched');
-      if (price != null && price === cheapest) classes.push('cheapest');
-      if (price == null) classes.push('na');
-      return `<td class="${classes.join(' ')}">${price != null ? price.toLocaleString() : '—'}</td>`;
+      if (price === cheapest) classes.push('cheapest');
+      return `<td class="${classes.join(' ')}" style="${heatStyle(rank)}">${price.toLocaleString()}</td>`;
     }).join('');
     return `<tr><th>${esc(fmtDay(addDaysDate(CUSTOM_BASE.depart, dOff)))}</th>${cells}</tr>`;
   }).join('');
 
   return `<div class="flex-matrix-wrap"><table class="flex-matrix">
-      <caption>${esc(entry.city)} — depart (rows) × return (columns), ${esc(CURRENCY)}. Outlined = your search, green = cheapest of this grid.</caption>
+      <caption>${esc(entry.city)} — depart (rows) × return (columns), ${esc(CURRENCY)}. Outlined = your search.</caption>
       <thead><tr><th class="corner"></th>${header}</tr></thead>
       <tbody>${rows}</tbody>
-    </table></div>`;
+    </table>
+    <div class="heat-legend"><span>Cheapest</span><span class="bar"></span><span>Most expensive</span></div>
+    </div>`;
 }
 
 const addDaysDate = (dateStr, n) => parse(addDays(dateStr, n));

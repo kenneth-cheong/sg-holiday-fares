@@ -82,11 +82,14 @@ cheapest-first, one batched call to `/fares` covering all of them at once.
 Nothing here is added to your tracked destinations or remembered anywhere.
 
 Click any result row to expand a ±3-day flex-date matrix underneath it —
-depart date as rows, return date as columns, your original search outlined and
-the cheapest combination in the grid highlighted. It is a second, separate
-`/fares` call (up to 49 queries, skipping same-day-or-backwards combinations),
-fetched once per destination and cached until the next base search, so
-re-expanding an already-checked destination is instant.
+depart date as rows, return date as columns, your original search outlined.
+Every cell is coloured on a gradient from green (the grid's cheapest fare)
+through amber to dark red (its most expensive), so the cheap dates jump out
+without reading every number — the price itself is still printed in each
+cell, so the colour is a shortcut, not the only way to read the grid. It is a
+second, separate `/fares` call (up to 49 queries, skipping same-day-or-backwards
+combinations), fetched once per destination and cached until the next base
+search, so re-expanding an already-checked destination is instant.
 
 ## Choosing destinations
 
