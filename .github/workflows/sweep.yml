@@ -1,10 +1,12 @@
-name: Daily fare sweep
+name: Fare sweep (manual)
+
+# No schedule. The dashboard fetches fares live on demand via the API in
+# api/lambda_function.py and no longer reads this workflow's output, so
+# there is nothing that needs a daily run. This stays as an on-demand tool
+# for refreshing docs/data/plan.json (the holiday/leave-planner data) or for
+# recording a price snapshot and sending Telegram alerts by hand.
 
 on:
-  schedule:
-    # 01:15 UTC = 09:15 SGT. Off the hour on purpose: GitHub queues scheduled
-    # jobs hardest at :00, and a delayed run skews the daily observation.
-    - cron: "15 1 * * *"
   workflow_dispatch:
     inputs:
       dry_run:
@@ -54,7 +56,7 @@ jobs:
             exit 0
           fi
           git commit -m "Fares: $(date -u +%Y-%m-%d) sweep"
-          # The scheduled job is the only writer, but a manual dispatch can race
-          # it; rebase rather than fail so an observation is never lost.
+          # Manual dispatches can overlap; rebase rather than fail so a run
+          # never loses its output to a race with another one.
           git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
           git push
