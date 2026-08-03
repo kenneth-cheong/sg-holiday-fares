@@ -307,6 +307,34 @@
   .add-msg.bad { color: var(--series-8); }
   .add-msg.good { color: var(--good); }
 
+  /* ── Custom date search ───────────────────────────────────────────────── */
+  .custom-form { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 12px; }
+  .custom-form .typeahead { margin-top: 0; flex: 1 1 220px; max-width: 320px; }
+  #custom-dest-input {
+    width: 100%; font: inherit; font-size: 13px; padding: 7px 10px; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--surface-1); color: var(--text-primary);
+  }
+  .custom-form input[type="date"] {
+    font: inherit; font-size: 13px; padding: 6px 9px; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--surface-1); color: var(--text-primary);
+    color-scheme: light dark;
+  }
+  .arrow-sep { color: var(--text-muted); }
+  #custom-go {
+    font: inherit; font-size: 13px; padding: 7px 15px; border-radius: 8px; cursor: pointer;
+    border: 1px solid var(--border); background: var(--surface-1); color: var(--text-primary);
+  }
+  #custom-go:hover { border-color: var(--axis); }
+  #custom-go[disabled] { opacity: .55; cursor: progress; }
+
+  .custom-outcome {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 16px; margin-top: 14px;
+    padding: 12px 14px; border-radius: 10px; background: var(--grid);
+  }
+  .custom-outcome .price { font-size: 22px; font-weight: 650; color: var(--text-primary); letter-spacing: -0.01em; }
+  .custom-outcome .detail { color: var(--text-secondary); font-size: 13px; }
+  .custom-outcome.error { color: var(--text-secondary); font-size: 13px; }
+
   .sync { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; margin-top: 10px; font-size: 12px; }
   .sync-state { color: var(--text-muted); }
   .sync-state.ok { color: var(--good); }
@@ -389,6 +417,26 @@
       </div>
     </details>
   </div>
+
+  <section class="holiday" id="custom-search" hidden>
+    <div class="htitle">
+      <h2>Check any dates</h2>
+      <span class="away">Not tied to a holiday — any destination, any depart/return</span>
+    </div>
+    <form class="custom-form" id="custom-form" autocomplete="off">
+      <div class="typeahead" id="custom-dest-search">
+        <input type="text" id="custom-dest-input" placeholder="Destination…" autocomplete="off"
+               aria-autocomplete="list" aria-expanded="false" role="combobox" aria-controls="custom-dest-results">
+        <ul class="ta-list" id="custom-dest-results" role="listbox" hidden></ul>
+      </div>
+      <input type="date" id="custom-depart" required aria-label="Depart date">
+      <span class="arrow-sep">→</span>
+      <input type="date" id="custom-return" required aria-label="Return date">
+      <label class="nonstop"><input type="checkbox" id="custom-nonstop"> nonstop only</label>
+      <button type="submit" id="custom-go">Search</button>
+    </form>
+    <div id="custom-result"></div>
+  </section>
 
   <div id="out"></div>
 
@@ -762,6 +810,141 @@ document.getElementById('dest-results').addEventListener('click', event => {
 });
 document.addEventListener('click', event => {
   if (!document.getElementById('dest-search').contains(event.target)) { MATCHES = []; ACTIVE = -1; renderResults(); }
+});
+
+/* ═══ Custom date search — one price, any destination, any dates ═══
+   Deliberately separate from the tracked-destinations typeahead above: this
+   one searches every airport regardless of whether it is already tracked (you
+   may want a one-off check on a place you already track), and a result here
+   is never added to the destination list — it is a single lookup, not a
+   subscription. */
+let CUSTOM_MATCHES = [];
+let CUSTOM_ACTIVE = -1;
+let CUSTOM_CODE = null;   // the airport actually picked from the dropdown, not just typed text
+
+function searchAllAirports(query) {
+  const q = query.trim().toLowerCase();
+  if (!q) return [];
+  const starts = [], contains = [];
+  for (const a of AIRPORTS) {
+    const hay = `${a.city} ${a.country} ${a.name} ${a.code}`.toLowerCase();
+    if (a.code.toLowerCase() === q || a.city.toLowerCase().startsWith(q)) starts.push(a);
+    else if (hay.includes(q)) contains.push(a);
+  }
+  return [...starts, ...contains].slice(0, 8);
+}
+
+function renderCustomResults() {
+  const list = document.getElementById('custom-dest-results');
+  const input = document.getElementById('custom-dest-input');
+  if (!CUSTOM_MATCHES.length) { list.hidden = true; list.innerHTML = ''; input.setAttribute('aria-expanded', 'false'); return; }
+  list.hidden = false;
+  input.setAttribute('aria-expanded', 'true');
+  list.innerHTML = CUSTOM_MATCHES.map((a, i) => `<li role="option" id="cta-opt-${i}" data-index="${i}"
+      class="${i === CUSTOM_ACTIVE ? 'active' : ''}" aria-selected="${i === CUSTOM_ACTIVE}">
+      <span class="ta-city">${esc(a.city)}</span><span class="ta-name">${esc(a.name)} · ${esc(a.country)}</span>
+      <span class="ta-code">${esc(a.code)}</span>
+    </li>`).join('');
+}
+
+function chooseCustomAirport(airport) {
+  CUSTOM_CODE = airport.code;
+  document.getElementById('custom-dest-input').value = `${airport.city} (${airport.code})`;
+  CUSTOM_MATCHES = []; CUSTOM_ACTIVE = -1; renderCustomResults();
+}
+
+const customDestInput = document.getElementById('custom-dest-input');
+customDestInput.addEventListener('input', () => {
+  CUSTOM_CODE = null; // typing invalidates whatever was previously picked
+  CUSTOM_MATCHES = searchAllAirports(customDestInput.value);
+  CUSTOM_ACTIVE = -1;
+  renderCustomResults();
+});
+customDestInput.addEventListener('keydown', event => {
+  if (!CUSTOM_MATCHES.length && event.key !== 'Escape') return;
+  if (event.key === 'ArrowDown') { event.preventDefault(); CUSTOM_ACTIVE = Math.min(CUSTOM_ACTIVE + 1, CUSTOM_MATCHES.length - 1); renderCustomResults(); }
+  else if (event.key === 'ArrowUp') { event.preventDefault(); CUSTOM_ACTIVE = Math.max(CUSTOM_ACTIVE - 1, 0); renderCustomResults(); }
+  else if (event.key === 'Enter') { event.preventDefault(); chooseCustomAirport(CUSTOM_MATCHES[CUSTOM_ACTIVE >= 0 ? CUSTOM_ACTIVE : 0]); }
+  else if (event.key === 'Escape') { CUSTOM_MATCHES = []; CUSTOM_ACTIVE = -1; renderCustomResults(); }
+});
+document.getElementById('custom-dest-results').addEventListener('click', event => {
+  const li = event.target.closest('li[data-index]');
+  if (li) chooseCustomAirport(CUSTOM_MATCHES[Number(li.dataset.index)]);
+});
+document.addEventListener('click', event => {
+  if (!document.getElementById('custom-dest-search').contains(event.target)) { CUSTOM_MATCHES = []; CUSTOM_ACTIVE = -1; renderCustomResults(); }
+});
+
+// Keep the return picker from offering a date before departure.
+document.getElementById('custom-depart').addEventListener('change', event => {
+  document.getElementById('custom-return').min = event.target.value;
+});
+
+document.getElementById('custom-form').addEventListener('submit', async event => {
+  event.preventDefault();
+  const result = document.getElementById('custom-result');
+  const button = document.getElementById('custom-go');
+  const depart = document.getElementById('custom-depart').value;
+  const ret = document.getElementById('custom-return').value;
+
+  if (!CUSTOM_CODE) {
+    result.innerHTML = `<div class="custom-outcome error">Pick a destination from the dropdown list first.</div>`;
+    return;
+  }
+  if (!depart || !ret) {
+    result.innerHTML = `<div class="custom-outcome error">Both a depart and a return date are needed.</div>`;
+    return;
+  }
+  if (ret < depart) {
+    result.innerHTML = `<div class="custom-outcome error">The return date is before the depart date.</div>`;
+    return;
+  }
+
+  button.disabled = true;
+  result.innerHTML = `<div class="custom-outcome"><span class="spin"></span> Checking live prices from Singapore…</div>`;
+
+  try {
+    const response = await fetch(`${API}/fares`, {
+      method: 'POST', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        origin: 'SIN', currency: CURRENCY,
+        queries: [{
+          dest: CUSTOM_CODE, depart, ret,
+          maxStops: document.getElementById('custom-nonstop').checked ? 0 : null,
+        }],
+      }),
+    });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const payload = await response.json();
+    const found = (payload.results || [])[0];
+
+    if (!found || !found.best) {
+      // "no offers" is a genuine empty result; anything else is the fare
+      // source itself failing (the same fast_flights parser gap documented
+      // in the README) — worth a plainer message than the raw exception, and
+      // a manual fallback since a booking link is generated either way.
+      const reason = found?.error && found.error.startsWith('no offers')
+        ? 'No fares found for those dates.'
+        : "Couldn't price this route right now — it may be one the fare source can't parse.";
+      const fallback = found?.book
+        ? ` <a class="book" href="${esc(found.book)}" target="_blank" rel="noopener noreferrer">Try Google Flights directly ↗</a>` : '';
+      result.innerHTML = `<div class="custom-outcome error">${esc(reason)}${fallback}</div>`;
+      return;
+    }
+
+    const best = found.best;
+    result.innerHTML = `<div class="custom-outcome">
+      <span class="price">${esc(CURRENCY)} ${best.price.toLocaleString()}</span>
+      <span class="detail">${esc((best.airlines || []).join(', ') || 'unknown carrier')}</span>
+      <span class="detail">${best.stops === 0 ? 'nonstop' : best.stops == null ? '' : best.stops + ' stop'}</span>
+      <span class="detail">${esc(fmtDuration(best.duration))}</span>
+      ${found.book ? `<a class="book" href="${esc(found.book)}" target="_blank" rel="noopener noreferrer">Open ↗</a>` : ''}
+    </div>`;
+  } catch (error) {
+    result.innerHTML = `<div class="custom-outcome error">Could not reach the price service (${esc(error.message)}).</div>`;
+  } finally {
+    button.disabled = false;
+  }
 });
 
 /* ═══ Holidays and live fares ═══
@@ -1198,6 +1381,13 @@ Promise.all([grab('data/plan.json'), loadAirports(), loadDestinations()])
     document.getElementById('planner').hidden = false;
     document.getElementById('budget').addEventListener('change', renderPlan);
     renderPlan();
+
+    // Custom search has no dependency on the holiday plan, so it is shown
+    // even if plan.breaks turns out to be empty.
+    document.getElementById('custom-search').hidden = false;
+    const todayIso = iso(new Date());
+    document.getElementById('custom-depart').min = todayIso;
+    document.getElementById('custom-return').min = todayIso;
 
     if (!plan.breaks.length) {
       document.getElementById('out').innerHTML = `<div class="empty">No upcoming holidays found.</div>`;

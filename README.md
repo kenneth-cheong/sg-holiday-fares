@@ -73,6 +73,13 @@ Nothing about a price is stored. Reload the page and every card starts fresh —
 there is no trend, no "cheaper than usual" comparison, no history to fall
 back on. What you see is what Google returns for that exact search, right now.
 
+**Check any dates**, above the holiday cards, is a single free-standing
+lookup — any destination (searched the same way, but from the full airport
+list regardless of what you already track), any depart/return dates, not tied
+to a holiday window at all. It calls the same `/fares` endpoint with one
+query and shows the result inline; nothing about it is added to your tracked
+destinations or remembered anywhere.
+
 ## Choosing destinations
 
 Type a city, country or airport name into the search box under Destinations —
