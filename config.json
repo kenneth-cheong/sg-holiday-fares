@@ -18,18 +18,19 @@
     "resend_after_days": 7,
     "resend_if_cheaper_pct": 5
   },
-  "_targets": "alert_below is set from the cheapest fare actually observed for each destination, so day one is quiet and only a real drop speaks up. Retune once a few weeks of history exist.",
+  "_targets": "alert_below is set from the cheapest fare actually observed for each destination, so day one is quiet and only a real drop speaks up. Re-measured 2026-08-09 against nonstop-only fares across all 15 upcoming holiday windows, when max_stops went to 0 — the old values were tuned on one-stop fares and would never have fired again (Seoul's was 350 against a cheapest nonstop of 712).",
+  "_stops": "Nonstop everywhere, matching the dashboard's own default. HGH has no target because it has no nonstop observation to set one from: SIN-HGH fails inside fast-flights (RuntimeError: list index out of range) in every window, at any stop limit, the same parser gap as SIN-PVG and SIN-CTU. NKG hits it too but parsed in 3 of 15 windows, and had a Scoot nonstop in all three.",
 
   "destinations": [
-    { "code": "BKK", "name": "Bangkok",   "max_stops": 1, "alert_below": 280, "airports": ["BKK", "DMK"] },
-    { "code": "TPE", "name": "Taipei",    "max_stops": 1, "alert_below": 330 },
-    { "code": "HKG", "name": "Hong Kong", "max_stops": 1, "alert_below": 340 },
-    { "code": "HND", "name": "Tokyo",     "max_stops": 1, "alert_below": 580 },
-    { "code": "ICN", "name": "Seoul",     "max_stops": 1, "alert_below": 350 },
-    { "code": "PEK", "name": "Beijing",   "max_stops": 1, "alert_below": 410 },
-    { "code": "CAN", "name": "Guangzhou", "max_stops": 1, "alert_below": 380 },
-    { "code": "SZX", "name": "Shenzhen",  "max_stops": 1, "alert_below": 410 },
-    { "code": "HGH", "name": "Hangzhou",  "max_stops": 1, "alert_below": 420 },
-    { "code": "NKG", "name": "Nanjing",   "max_stops": 1, "alert_below": 420 }
+    { "code": "BKK", "name": "Bangkok",   "max_stops": 0, "alert_below": 310, "airports": ["BKK", "DMK"] },
+    { "code": "TPE", "name": "Taipei",    "max_stops": 0, "alert_below": 360 },
+    { "code": "HKG", "name": "Hong Kong", "max_stops": 0, "alert_below": 500 },
+    { "code": "HND", "name": "Tokyo",     "max_stops": 0, "alert_below": 1150 },
+    { "code": "ICN", "name": "Seoul",     "max_stops": 0, "alert_below": 710 },
+    { "code": "PEK", "name": "Beijing",   "max_stops": 0, "alert_below": 670 },
+    { "code": "CAN", "name": "Guangzhou", "max_stops": 0, "alert_below": 640 },
+    { "code": "SZX", "name": "Shenzhen",  "max_stops": 0, "alert_below": 650 },
+    { "code": "HGH", "name": "Hangzhou",  "max_stops": 0, "alert_below": null },
+    { "code": "NKG", "name": "Nanjing",   "max_stops": 0, "alert_below": 1010 }
   ]
 }

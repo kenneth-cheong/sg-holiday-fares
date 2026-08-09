@@ -243,7 +243,14 @@ on what the dashboard shows; that comes from the API and your browser.
 | `alerts.resend_after_days` | Cooldown before re-alerting an unchanged fare |
 | `destinations[].airports` | Optional. Airports this destination covers; each is priced and the cheaper wins |
 | `destinations[].max_stops` | `0` for nonstop only (what `manage.py add` sets unless told otherwise), `1` to allow a connection |
-| `destinations[].alert_below` | Absolute price target for manual-sweep alerts |
+| `destinations[].alert_below` | Absolute price target for manual-sweep alerts, or `null` for none |
+
+A target is only meaningful against the stop limit it was measured under, and
+the two move together: the tracked list went nonstop-only on 2026-08-09 and
+every target was re-measured the same day against nonstop fares across all
+fifteen upcoming holiday windows. The one-stop values they replaced would
+never have fired again — Seoul's was SGD 350 against a cheapest nonstop of
+712. Re-measure the same way after any change to `max_stops`.
 
 **A destination can span several airports.** Bangkok is configured as
 `"airports": ["BKK", "DMK"]`: both Suvarnabhumi and Don Mueang are priced for
