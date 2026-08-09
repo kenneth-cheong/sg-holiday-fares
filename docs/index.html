@@ -84,9 +84,37 @@
 
   .filters { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin: 18px 0 8px; }
   .filters label { font-size: 13px; color: var(--text-secondary); }
+  /* Keeps a label with its control when the row wraps on a narrow screen,
+     instead of stranding "Order" at the end of the line above its select. */
+  .filters .field { display: inline-flex; align-items: center; gap: 8px; }
   select {
     font: inherit; font-size: 13px; padding: 5px 9px; border-radius: 8px;
     border: 1px solid var(--border); background: var(--surface-1); color: var(--text-primary);
+  }
+  /* The one action that turns a page of unpriced cards into an answer, so it
+     carries more weight than the filters it sits with. */
+  button.primary {
+    font: inherit; font-size: 13px; padding: 6px 13px; border-radius: 8px; cursor: pointer;
+    border: 1px solid var(--axis); background: var(--surface-1); color: var(--text-primary);
+  }
+  button.primary:hover { border-color: var(--text-secondary); }
+  button.primary.running { border-color: var(--series-2); color: var(--series-2); }
+  button.primary[disabled] { opacity: .55; cursor: not-allowed; }
+
+  /* Answer line: which holiday is cheapest across everything priced so far. */
+  .topline-go {
+    display: flex; flex-direction: column; gap: 3px; width: 100%; text-align: left; cursor: pointer;
+    background: var(--surface-1); border: 1px solid var(--axis); border-radius: 14px;
+    padding: 14px 16px; margin-top: 18px; font: inherit; color: var(--text-secondary);
+  }
+  .topline-go:hover { border-color: var(--text-secondary); }
+  .topline-label { font-size: 12px; color: var(--text-muted); }
+  .topline-main { font-size: 14px; color: var(--text-primary); }
+  .topline-main b { font-size: 22px; font-weight: 650; letter-spacing: -0.02em; }
+  .topline-sub { font-size: 13px; color: var(--text-muted); }
+  .badge {
+    font-size: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+    color: var(--good); border: 1px solid currentColor; border-radius: 999px; padding: 1px 7px;
   }
 
   section.holiday, details.holiday {
@@ -435,20 +463,36 @@
 
   <div id="controls" hidden>
     <div class="filters">
-      <label for="leave">Annual leave</label>
-      <select id="leave">
-        <option value="9">Any</option>
-        <option value="0">None — public holidays only</option>
-        <option value="1">Up to 1 day</option>
-        <option value="2">Up to 2 days</option>
-      </select>
+      <span class="field">
+        <label for="leave">Annual leave</label>
+        <select id="leave">
+          <option value="9">Any</option>
+          <option value="0">None — public holidays only</option>
+          <option value="1">Up to 1 day</option>
+          <option value="2">Up to 2 days</option>
+        </select>
+      </span>
+      <span class="field">
+        <label for="order">Order</label>
+        <select id="order">
+          <option value="date">By date</option>
+          <option value="price">Cheapest first</option>
+        </select>
+      </span>
+      <!-- On by default: out of SIN a connection usually costs hours for a
+           saving that rarely survives the extra night. Unticking widens each
+           holiday query back to the destination's own stop limit. -->
+      <label class="nonstop"><input type="checkbox" id="nonstop-only" checked> Nonstop only</label>
+      <!-- Card-by-card pricing answers "how much for this holiday". Comparing
+           holidays needs them all priced, which is a dozen clicks by hand. -->
+      <button class="primary" id="price-all" type="button">Price every holiday</button>
     </div>
 
     <details class="picker-panel" id="picker-panel">
       <summary>
         <span class="picker-title">Destinations</span>
         <span class="note" id="pick-note"></span>
-        <span class="live-status" id="live-status"></span>
+        <span class="live-status" id="live-status" aria-live="polite"></span>
       </summary>
       <div class="picker-head">
         <button type="button" id="pick-all">Select all</button>
@@ -462,7 +506,7 @@
         <div class="ta-row">
           <input type="text" id="dest-input" placeholder="Search a city or airport…" autocomplete="off"
                  aria-autocomplete="list" aria-expanded="false" role="combobox" aria-controls="dest-results">
-          <label class="nonstop"><input type="checkbox" id="add-nonstop"> nonstop only</label>
+          <label class="nonstop"><input type="checkbox" id="add-nonstop" checked> nonstop only</label>
         </div>
         <ul class="ta-list" id="dest-results" role="listbox" hidden></ul>
         <span class="add-msg" id="add-msg"></span>
@@ -479,6 +523,11 @@
     </details>
   </div>
 
+  <div id="topline"></div>
+  <div id="out"></div>
+
+  <!-- Below the holiday cards deliberately: this is the escape hatch for dates
+       the holiday plan does not cover, not the thing most visits are here for. -->
   <section class="holiday" id="custom-search" hidden>
     <div class="htitle">
       <h2>Check any dates</h2>
@@ -494,13 +543,11 @@
       <input type="date" id="custom-depart" required aria-label="Depart date">
       <span class="arrow-sep">→</span>
       <input type="date" id="custom-return" required aria-label="Return date">
-      <label class="nonstop"><input type="checkbox" id="custom-nonstop"> nonstop only</label>
+      <label class="nonstop"><input type="checkbox" id="custom-nonstop" checked> nonstop only</label>
       <button type="submit" id="custom-go">Search</button>
     </form>
     <div id="custom-result"></div>
   </section>
-
-  <div id="out"></div>
 
   <section class="holiday" id="planner" hidden>
     <div class="htitle">
@@ -588,6 +635,36 @@ const fmtDuration = minutes => {
 const API = 'https://rteq3k1msa.execute-api.ap-southeast-1.amazonaws.com';
 const CURRENCY = 'SGD';
 
+/* Every price on the page goes through here. Two hard limits upstream make a
+   single big POST the wrong shape: the API refuses more than 60 queries, and
+   the gateway in front of it gives up at 29 seconds — and ten destinations
+   across four windows is already 44 lookups, more than the Lambda's eight
+   worker threads can finish in that budget. Chunks are sized to two full
+   rounds of those workers and run one after another, which also keeps the
+   in-container fare cache warm rather than fanning out across cold copies.
+   Results are concatenated in request order, which callers rely on. */
+const MAX_PER_REQUEST = 16;
+
+async function faresRequest(queries, { fresh = false } = {}) {
+  const results = [];
+  for (let i = 0; i < queries.length; i += MAX_PER_REQUEST) {
+    const response = await fetch(`${API}/fares`, {
+      method: 'POST', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        origin: 'SIN', currency: CURRENCY,
+        // Only the first chunk busts the server cache: a later chunk asking
+        // again would evict what the earlier ones just fetched.
+        fresh: fresh && i === 0,
+        queries: queries.slice(i, i + MAX_PER_REQUEST),
+      }),
+    });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const payload = await response.json();
+    results.push(...(payload.results || []));
+  }
+  return results;
+}
+
 /* A destination's colour follows its code (a stable hash), not its position in
    any list or its price rank — so it never changes as selections or prices
    change, with no chart to protect from repainting and no slot bookkeeping to
@@ -602,6 +679,19 @@ function colorFor(code) {
 const STORE_KEY = 'sgfares.selected.v1';
 const DEST_KEY = 'sgfares.list.v1';
 const KEY_STORE = 'sgfares.editkey.v1';
+const NONSTOP_KEY = 'sgfares.nonstop.v1';
+const LEAVE_KEY = 'sgfares.leave.v1';
+const ORDER_KEY = 'sgfares.order.v1';
+
+/* Nonstop is the starting position for every holiday query; the per-destination
+   max_stops only applies once the filter is switched off. Absent storage (first
+   visit, private mode) reads as on, so the default survives a cleared browser. */
+let NONSTOP_ONLY = (() => {
+  try { return localStorage.getItem(NONSTOP_KEY) !== '0'; } catch { return true; }
+})();
+
+const remember = (key, value) => { try { localStorage.setItem(key, value); } catch { /* private mode */ } };
+const recall = key => { try { return localStorage.getItem(key); } catch { return null; } };
 
 let DESTS = [];          // [{code, name, airports, maxStops, alertBelow}]
 let SELECTED = new Set();
@@ -609,11 +699,11 @@ let WRITABLE = false;     // the API accepts writes (an edit key is configured o
 let SHARED = false;       // this list came from the API rather than the browser
 
 const STARTER_DESTINATIONS = [
-  { code: 'BKK', name: 'Bangkok', airports: ['BKK', 'DMK'], maxStops: 1 },
-  { code: 'TPE', name: 'Taipei', airports: ['TPE'], maxStops: 1 },
-  { code: 'HKG', name: 'Hong Kong', airports: ['HKG'], maxStops: 1 },
-  { code: 'HND', name: 'Tokyo', airports: ['HND'], maxStops: 1 },
-  { code: 'ICN', name: 'Seoul', airports: ['ICN'], maxStops: 1 },
+  { code: 'BKK', name: 'Bangkok', airports: ['BKK', 'DMK'], maxStops: 0 },
+  { code: 'TPE', name: 'Taipei', airports: ['TPE'], maxStops: 0 },
+  { code: 'HKG', name: 'Hong Kong', airports: ['HKG'], maxStops: 0 },
+  { code: 'HND', name: 'Tokyo', airports: ['HND'], maxStops: 0 },
+  { code: 'ICN', name: 'Seoul', airports: ['ICN'], maxStops: 0 },
 ];
 
 const airportsOf = dest => (dest.airports && dest.airports.length ? dest.airports : [dest.code]);
@@ -1100,15 +1190,7 @@ async function fetchFlexMatrix(code) {
   }
 
   try {
-    const response = await fetch(`${API}/fares`, {
-      method: 'POST', headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        origin: 'SIN', currency: CURRENCY,
-        queries: queries.map(({ _dOff, _rOff, ...q }) => q),
-      }),
-    });
-    const payload = await response.json();
-    const results = payload.results || [];
+    const results = await faresRequest(queries.map(({ _dOff, _rOff, ...q }) => q));
 
     const grid = new Map();
     // Match each response back to the offset that produced it — the API
@@ -1153,16 +1235,8 @@ document.getElementById('custom-form').addEventListener('submit', async event =>
   result.innerHTML = `<div class="custom-outcome"><span class="spin"></span> Checking live prices from Singapore…</div>`;
 
   try {
-    const response = await fetch(`${API}/fares`, {
-      method: 'POST', headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        origin: 'SIN', currency: CURRENCY,
-        queries: CUSTOM_DESTS.map(d => ({ dest: d.code, depart, ret, maxStops })),
-      }),
-    });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const payload = await response.json();
-    const byCode = new Map((payload.results || []).map(r => [r.dest, r]));
+    const results = await faresRequest(CUSTOM_DESTS.map(d => ({ dest: d.code, depart, ret, maxStops })));
+    const byCode = new Map(results.map(r => [r.dest, r]));
 
     CUSTOM_BASE = { depart, ret, maxStops };
     CUSTOM_RESULTS = CUSTOM_DESTS.map(d => {
@@ -1202,6 +1276,25 @@ function windowsForBreak(brk, maxLeave = 3) {
     });
 }
 
+const currentLeave = () => Number(document.getElementById('leave').value);
+
+/* The single cheapest priced fare for a holiday, under the leave filter the
+   page is currently showing — what both the ordering and the answer line at
+   the top rank on. Null while a holiday has no price yet. */
+function cheapestFor(brk, maxLeave) {
+  const windows = windowsForBreak(brk, maxLeave);
+  let best = null;
+  for (const dest of DESTS) {
+    if (!SELECTED.has(dest.code)) continue;
+    for (const w of windows) {
+      const result = LIVE.get(`${dest.code}|${w.depart}|${w.return}`);
+      if (!result || !result.best) continue;
+      if (!best || result.best.price < best.price) best = { price: result.best.price, dest, window: w };
+    }
+  }
+  return best;
+}
+
 function inHorizon(anchor) {
   const brk = PLAN.breaks.find(b => b.anchor === anchor);
   if (!brk) return false;
@@ -1219,7 +1312,10 @@ async function refreshLive({ fresh = false, only = null } = {}) {
   if (!PLAN || !DESTS.length) return;
   const groups = PLAN.breaks
     .filter(b => (only ? b.anchor === only : inHorizon(b.anchor)))
-    .map(b => ({ brk: b, windows: windowsForBreak(b) }))
+    // Priced without a leave cap on purpose: the filter above the cards is a
+    // view over what has been priced, so pricing a subset of it would leave
+    // rows that appear only after a second, invisible fetch.
+    .map(b => ({ brk: b, windows: windowsForBreak(b, Infinity) }))
     .filter(g => g.windows.length);
   if (!groups.length) { render(); return; }
 
@@ -1234,22 +1330,18 @@ async function refreshLive({ fresh = false, only = null } = {}) {
   await Promise.all(groups.map(async ({ brk, windows }) => {
     const queries = DESTS.filter(d => SELECTED.has(d.code)).flatMap(dest =>
       airportsOf(dest).flatMap(airport => windows.map(w => ({
-        dest: airport, depart: w.depart, ret: w['return'], maxStops: dest.maxStops ?? 1,
+        dest: airport, depart: w.depart, ret: w['return'],
+        maxStops: NONSTOP_ONLY ? 0 : dest.maxStops ?? 1,
       }))));
     if (!queries.length) { LOADING.delete(brk.anchor); return; }
 
     try {
-      const response = await fetch(`${API}/fares`, {
-        method: 'POST', headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ origin: 'SIN', currency: CURRENCY, fresh, queries }),
-      });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const payload = await response.json();
+      const results = await faresRequest(queries, { fresh });
 
       // A destination can span more than one airport; collapse each set of
       // per-airport results down to the cheapest before storing.
       const winners = new Map();
-      for (const result of payload.results || []) {
+      for (const result of results) {
         const code = owner.get(result.dest) || result.dest;
         const key = `${code}|${result.depart}|${result['return']}`;
         const held = winners.get(key);
@@ -1278,17 +1370,66 @@ async function refreshLive({ fresh = false, only = null } = {}) {
   render();
 }
 
+/* ═══ Pricing every holiday at once ═══
+   One holiday at a time, not all at once: each is already several batched
+   requests, and a dozen holidays fired together would trip the API's rate
+   limit and lose the shared fare cache. Slow enough to want a way out, hence
+   the button doubling as Stop. */
+let BULK = null;
+
+async function priceAll() {
+  const button = document.getElementById('price-all');
+  if (!PLAN) return;
+  if (BULK) { BULK.stop = true; button.textContent = 'Stopping…'; return; }
+
+  if (!SELECTED.size) { setLiveStatus('pick at least one destination first', false); return; }
+  const targets = PLAN.breaks
+    .filter(b => inHorizon(b.anchor) && !PRICED.has(b.anchor))
+    .map(b => b.anchor);
+  if (!targets.length) { setLiveStatus('every holiday in the booking window is already priced', false); return; }
+
+  BULK = { stop: false };
+  button.classList.add('running');
+  document.getElementById('refresh').disabled = true;
+
+  let done = 0;
+  for (const anchor of targets) {
+    if (BULK.stop) break;
+    button.textContent = `Stop · ${done + 1} of ${targets.length}`;
+    await refreshLive({ only: anchor });
+    done++;
+  }
+
+  const stopped = BULK.stop;
+  BULK = null;
+  button.classList.remove('running');
+  button.textContent = 'Price every holiday';
+  document.getElementById('refresh').disabled = false;
+  setLiveStatus(
+    stopped ? `stopped — ${done} of ${targets.length} priced` : `priced ${done} holiday${done === 1 ? '' : 's'} · from Singapore`,
+    false,
+  );
+  render();
+}
+
+document.getElementById('price-all').addEventListener('click', priceAll);
+
 /* ═══ Table sorting — one sort applies to every holiday's table ═══ */
 const COLUMNS = [
   { key: 'dest', label: 'Destination', field: 'name' },
   { key: 'window', label: 'Window', field: 'depart' },
-  { key: 'now', label: 'Now', field: 'now', num: true },
+  { key: 'now', label: 'Price', field: 'now', num: true },
+  // A 9-night window costing more than a 3-night one is not the same as being
+  // worse value, and nothing else on the row makes that comparable.
+  { key: 'pernight', label: 'Per night', field: 'pernight', num: true },
   { key: 'carrier', label: 'Carrier', field: 'carrier' },
   { key: 'stops', label: 'Stops', field: 'stops' },
   { key: 'journey', label: 'Journey', field: 'journey', num: true },
   { key: null, label: 'Google Flights' },
 ];
-let SORT = null;
+/* Cheapest-first out of the box: the tracked-destination order the rows used
+   to arrive in carries no meaning for someone reading a price table. */
+let SORT = { key: 'now', dir: 'asc' };
 
 function sortRows(list) {
   if (!SORT) {
@@ -1341,15 +1482,30 @@ document.getElementById('out').addEventListener('keydown', event => {
 /* ═══ Rendering ═══ */
 function renderHoliday(brk, maxLeave, openByDefault) {
   const windows = windowsForBreak(brk, maxLeave);
-  const away = Math.round((parse(brk.anchor) - new Date()) / 864e5);
+  // Measured midnight to midnight: against the current clock a holiday that
+  // starts today reads as "-1 days away" for most of the day.
+  const midnight = new Date(); midnight.setHours(0, 0, 0, 0);
+  const days = Math.round((parse(brk.anchor) - midnight) / 864e5);
+  const away = days === 0 ? 'today' : days === 1 ? 'tomorrow'
+    : days > 0 ? `${days} days away` : `${-days} days ago`;
   const dateLabel = parse(brk.anchor).toLocaleDateString(undefined,
     { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-  const head = `<div class="htitle"><h2>${esc(brk.name)}</h2>
-      <span class="away">${esc(dateLabel)} · ${away} days away</span>
+  const badge = brk.anchor === CHEAPEST_ANCHOR ? '<span class="badge">cheapest</span>' : '';
+  const head = `<div class="htitle"><h2>${esc(brk.name)}</h2>${badge}
+      <span class="away">${esc(dateLabel)} · ${esc(away)}</span>
       <button class="card-refresh" type="button" data-refresh="${esc(brk.anchor)}"
         title="Re-check prices for ${esc(brk.name)}" aria-label="Refresh ${esc(brk.name)}">⟳</button></div>`;
 
   const busy = LOADING.has(brk.anchor);
+
+  // Nothing selected prices nothing, so say that rather than leaving every
+  // card inviting a click that would return an empty table.
+  if (!SELECTED.size) {
+    return `<details class="holiday card" data-anchor="${esc(brk.anchor)}">
+      <summary>${head}<p class="headline muted">No destinations selected — pick some under Destinations.</p></summary>
+      <div class="card-body"><p class="note">No destinations selected.</p></div>
+    </details>`;
+  }
 
   const rows = [];
   for (const dest of DESTS) {
@@ -1399,6 +1555,7 @@ function renderHoliday(brk, maxLeave, openByDefault) {
     label: r.window.label,
     depart: r.window.depart,
     now: r.result.best.price,
+    pernight: r.window.nights ? Math.round(r.result.best.price / r.window.nights) : null,
     carrier: (r.result.best.airlines || []).join(', '),
     stops: r.result.best.stops,
     journey: r.result.best.duration,
@@ -1409,7 +1566,8 @@ function renderHoliday(brk, maxLeave, openByDefault) {
   const rowsHtml = rowData.map(r => `<tr>
       <td class="name" data-label="Destination">${esc(r.name)} <span class="meta">${esc(r.code)}</span></td>
       <td data-label="Window">${esc(r.label)}</td>
-      <td class="num" data-label="Now">${esc(CURRENCY)} ${r.now.toLocaleString()}</td>
+      <td class="num" data-label="Price">${esc(CURRENCY)} ${r.now.toLocaleString()}</td>
+      <td class="num" data-label="Per night">${r.pernight == null ? '—' : esc(CURRENCY) + ' ' + r.pernight.toLocaleString()}</td>
       <td data-label="Carrier">${esc(r.carrier || '—')}</td>
       <td data-label="Stops">${r.stops === 0 ? 'nonstop' : r.stops == null ? '—' : r.stops + ' stop'}</td>
       <td class="num" data-label="Journey">${esc(fmtDuration(r.journey))}</td>
@@ -1432,11 +1590,59 @@ function renderHoliday(brk, maxLeave, openByDefault) {
   </details>`;
 }
 
+/* Set by render() before the cards are built, read by renderHoliday. */
+let CHEAPEST_ANCHOR = null;
+
+/* The whole point of pricing more than one holiday: which is cheapest. It
+   only appears once there are at least two to compare — with one priced it
+   would just restate the card directly below it. */
+function renderTopline(ranked) {
+  const el = document.getElementById('topline');
+  if (ranked.length < 2) { el.innerHTML = ''; return; }
+
+  const { brk, best } = ranked[0];
+  const w = best.window;
+  el.innerHTML = `<button class="topline-go" type="button" data-anchor="${esc(brk.anchor)}">
+      <span class="topline-label">Cheapest of the ${ranked.length} holidays priced so far</span>
+      <span class="topline-main"><b>${esc(CURRENCY)} ${best.price.toLocaleString()}</b> · ${esc(best.dest.name)} · ${esc(brk.name)}</span>
+      <span class="topline-sub">${esc(w.label)} · ${esc(CURRENCY)} ${Math.round(best.price / (w.nights || 1)).toLocaleString()} per night</span>
+    </button>`;
+}
+
+document.getElementById('topline').addEventListener('click', event => {
+  const anchor = event.target.closest('[data-anchor]')?.dataset.anchor;
+  if (!anchor) return;
+  OPEN.add(anchor);
+  render();
+  document.querySelector(`details.holiday[data-anchor="${anchor}"]`)
+    ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
 function render() {
   const out = document.getElementById('out');
-  const maxLeave = Number(document.getElementById('leave').value);
+  const maxLeave = currentLeave();
 
-  out.innerHTML = PLAN.breaks.map(brk => renderHoliday(brk, maxLeave, OPEN.has(brk.anchor))).join('')
+  // Priced holidays, cheapest first. Unpriced ones have nothing to rank on,
+  // so they keep their chronological place at the back of a price ordering.
+  const ranked = PLAN.breaks
+    .map(brk => ({ brk, best: cheapestFor(brk, maxLeave) }))
+    .filter(x => x.best)
+    .sort((a, b) => a.best.price - b.best.price);
+
+  CHEAPEST_ANCHOR = ranked.length > 1 ? ranked[0].brk.anchor : null;
+  renderTopline(ranked);
+
+  const order = document.getElementById('order').value;
+  const rank = new Map(ranked.map((x, i) => [x.brk.anchor, i]));
+  // Unranked holidays share a finite sentinel rather than Infinity, whose
+  // difference is NaN and would leave the comparator inconsistent.
+  const rankOf = brk => (rank.has(brk.anchor) ? rank.get(brk.anchor) : Number.MAX_SAFE_INTEGER);
+  const breaks = order === 'price'
+    ? [...PLAN.breaks].sort((a, b) =>
+        rankOf(a) - rankOf(b) || (a.anchor < b.anchor ? -1 : a.anchor > b.anchor ? 1 : 0))
+    : PLAN.breaks;
+
+  out.innerHTML = breaks.map(brk => renderHoliday(brk, maxLeave, OPEN.has(brk.anchor))).join('')
     || `<div class="empty">No upcoming holidays found.</div>`;
 
   out.querySelectorAll('details.holiday').forEach(card => {
@@ -1451,10 +1657,42 @@ function render() {
   });
 }
 
-document.getElementById('leave').addEventListener('change', render);
+document.getElementById('leave').addEventListener('change', event => {
+  remember(LEAVE_KEY, event.target.value);
+  render();
+});
+document.getElementById('order').addEventListener('change', event => {
+  remember(ORDER_KEY, event.target.value);
+  render();
+});
+document.getElementById('nonstop-only').addEventListener('change', event => {
+  NONSTOP_ONLY = event.target.checked;
+  try { localStorage.setItem(NONSTOP_KEY, NONSTOP_ONLY ? '1' : '0'); } catch { /* private mode */ }
+
+  // Every price on screen answered a different question, so it goes rather
+  // than sitting next to results under the new filter. Only holidays that
+  // were already priced are re-queried — the rest stay lazy, as on load.
+  const stale = [...PRICED];
+  LIVE.clear();
+  PRICED.clear();
+  render();
+  (async () => { for (const anchor of stale) await refreshLive({ only: anchor }); })();
+});
+/* Re-checks what you are actually looking at. It used to price every holiday
+   in the booking window, which on a page that deliberately prices nothing
+   until asked was a large bill for one click — that job now belongs to the
+   explicit "Price every holiday" button. */
 document.getElementById('refresh').addEventListener('click', async event => {
+  const anchors = [...PRICED];
+  if (!anchors.length) {
+    setLiveStatus('nothing priced yet — open a holiday, or price every holiday', false);
+    return;
+  }
   event.target.disabled = true;
-  try { await refreshLive({ fresh: true }); } finally { event.target.disabled = false; }
+  try {
+    for (const anchor of anchors) await refreshLive({ only: anchor, fresh: true });
+    setLiveStatus(`re-checked ${anchors.length} holiday${anchors.length === 1 ? '' : 's'} · from Singapore`, false);
+  } finally { event.target.disabled = false; }
 });
 
 /* ═══ Leave planner (public holidays joined with weekends) ═══ */
@@ -1625,11 +1863,16 @@ Promise.all([grab('data/plan.json'), loadAirports(), loadDestinations()])
     }
 
     document.getElementById('controls').hidden = false;
+    document.getElementById('nonstop-only').checked = NONSTOP_ONLY;
+    // Filters are answers to "how do I travel", not per-visit decisions.
+    const leave = recall(LEAVE_KEY), order = recall(ORDER_KEY);
+    if (leave) document.getElementById('leave').value = leave;
+    if (order) document.getElementById('order').value = order;
     loadSelection();
     renderPicker();
     renderSyncState();
     render();
-    setLiveStatus('open a holiday for live prices', false);
+    setLiveStatus('open a holiday, or price every holiday, for live prices', false);
   })
   .catch(err => {
     document.getElementById('out').innerHTML =

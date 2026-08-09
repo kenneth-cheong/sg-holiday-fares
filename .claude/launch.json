@@ -1,11 +1,12 @@
 {
+  "_comment": "Port 8141 is deliberate: the API's CORS allow-list is https://kenneth-cheong.github.io plus localhost 8000/8141/8142, so a dashboard served on any other port loads but cannot fetch a single price.",
   "version": "0.0.1",
   "configurations": [
     {
       "name": "fares-dashboard",
       "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "8137", "--directory", "docs"],
-      "port": 8137
+      "runtimeArgs": ["-m", "http.server", "8141", "--directory", "docs"],
+      "port": 8141
     }
   ]
 }

@@ -172,7 +172,10 @@ def parse_args(argv=None):
     add = subparsers.add_parser("add", help="track a new destination")
     add.add_argument("code", help="3-letter IATA airport code, e.g. HND")
     add.add_argument("name", help="display name, e.g. Tokyo")
-    add.add_argument("--max-stops", type=int, default=1, help="0 for nonstop only (default 1)")
+    add.add_argument(
+        "--max-stops", type=int, default=0,
+        help="0 for nonstop only (the default), 1 to allow a connection",
+    )
     add.add_argument("--target", type=int, help="alert at or below this price")
     add.add_argument("--verify", action="store_true", help="check the route with one live query")
     add.set_defaults(run=cmd_add)

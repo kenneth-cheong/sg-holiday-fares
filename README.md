@@ -45,6 +45,10 @@ Enable **Settings → Pages → Deploy from branch**, folder `/docs`. Locally:
 python3 -m http.server -d docs 8000
 ```
 
+Use one of ports 8000, 8141 or 8142 — the API's CORS allow-list holds those
+three plus the Pages origin, and on any other port the dashboard loads but
+cannot fetch a single price.
+
 The page reads two static files — `docs/data/plan.json` (holidays and travel
 windows) and `docs/data/airports.json` (the destination search index) — and
 otherwise talks directly to the API for prices and the destination list.
@@ -69,16 +73,42 @@ ask for it. Opening a card fetches that holiday's prices on the spot; nothing
 loads eagerly on page open, so visiting the page costs nothing until you
 actually click something.
 
+**Price every holiday** does the same thing for every holiday inside the
+booking window, one after another — the answer to "when should I go", which
+card-by-card clicking only gets to a dozen clicks later. It runs sequentially
+so it neither trips the API's rate limit nor throws away its shared fare
+cache, skips holidays already priced, and turns into a **Stop · n of N**
+button while it works. **Refresh** at the top re-checks only what is already
+priced, ignoring the fifteen-minute server cache.
+
+Once two or more holidays have prices, a line above the cards names the
+cheapest one found so far — click it to jump to that card — and that card
+carries a **cheapest** badge. **Order** switches the cards between
+chronological and cheapest-first; holidays with no price yet keep their date
+order at the back.
+
+Inside an expanded card the table sorts by price, cheapest first, and carries
+a **per night** column: a nine-night window at a higher total is not worse
+value than a three-night one, and nothing else on the row makes that
+comparable. Any column header re-sorts every holiday's table at once.
+
+**Nonstop only**, next to the leave filter, is on by default and wins over each
+destination's own `max_stops` — a connection out of SIN usually costs hours for
+a saving that does not survive the extra night. Unticking it widens every
+holiday query back to the destination's configured limit, drops the prices
+already on screen (they answered a different question) and re-prices the
+holidays you had open. The choice is remembered in this browser.
+
 Nothing about a price is stored. Reload the page and every card starts fresh —
 there is no trend, no "cheaper than usual" comparison, no history to fall
 back on. What you see is what Google returns for that exact search, right now.
 
-**Check any dates**, above the holiday cards, is a free-standing lookup — one
+**Check any dates**, below the holiday cards, is a free-standing lookup — one
 or more destinations (searched the same way, but from the full airport list
 regardless of what you already track), one depart/return date pair, not tied
 to a holiday window at all. Add as many destinations as you want with the same
 search box before hitting Search; results come back as a table sorted
-cheapest-first, one batched call to `/fares` covering all of them at once.
+cheapest-first, batched into as few `/fares` calls as the limits below allow.
 Nothing here is added to your tracked destinations or remembered anywhere.
 
 Click any result row to expand a ±3-day flex-date matrix underneath it —
@@ -115,7 +145,7 @@ list from the command line or the **Manage destinations** Actions workflow,
 independent of the page:
 
 ```bash
-python manage.py add HND Tokyo --max-stops 1 --verify
+python manage.py add HND Tokyo --verify        # nonstop only; --max-stops 1 to allow a connection
 ```
 
 ## Live prices and the API
@@ -131,6 +161,16 @@ Results are cached in the function for 15 minutes, so reopening a card you
 just checked is instant and Google sees a fraction of the traffic. The header
 **Refresh** button sets `fresh` and re-queries everything currently on screen;
 a card's own **⟳** does the same for just that holiday.
+
+**The page never sends a whole holiday in one request.** Two upstream limits
+decide the batch size: the function rejects more than 60 queries, and the HTTP
+API in front of it abandons the integration at 29 seconds — and ten
+destinations across four windows is already 44 lookups, well past what eight
+worker threads finish inside that budget. The dashboard therefore splits any
+query list into chunks of 16 (two full rounds of workers) and sends them one
+after another, which also keeps the warm container's cache in play instead of
+fanning out across cold copies. Only the first chunk carries `fresh`, so a
+later chunk cannot evict what the earlier ones just fetched.
 
 Because the repository is public the endpoint URL is too, so the API Gateway
 stage is throttled (5 requests/second, burst 10) to bound what a stranger can
@@ -202,7 +242,7 @@ on what the dashboard shows; that comes from the API and your browser.
 | `alerts.default_drop_pct` | How far below the median counts as a deal |
 | `alerts.resend_after_days` | Cooldown before re-alerting an unchanged fare |
 | `destinations[].airports` | Optional. Airports this destination covers; each is priced and the cheaper wins |
-| `destinations[].max_stops` | `0` for nonstop only, `1` to allow a connection |
+| `destinations[].max_stops` | `0` for nonstop only (what `manage.py add` sets unless told otherwise), `1` to allow a connection |
 | `destinations[].alert_below` | Absolute price target for manual-sweep alerts |
 
 **A destination can span several airports.** Bangkok is configured as
