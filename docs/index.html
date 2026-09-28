@@ -668,7 +668,23 @@
   .fare .fp { font: 600 15px 'IBM Plex Mono', ui-monospace, monospace; text-align: right; }
   .fare .fm { font-size: 12px; color: var(--text-muted); }
   .fare .fl { text-align: right; font-size: 12px; }
+  .flex-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .flex-chip {
+    display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 0 12px; border-radius: 17px;
+    border: 1px solid var(--border); background: var(--surface-1); color: var(--text-secondary);
+    font: inherit; font-size: 12px; font-weight: 600; cursor: pointer;
+  }
+  .flex-chip:hover { color: var(--text-primary); border-color: var(--axis); }
+  .flex-chip[aria-pressed="true"] { border-color: var(--accent); color: var(--text-primary); background: color-mix(in srgb, var(--accent) 12%, transparent); }
+  .flex-chip i { width: 8px; height: 8px; border-radius: 50%; }
+  .flex-best { font-size: 13px; color: var(--text-secondary); margin: 2px 0 8px; }
+  .flex-best b { color: var(--text-primary); }
+  .flex-holiday td { padding: 4px 6px; line-height: 1.2; }
+  .flex-holiday td a { color: inherit; text-decoration: none; display: block; }
+  .flex-holiday td small { display: block; font-size: 9px; opacity: .85; font-weight: 400; }
   details.more { margin: 20px 0 8px; }
+  .hidden-note { grid-column: 1 / -1; margin: 0; font-size: 12px; color: var(--text-muted); }
+  #chart-tools:empty { display: none; }
   details.more > summary { font-weight: 600; }
   @media (max-width: 900px) { .detail { grid-template-columns: 1fr; } }
   @media (max-width: 680px) {
@@ -775,6 +791,7 @@
         <h2>Cheapest return fare, holiday by holiday</h2>
         <p class="sub">One dot per city — its lowest fare within your leave. Tap a holiday to open it, or to price it.</p>
       </div>
+      <span id="chart-tools"></span>
       <div class="legend" id="chart-legend"></div>
     </div>
     <div class="chart-scroll" id="chart"></div>
@@ -1672,9 +1689,6 @@ const COLUMNS = [
   { key: 'dest', label: 'Destination', field: 'name' },
   { key: 'window', label: 'Window', field: 'depart' },
   { key: 'now', label: 'Price', field: 'now', num: true },
-  // A 9-night window costing more than a 3-night one is not the same as being
-  // worse value, and nothing else on the row makes that comparable.
-  { key: 'pernight', label: 'Per night', field: 'pernight', num: true },
   { key: 'carrier', label: 'Carrier', field: 'carrier' },
   { key: 'stops', label: 'Stops', field: 'stops' },
   { key: 'journey', label: 'Journey', field: 'journey', num: true },
@@ -1755,6 +1769,13 @@ const selectedDests = () => DESTS.filter(d => SELECTED.has(d.code));
 const upcomingBreaks = () => (PLAN ? PLAN.breaks.filter(b => windowsForBreak(b, 3).length) : []);
 const fareFor = (code, w) => LIVE.get(`${code}|${w.depart}|${w['return']}`);
 
+/* Booked holidays are already decided, so by default they step out of the
+   chart and the card list and the rest get the width and the price scale. */
+const HIDE_KEY = 'sgfares.hidebooked.v1';
+let HIDE_BOOKED = recall(HIDE_KEY) !== '0';
+const bookedCount = () => upcomingBreaks().filter(b => isBooked(b.anchor)).length;
+const visibleBreaks = () => upcomingBreaks().filter(b => !(HIDE_BOOKED && isBooked(b.anchor)));
+
 /* Each selected city's cheapest priced fare for a holiday, within the leave
    budget. Ties go to the option that spends less leave. */
 function perDest(brk, maxLeave) {
@@ -1784,9 +1805,9 @@ function cheapestFor(brk, maxLeave) {
 
 /* One scale for the chart and every card's bars, rounded up so the axis reads
    in whole hundreds. */
-function priceScale(maxLeave) {
+function priceScale(maxLeave, breaks = upcomingBreaks()) {
   let hi = 0;
-  for (const brk of upcomingBreaks()) for (const x of perDest(brk, maxLeave).values()) hi = Math.max(hi, x.price);
+  for (const brk of breaks) for (const x of perDest(brk, maxLeave).values()) hi = Math.max(hi, x.price);
   const step = hi > 3000 ? 1000 : 500;
   return Math.max(500, Math.ceil(hi / step) * step);
 }
@@ -1944,7 +1965,7 @@ function renderInsights(ranked, maxLeave) {
       <span class="eyebrow">Best value break · ${maxLeave === 0 ? 'no leave' : `up to ${esc(leaveWord(maxLeave))}`}</span>
       <h2 class="hero-title">${esc(brk.name)} in ${esc(best.dest.name)}</h2>
       <div class="hero-price">${CURRENCY} ${fmt(best.price)}<small>return${NONSTOP_ONLY ? ', nonstop' : ''}</small></div>
-      <div class="hero-sub">${esc(fmtRange(w))} · ${w.nights + 1} days off for ${esc(leaveWord(w.leave_days))} · ${CURRENCY} ${fmt(best.price / (w.nights || 1))} a night</div>
+      <div class="hero-sub">${esc(fmtRange(w))} · ${w.nights + 1} days off for ${esc(leaveWord(w.leave_days))}</div>
       ${stripHtml(w, 'lg')}
       <button class="hero-go" type="button" data-anchor="${esc(brk.anchor)}">See every fare for this holiday →</button>
     </div>` + cards.map(c => `<div class="insight">
@@ -1962,8 +1983,11 @@ document.getElementById('insights').addEventListener('click', event => {
 function renderChart(maxLeave, max) {
   const el = document.getElementById('chart');
   const legend = document.getElementById('chart-legend');
-  const breaks = upcomingBreaks();
+  const breaks = visibleBreaks();
   const dests = selectedDests();
+  const booked = bookedCount();
+  document.getElementById('chart-tools').innerHTML = booked
+    ? `<button type="button" class="flex-chip" id="hide-booked" aria-pressed="${HIDE_BOOKED}">Hide ${booked} booked holiday${booked === 1 ? '' : 's'}</button>` : '';
   legend.innerHTML = dests.map(d => `<span><i style="background:${colorFor(d.code)}"></i>${esc(d.name)}</span>`).join('');
   if (!breaks.length || !dests.length) { el.innerHTML = ''; return; }
 
@@ -2017,6 +2041,18 @@ function renderChart(maxLeave, max) {
     </div>`;
 }
 
+function setHideBooked(hide) {
+  HIDE_BOOKED = hide;
+  remember(HIDE_KEY, hide ? '1' : '0');
+  render();
+}
+document.getElementById('chart-tools').addEventListener('click', event => {
+  if (event.target.closest('#hide-booked')) setHideBooked(!HIDE_BOOKED);
+});
+document.getElementById('out').addEventListener('click', event => {
+  if (event.target.closest('[data-show-booked]')) setHideBooked(false);
+});
+
 document.getElementById('chart').addEventListener('click', event => {
   const anchor = event.target.closest('.chart-col')?.dataset.anchor;
   if (anchor) openHoliday(anchor);
@@ -2051,7 +2087,6 @@ function fareTable(brk, windows) {
     label: r.window.label,
     depart: r.window.depart,
     now: r.result.best.price,
-    pernight: r.window.nights ? Math.round(r.result.best.price / r.window.nights) : null,
     carrier: (r.result.best.airlines || []).join(', '),
     stops: r.result.best.stops,
     journey: r.result.best.duration,
@@ -2062,7 +2097,6 @@ function fareTable(brk, windows) {
       <td class="name" data-label="Destination">${esc(r.name)} <span class="meta">${esc(r.code)}</span></td>
       <td data-label="Window">${esc(r.label)}</td>
       <td class="num" data-label="Price">${esc(CURRENCY)} ${r.now.toLocaleString()}</td>
-      <td class="num" data-label="Per night">${r.pernight == null ? '—' : esc(CURRENCY) + ' ' + r.pernight.toLocaleString()}</td>
       <td data-label="Carrier">${esc(r.carrier || '—')}</td>
       <td data-label="Stops">${r.stops === 0 ? 'nonstop' : r.stops == null ? '—' : r.stops + ' stop'}</td>
       <td class="num" data-label="Journey">${esc(fmtDuration(r.journey))}</td>
@@ -2122,7 +2156,7 @@ function detailHtml(brk, windows, top) {
       const p = r.best.price;
       const bucket = hi === lo ? 0 : Math.min(4, Math.floor((p - lo) / (hi - lo) * 4.999));
       const tip = [d.name, fmtRange(w), (r.best.airlines || []).join(', '), stopsText(r.best.stops), fmtDuration(r.best.duration)].filter(Boolean).join(' · ');
-      const inner = `${fmt(p)}<small>${fmt(p / (w.nights || 1))}/night</small>`;
+      const inner = fmt(p);
       return r.book
         ? `<a class="cell heat-${bucket}${w === sel ? ' sel' : ''}" href="${esc(r.book)}" target="_blank" rel="noopener noreferrer" title="${esc(tip)} — open in Google Flights">${inner}</a>`
         : `<span class="cell heat-${bucket}${w === sel ? ' sel' : ''}" title="${esc(tip)}">${inner}</span>`;
@@ -2170,7 +2204,7 @@ function detailHtml(brk, windows, top) {
     .map(({ d, r }) => `<div class="fare">
         <span class="fc"><i style="background:${colorFor(d.code)}"></i>${esc(d.name)} <span class="meta">${esc(r.airport || d.code)}</span></span>
         <span class="fp">${CURRENCY} ${fmt(r.best.price)}</span>
-        <span class="fm">${esc([(r.best.airlines || []).join(', '), stopsText(r.best.stops), fmtDuration(r.best.duration), `${CURRENCY} ${fmt(r.best.price / (sel.nights || 1))}/night`].filter(Boolean).join(' · '))}</span>
+        <span class="fm">${esc([(r.best.airlines || []).join(', '), stopsText(r.best.stops), fmtDuration(r.best.duration)].filter(Boolean).join(' · '))}</span>
         ${r.book ? `<a class="fl book" href="${esc(r.book)}" target="_blank" rel="noopener noreferrer">Google Flights ↗</a>` : '<span></span>'}
       </div>`).join('');
 
@@ -2181,8 +2215,9 @@ function detailHtml(brk, windows, top) {
         <div class="ladder">${ladderHead}${ladderRows}</div>
         <div class="dk-key"><span><i class="dk dk-H"></i>Public holiday</span><span><i class="dk dk-L"></i>Day of leave</span><span><i class="dk dk-W"></i>Weekend</span><span><i class="dk dk-off"></i>At work</span></div>
         <h3 class="gap">Every city, every option</h3>
-        <p class="hint">Each row is coloured on its own — darkest is that city's cheapest option. Tap a fare to open it in Google Flights.</p>
+        <p class="hint">Each row is coloured on its own — the strongest blue is that city's cheapest option. Tap a fare to open it in Google Flights.</p>
         ${grid}
+        ${flexHtml(anchor, sel, dests.filter(d => ordered.some(w => fareFor(d.code, w)?.best)))}
       </div>
       <div>
         ${buys}
@@ -2252,6 +2287,131 @@ function renderHoliday(brk, maxLeave, openByDefault, max) {
   return shell(summary, openByDefault ? detailHtml(brk, windows, top) : '');
 }
 
+/* ═══ ±3 days around a holiday option ═══
+   The holiday windows are fixed by the calendar, but a fare can drop a lot a
+   day either side. For one city at a time (49 date pairs is a lot to ask of
+   the API), price every depart/return within FLEX_SPAN days of the picked
+   option and show what each shift costs in leave. */
+const FLEX = new Map();       // "code|depart|return|stops" -> Map("d,r" -> result|null) | 'loading' | 'failed'
+const FLEX_PICK = new Map();  // anchor -> dest code whose grid is showing
+
+const stopsFor = dest => (NONSTOP_ONLY ? 0 : dest.maxStops ?? 1);
+const flexKey = (code, w, stops) => `${code}|${w.depart}|${w['return']}|${stops}`;
+const leaveNeeded = (depart, ret) => eachDay(depart, ret)
+  .filter(k => { const d = parse(k).getDay(); return d !== 0 && d !== 6 && !PLAN.holidays[k]; }).length;
+
+function selectedWindow(brk) {
+  const windows = windowsForBreak(brk, currentLeave());
+  const picked = windows.find(w => `${w.depart}|${w['return']}` === SEL.get(brk.anchor));
+  return picked || cheapestFor(brk, currentLeave())?.window || windows[0];
+}
+
+async function loadFlex(dest, w) {
+  const stops = stopsFor(dest);
+  const key = flexKey(dest.code, w, stops);
+  if (FLEX.has(key) && FLEX.get(key) !== 'failed') return;
+  FLEX.set(key, 'loading');
+  render();
+  const today = iso(new Date());
+  const cells = [];
+  for (let d = -FLEX_SPAN; d <= FLEX_SPAN; d++) {
+    for (let r = -FLEX_SPAN; r <= FLEX_SPAN; r++) {
+      const depart = addDays(w.depart, d), ret = addDays(w['return'], r);
+      if (ret <= depart || depart < today) continue;
+      for (const airport of airportsOf(dest)) cells.push({ d, r, q: { dest: airport, depart, ret, maxStops: stops } });
+    }
+  }
+  try {
+    const results = await faresRequest(cells.map(c => c.q));
+    const grid = new Map();
+    cells.forEach((c, i) => {
+      const k = `${c.d},${c.r}`, res = results[i];
+      if (!grid.has(k)) grid.set(k, null);
+      if (res?.best && (!grid.get(k) || res.best.price < grid.get(k).best.price)) grid.set(k, res);
+    });
+    FLEX.set(key, grid);
+  } catch (error) {
+    FLEX.set(key, 'failed');
+    console.warn('±3 days failed', error);
+  }
+  render();
+}
+
+function flexHtml(anchor, sel, dests) {
+  if (!dests.length) return '';
+  const code = FLEX_PICK.get(anchor);
+  const chips = dests.map(d => `<button type="button" class="flex-chip" data-flex="${esc(anchor)}|${esc(d.code)}" aria-pressed="${d.code === code}">
+      <i style="background:${colorFor(d.code)}"></i>${esc(d.name)}</button>`).join('');
+  let body = '';
+  const dest = code && DESTS.find(d => d.code === code);
+  if (dest) {
+    const state = FLEX.get(flexKey(code, sel, stopsFor(dest)));
+    if (!state || state === 'loading') {
+      body = `<div class="flex-matrix-loading"><span class="spin"></span> Checking ${esc(dest.name)} for every date pair within ${FLEX_SPAN} days of ${esc(shortRange(sel))}…</div>`;
+    } else if (state === 'failed') {
+      body = `<p class="note">Couldn't check the nearby dates — tap ${esc(dest.name)} again to retry.</p>`;
+    } else {
+      body = flexMatrix(dest, sel, state);
+    }
+  }
+  return `<h3 class="gap">Shift the dates ±${FLEX_SPAN} days</h3>
+    <p class="hint">Would leaving earlier or coming back later be cheaper? Pick a city to price every date pair around ${esc(shortRange(sel))}.</p>
+    <div class="flex-chips">${chips}</div>${body}`;
+}
+
+function flexMatrix(dest, sel, grid) {
+  const offsets = [];
+  for (let i = -FLEX_SPAN; i <= FLEX_SPAN; i++) offsets.push(i);
+  const priced = [...grid.entries()].filter(([, r]) => r?.best);
+  if (!priced.length) return `<p class="note">No fares found around these dates.</p>`;
+  const prices = priced.map(([, r]) => r.best.price);
+  const lo = Math.min(...prices), hi = Math.max(...prices);
+  const dayLabel = (date, n) => { const d = parse(addDays(date, n)); return `${WD(d)} ${d.getDate()}`; };
+
+  const base = grid.get('0,0');
+  const [bestKey, best] = priced.reduce((a, b) => (b[1].best.price < a[1].best.price ? b : a));
+  const [bd, br] = bestKey.split(',').map(Number);
+  const bestDep = addDays(sel.depart, bd), bestRet = addDays(sel['return'], br);
+  const extraLeave = leaveNeeded(bestDep, bestRet) - leaveNeeded(sel.depart, sel['return']);
+  let verdict;
+  if (bestKey === '0,0') verdict = `<b>Your dates are already the cheapest</b> within ${FLEX_SPAN} days.`;
+  else {
+    const range = `${fmtWeekday(parse(bestDep))} – ${fmtWeekday(parse(bestRet))}`;
+    const saving = base?.best ? `, ${CURRENCY} ${fmt(base.best.price - best.best.price)} less than your dates` : '';
+    const leave = extraLeave > 0 ? ` for ${extraLeave} more day${extraLeave === 1 ? '' : 's'} of leave`
+      : extraLeave < 0 ? ` with ${-extraLeave} fewer day${extraLeave === -1 ? '' : 's'} of leave` : ' with the same leave';
+    verdict = `Cheapest nearby: <b>${esc(range)}</b> at <b>${CURRENCY} ${fmt(best.best.price)}</b>${saving}${leave}.`;
+  }
+
+  const head = offsets.map(r => `<th>${esc(dayLabel(sel['return'], r))}</th>`).join('');
+  const rows = offsets.map(d => {
+    const cells = offsets.map(r => {
+      const k = `${d},${r}`;
+      const classes = [];
+      if (d === 0 && r === 0) classes.push('searched');
+      if (!grid.has(k)) return `<td class="na${classes.length ? ' ' + classes.join(' ') : ''}"></td>`;
+      const res = grid.get(k);
+      if (!res?.best) return `<td class="na ${classes.join(' ')}">—</td>`;
+      const p = res.best.price;
+      if (p === lo) classes.push('cheapest');
+      const leave = leaveNeeded(addDays(sel.depart, d), addDays(sel['return'], r));
+      const tip = `${fmtWeekday(parse(addDays(sel.depart, d)))} – ${fmtWeekday(parse(addDays(sel['return'], r)))} · ${leaveWord(leave)}${res.best.airlines?.length ? ' · ' + res.best.airlines.join(', ') : ''}`;
+      const inner = `${fmt(p)}<small>${leave ? `${leave}d leave` : 'no leave'}</small>`;
+      return `<td class="${classes.join(' ')}" style="${heatStyle(hi === lo ? 0 : (p - lo) / (hi - lo))}" title="${esc(tip)}">${
+        res.book ? `<a href="${esc(res.book)}" target="_blank" rel="noopener noreferrer">${inner}</a>` : inner}</td>`;
+    }).join('');
+    return `<tr><th>${esc(dayLabel(sel.depart, d))}</th>${cells}</tr>`;
+  }).join('');
+
+  return `<p class="flex-best">${verdict}</p>
+    <div class="flex-matrix-wrap"><table class="flex-matrix flex-holiday">
+      <caption>${esc(dest.name)} — depart (rows) × return (columns), ${esc(CURRENCY)}. Outlined = the option you picked.</caption>
+      <thead><tr><th class="corner"></th>${head}</tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div class="heat-legend"><span>Cheapest</span><span class="bar"></span><span>Most expensive</span></div></div>`;
+}
+
 /* Set by render() before the cards are built, read by renderHoliday. */
 let CHEAPEST_ANCHOR = null;
 
@@ -2259,7 +2419,7 @@ function render() {
   if (!PLAN) return;
   const out = document.getElementById('out');
   const maxLeave = currentLeave();
-  const breaks = upcomingBreaks();
+  const breaks = visibleBreaks();
 
   // Priced holidays, cheapest first — booked ones are already spoken for, so
   // they never win the answer card.
@@ -2270,7 +2430,7 @@ function render() {
     .sort((a, b) => a.best.price - b.best.price || a.best.window.leave_days - b.best.window.leave_days);
 
   CHEAPEST_ANCHOR = ranked.length > 1 ? ranked[0].brk.anchor : null;
-  const max = priceScale(maxLeave);
+  const max = priceScale(maxLeave, breaks);
   renderInsights(ranked, maxLeave);
   renderChart(maxLeave, max);
 
@@ -2281,8 +2441,10 @@ function render() {
     ? [...breaks].sort((a, b) => rankOf(a) - rankOf(b) || (a.anchor < b.anchor ? -1 : a.anchor > b.anchor ? 1 : 0))
     : breaks;
 
-  out.innerHTML = list.map(brk => renderHoliday(brk, maxLeave, OPEN.has(brk.anchor), max)).join('')
-    || `<div class="empty">No upcoming holidays found.</div>`;
+  const hidden = HIDE_BOOKED ? bookedCount() : 0;
+  out.innerHTML = (hidden ? `<p class="hidden-note">${hidden} booked holiday${hidden === 1 ? '' : 's'} hidden · <button type="button" class="linkish" data-show-booked>show</button></p>` : '')
+    + (list.map(brk => renderHoliday(brk, maxLeave, OPEN.has(brk.anchor), max)).join('')
+      || `<div class="empty">No upcoming holidays found.</div>`);
 
   out.querySelectorAll('details.holiday').forEach(card => {
     card.querySelector('summary').addEventListener('click', event => {
@@ -2305,10 +2467,22 @@ function render() {
 }
 
 document.getElementById('out').addEventListener('click', event => {
+  const chip = event.target.closest('.flex-chip[data-flex]');
+  if (chip) {
+    const [anchor, code] = chip.dataset.flex.split('|');
+    if (FLEX_PICK.get(anchor) === code) { FLEX_PICK.delete(anchor); render(); return; }
+    FLEX_PICK.set(anchor, code);
+    const brk = PLAN.breaks.find(b => b.anchor === anchor);
+    loadFlex(DESTS.find(d => d.code === code), selectedWindow(brk));
+    render();
+    return;
+  }
   const row = event.target.closest('.ladder-row[data-sel]');
   if (!row) return;
   const [anchor, depart, ret] = row.dataset.sel.split('|');
   SEL.set(anchor, `${depart}|${ret}`);
+  const code = FLEX_PICK.get(anchor);
+  if (code) loadFlex(DESTS.find(d => d.code === code), selectedWindow(PLAN.breaks.find(b => b.anchor === anchor)));
   render();
 });
 // toggle does not bubble; capture it so the full table stays open across renders.

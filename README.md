@@ -70,7 +70,7 @@ always agree.
 
 - **Best value break** — the cheapest trip across every holiday priced so
   far, with its dates drawn as a strip of holiday / leave / weekend days and
-  the cost per night. Holidays already booked in your calendar never win it.
+  how much leave it takes. Holidays already booked in your calendar never win it.
 - **Insights** — up to three findings computed from the prices on screen:
   a holiday where taking leave makes the fare *cheaper* than the plain long
   weekend, the holiday that costs most for the most cities, and the city that
@@ -87,6 +87,11 @@ always agree.
   most leave buys over the plain holiday, the fares for the option you pick
   (each links to the exact Google Flights search), and the full sortable
   table underneath.
+- **Shift the dates ±3 days** — inside an opened holiday, pick a city to
+  price every depart/return pair within three days of the chosen option (49
+  pairs, one city at a time — about half a minute). Each cell shows the
+  leave that pair needs, and a line above names the cheapest nearby pair
+  and what it saves against your dates.
 
 **Every** future public holiday gets a card and a column, and nothing is
 priced until you ask. Past holidays and windows that have already departed
@@ -107,7 +112,8 @@ browser — nothing is sent anywhere but Google) and marks holidays you have
 already booked: flight and hotel events Gmail added, out-of-office and
 "leave"/"trip"-style events, and all-day plans. Booked holidays get a
 **booked** badge, are skipped by *Price every holiday*, and never win the
-answer card. Only the matching events' titles and dates are kept, in local
+answer card. **Hide booked holidays** (on by default) takes them out of the
+chart and the card list, so the price scale fits the holidays still open. Only the matching events' titles and dates are kept, in local
 storage; **Forget** removes them and revokes the token.
 
 It stays hidden until `GOOGLE_CLIENT_ID` in `docs/index.html` is set. To get
