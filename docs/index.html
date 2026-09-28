@@ -2342,6 +2342,10 @@ const GOOGLE_CLIENT_ID = '124489287192-hg8e496hk8rm9n706acsfmqjtuneo6is.apps.goo
 const CAL_KEY = 'sgfares.calendar.v1';
 const CAL_SCOPE = 'https://www.googleapis.com/auth/calendar.readonly';
 const TRIP_WORDS = /\b(flights?|hotel|stay at|check[- ]?in|trip|vacation|travel|airbnb|resort|getaway|annual leave|on leave|ooo|out of office)\b|✈/i;
+// An airline, or a flight number like "FD 305", "SQ818" or "TR-614", marks a
+// flight whatever else the title says ("Thai AirAsia FD-305").
+const AIRLINE_WORDS = /\b(airasia|scoot|jetstar|airlines?|airways|lion air|batik|vietjet|cebu pacific|garuda|emirates|qatar|qantas|eva air|starlux|korean air|asiana|peach|zipair)\b/i;
+const FLIGHT_NO = /\b[A-Z]{2}[ -]?\d{2,4}\b/;
 let CAL = (() => { try { return JSON.parse(localStorage.getItem(CAL_KEY) || 'null'); } catch { return null; } })();
 let calToken = null;
 
@@ -2406,8 +2410,13 @@ function classifyEvent(ev, holidayNames) {
   if (ev.status === 'cancelled' || ['birthday', 'workingLocation', 'focusTime'].includes(ev.eventType)) return null;
   if ((ev.attendees || []).some(a => a.self && a.responseStatus === 'declined')) return null;
   const title = (ev.summary || '').trim();
-  if (!title || holidayNames.has(title.toLowerCase()) || /public holiday/i.test(title)) return null;
-  if (ev.eventType === 'fromGmail' || ev.eventType === 'outOfOffice' || TRIP_WORDS.test(title)) return 'trip';
+  if (!title) return null;
+  if (ev.eventType === 'fromGmail' || ev.eventType === 'outOfOffice'
+    || TRIP_WORDS.test(title) || AIRLINE_WORDS.test(title) || FLIGHT_NO.test(title)) return 'trip';
+  // The holiday itself, copied into a personal calendar ("Hari Raya Puasa
+  // (tentative)"), is not a plan.
+  const lower = title.toLowerCase();
+  if (/public holiday/.test(lower) || [...holidayNames].some(name => lower.includes(name))) return null;
   return ev.start?.date ? 'busy' : null; // all-day plans; ordinary timed events don't block a trip
 }
 
@@ -2432,6 +2441,10 @@ function calendarByBreak(events) {
       if (!kind) continue;
       const [start, end] = eventDays(ev);
       if (start > to || end < from) continue;
+      // Only touching the window's edge while running outside it is a
+      // different trip: checking out of a hotel on the first day, or flying
+      // off on the last.
+      if ((start < from && end === from) || (end > to && start === to)) continue;
       const id = `${ev.summary}|${start}`;
       if (seen.has(id)) continue;
       seen.add(id);
