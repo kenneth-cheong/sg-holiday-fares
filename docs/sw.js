@@ -2,7 +2,7 @@
    error page. Network first for everything on this origin, falling back to the
    last copy; prices come from the API on another origin and are never touched
    here, so nothing about a fare is ever served stale. */
-const CACHE = 'sg-fares-shell-v2';
+const CACHE = 'sg-fares-shell-v3';
 const SHELL = [
   './', 'index.html', 'manifest.webmanifest',
   'data/plan.json', 'data/airports.json',
@@ -25,8 +25,14 @@ self.addEventListener('fetch', event => {
   const { request } = event;
   if (request.method !== 'GET' || new URL(request.url).origin !== location.origin) return;
 
+  // GitHub Pages sends max-age=600, so a plain fetch can hand back a page up
+  // to ten minutes behind a deploy; revalidating the page itself is one
+  // cheap 304 when nothing changed.
+  const network = request.mode === 'navigate'
+    ? fetch(new Request(request.url, { cache: 'no-cache', credentials: 'same-origin' }))
+    : fetch(request);
   event.respondWith(
-    fetch(request)
+    network
       .then(response => {
         if (response.ok) {
           const copy = response.clone();
