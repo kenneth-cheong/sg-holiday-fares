@@ -2336,7 +2336,9 @@ document.getElementById('leave').addEventListener('click', event => {
    what is kept (in local storage, so a reload still shows it) is just the
    title and dates of each matching event. With no client ID configured the
    whole feature stays hidden. */
-const GOOGLE_CLIENT_ID = '';
+// OAuth web client in the personal "SG Fares" Cloud project (sg-fares); a
+// client ID is public by design — it identifies the app, it grants nothing.
+const GOOGLE_CLIENT_ID = '124489287192-hg8e496hk8rm9n706acsfmqjtuneo6is.apps.googleusercontent.com';
 const CAL_KEY = 'sgfares.calendar.v1';
 const CAL_SCOPE = 'https://www.googleapis.com/auth/calendar.readonly';
 const TRIP_WORDS = /\b(flights?|hotel|stay at|check[- ]?in|trip|vacation|travel|airbnb|resort|getaway|annual leave|on leave|ooo|out of office)\b|✈/i;
