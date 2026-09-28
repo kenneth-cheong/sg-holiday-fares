@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Singapore holiday fares</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="SG Fares">
+<meta name="theme-color" content="#f9f9f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d0d0d" media="(prefers-color-scheme: dark)">
 <style>
   :root {
     color-scheme: light;
@@ -75,6 +83,11 @@
     border-radius: 8px; padding: 5px 11px; font: inherit; font-size: 13px; cursor: pointer;
   }
   #theme:hover { color: var(--text-primary); }
+  #install {
+    background: none; border: 1px solid var(--series-1); color: var(--series-1);
+    border-radius: 8px; padding: 5px 11px; font: inherit; font-size: 13px; cursor: pointer;
+  }
+  #install[hidden] { display: none; }
   .refresh {
     margin-left: auto; color: var(--text-secondary); font: inherit; font-size: 13px; cursor: pointer;
     background: none; border: 1px solid var(--border); border-radius: 8px; padding: 5px 11px;
@@ -459,6 +472,9 @@
     <button class="refresh" id="refresh" type="button"
             title="Re-query every fare now, ignoring the 15-minute cache">Refresh</button>
     <button id="theme" type="button">Theme</button>
+    <!-- Only shown where the browser offers installation (Chrome, Edge,
+         Android); Safari installs from Share → Add to Home Screen instead. -->
+    <button id="install" type="button" hidden title="Install as an app">Install</button>
   </header>
 
   <div id="controls" hidden>
@@ -1833,6 +1849,26 @@ document.getElementById('theme').addEventListener('click', () => {
   const now = document.documentElement.getAttribute('data-theme') || (dark ? 'dark' : 'light');
   document.documentElement.setAttribute('data-theme', now === 'dark' ? 'light' : 'dark');
 });
+
+/* ═══ Installable app ═══ */
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => { /* file:// or blocked — page still works */ });
+}
+let installPrompt = null;
+const installButton = document.getElementById('install');
+addEventListener('beforeinstallprompt', event => {
+  event.preventDefault();
+  installPrompt = event;
+  installButton.hidden = false;
+});
+installButton.addEventListener('click', async () => {
+  if (!installPrompt) return;
+  installPrompt.prompt();
+  await installPrompt.userChoice;
+  installPrompt = null;
+  installButton.hidden = true;
+});
+addEventListener('appinstalled', () => { installPrompt = null; installButton.hidden = true; });
 
 /* ═══ Boot ═══
    No dashboard.json, no history — plan.json (holidays + windows) is the only
