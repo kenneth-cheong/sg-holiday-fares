@@ -955,12 +955,19 @@ let SELECTED = new Set();
 let WRITABLE = false;     // the API accepts writes (an edit key is configured on it)
 let SHARED = false;       // this list came from the API rather than the browser
 
+// Mirrors config.json's destinations, so the page and the sweep agree even
+// when the API holds no shared list.
 const STARTER_DESTINATIONS = [
-  { code: 'BKK', name: 'Bangkok', airports: ['BKK', 'DMK'], maxStops: 0 },
-  { code: 'TPE', name: 'Taipei', airports: ['TPE'], maxStops: 0 },
-  { code: 'HKG', name: 'Hong Kong', airports: ['HKG'], maxStops: 0 },
-  { code: 'HND', name: 'Tokyo', airports: ['HND'], maxStops: 0 },
-  { code: 'ICN', name: 'Seoul', airports: ['ICN'], maxStops: 0 },
+  { code: 'BKK', name: 'Bangkok', airports: ['BKK', 'DMK'], maxStops: 0, alertBelow: 310 },
+  { code: 'TPE', name: 'Taipei', airports: ['TPE'], maxStops: 0, alertBelow: 360 },
+  { code: 'HKG', name: 'Hong Kong', airports: ['HKG'], maxStops: 0, alertBelow: 500 },
+  { code: 'HND', name: 'Tokyo', airports: ['HND'], maxStops: 0, alertBelow: 1150 },
+  { code: 'ICN', name: 'Seoul', airports: ['ICN'], maxStops: 0, alertBelow: 710 },
+  { code: 'PEK', name: 'Beijing', airports: ['PEK'], maxStops: 0, alertBelow: 670 },
+  { code: 'CAN', name: 'Guangzhou', airports: ['CAN'], maxStops: 0, alertBelow: 640 },
+  { code: 'SZX', name: 'Shenzhen', airports: ['SZX'], maxStops: 0, alertBelow: 650 },
+  { code: 'HGH', name: 'Hangzhou', airports: ['HGH'], maxStops: 0, alertBelow: null },
+  { code: 'NKG', name: 'Nanjing', airports: ['NKG'], maxStops: 0, alertBelow: 1010 },
 ];
 
 const airportsOf = dest => (dest.airports && dest.airports.length ? dest.airports : [dest.code]);
