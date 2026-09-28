@@ -2,7 +2,7 @@
    error page. Network first for everything on this origin, falling back to the
    last copy; prices come from the API on another origin and are never touched
    here, so nothing about a fare is ever served stale. */
-const CACHE = 'sg-fares-shell-v1';
+const CACHE = 'sg-fares-shell-v2';
 const SHELL = [
   './', 'index.html', 'manifest.webmanifest',
   'data/plan.json', 'data/airports.json',

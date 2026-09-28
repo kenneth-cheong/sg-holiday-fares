@@ -6,27 +6,36 @@
 <meta name="robots" content="noindex">
 <title>Singapore holiday fares</title>
 <link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>try { const t = localStorage.getItem('sgfares.theme.v1'); if (t) document.documentElement.setAttribute('data-theme', t); } catch {}</script>
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="SG Fares">
-<meta name="theme-color" content="#f9f9f7" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0d0d0d" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f6f4ef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#111214" media="(prefers-color-scheme: dark)">
 <style>
   :root {
     color-scheme: light;
-    --surface-1: #fcfcfb;
-    --page: #f9f9f7;
-    --text-primary: #0b0b0b;
-    --text-secondary: #52514e;
-    --text-muted: #898781;
-    --grid: #e1e0d9;
-    --axis: #c3c2b7;
-    --border: rgba(11, 11, 11, 0.10);
-    --good: #006300;
-    --series-1: #2a78d6; --series-2: #eb6834; --series-3: #1baf7a; --series-4: #eda100;
-    --series-5: #e87ba4; --series-6: #008300; --series-7: #4a3aa7; --series-8: #e34948;
+    --surface-1: #ffffff;
+    --page: #f6f4ef;
+    --text-primary: #15171c;
+    --text-secondary: #3f434b;
+    --text-muted: #666a73;
+    --grid: #ece8df;
+    --axis: #cfcabe;
+    --border: #e3e0d8;
+    --good: #0b6b34;
+    --accent: #1d4fb8;
+    --hero-bg: #15171c;
+    --dk-h: #15171c; --dk-h-fg: #ffffff; --dk-l: #b8501a; --dk-w: #d3cfc4;
+    --h0: #1b4db3; --h0-fg: #fff; --h1: #3d6fd0; --h1-fg: #fff; --h2: #8fb0ec; --h2-fg: #15171c;
+    --h3: #c9d8f6; --h3-fg: #15171c; --h4: #eef2fa; --h4-fg: #15171c;
+    --series-1: #2a78d6; --series-2: #eb6834; --series-3: #1baf7a; --series-4: #7a5ae0; --series-5: #e0508a;
+    --series-6: #c99a06; --series-7: #1597b0; --series-8: #b3452f; --series-9: #6b7a8f; --series-10: #8a6a3c;
     /* Flex-matrix heatmap: green (cheapest) through amber to dark red (priciest).
        Kept at a similar mid-dark lightness across all three stops so white cell
        text stays readable at any point on the scale, not just the endpoints. */
@@ -35,33 +44,43 @@
   @media (prefers-color-scheme: dark) {
     :root:where(:not([data-theme="light"])) {
       color-scheme: dark;
-      --surface-1: #1a1a19;
-      --page: #0d0d0d;
-      --text-primary: #ffffff;
-      --text-secondary: #c3c2b7;
-      --text-muted: #898781;
-      --grid: #2c2c2a;
-      --axis: #383835;
+      --surface-1: #1b1c1f;
+      --page: #111214;
+      --text-primary: #f2f1ee;
+      --text-secondary: #c9ccd3;
+      --text-muted: #9a9ea7;
+      --grid: #2a2c31;
+      --axis: #454852;
       --border: rgba(255, 255, 255, 0.10);
-      --good: #0ca30c;
-      --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70; --series-4: #c98500;
-      --series-5: #d55181; --series-6: #008300; --series-7: #9085e9; --series-8: #e66767;
+      --good: #4cc27a;
+      --accent: #7aa2f7;
+      --hero-bg: #22304f;
+      --dk-h: #f2f1ee; --dk-h-fg: #15171c; --dk-l: #b8501a; --dk-w: #3a3d45;
+      --h0: #8db1ff; --h0-fg: #0b1020; --h1: #5b87e0; --h1-fg: #0b1020; --h2: #34549a; --h2-fg: #fff;
+      --h3: #26365c; --h3-fg: #e3e8f4; --h4: #1f2533; --h4-fg: #c9d2e3;
+      --series-1: #4a90f0; --series-2: #f07a45; --series-3: #2cc48c; --series-4: #9a84f5; --series-5: #ee6fa3;
+      --series-6: #e0b030; --series-7: #33b5cf; --series-8: #d9654c; --series-9: #8d9bb0; --series-10: #b08a58;
       --heat-cheap: #22a866; --heat-mid: #b98426; --heat-expensive: #9a3030;
     }
   }
   :root[data-theme="dark"] {
     color-scheme: dark;
-    --surface-1: #1a1a19;
-    --page: #0d0d0d;
-    --text-primary: #ffffff;
-    --text-secondary: #c3c2b7;
-    --text-muted: #898781;
-    --grid: #2c2c2a;
-    --axis: #383835;
+    --surface-1: #1b1c1f;
+    --page: #111214;
+    --text-primary: #f2f1ee;
+    --text-secondary: #c9ccd3;
+    --text-muted: #9a9ea7;
+    --grid: #2a2c31;
+    --axis: #454852;
     --border: rgba(255, 255, 255, 0.10);
-    --good: #0ca30c;
-    --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70; --series-4: #c98500;
-    --series-5: #d55181; --series-6: #008300; --series-7: #9085e9; --series-8: #e66767;
+    --good: #4cc27a;
+    --accent: #7aa2f7;
+    --hero-bg: #22304f;
+    --dk-h: #f2f1ee; --dk-h-fg: #15171c; --dk-l: #b8501a; --dk-w: #3a3d45;
+    --h0: #8db1ff; --h0-fg: #0b1020; --h1: #5b87e0; --h1-fg: #0b1020; --h2: #34549a; --h2-fg: #fff;
+    --h3: #26365c; --h3-fg: #e3e8f4; --h4: #1f2533; --h4-fg: #c9d2e3;
+    --series-1: #4a90f0; --series-2: #f07a45; --series-3: #2cc48c; --series-4: #9a84f5; --series-5: #ee6fa3;
+    --series-6: #e0b030; --series-7: #33b5cf; --series-8: #d9654c; --series-9: #8d9bb0; --series-10: #b08a58;
     --heat-cheap: #22a866; --heat-mid: #b98426; --heat-expensive: #9a3030;
   }
 
@@ -71,7 +90,7 @@
     padding: 24px 20px 64px;
     background: var(--page);
     color: var(--text-primary);
-    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+    font: 15px/1.5 'IBM Plex Sans', system-ui, -apple-system, "Segoe UI", sans-serif;
   }
   .wrap { max-width: 1080px; margin: 0 auto; }
 
@@ -114,17 +133,6 @@
   button.primary.running { border-color: var(--series-2); color: var(--series-2); }
   button.primary[disabled] { opacity: .55; cursor: not-allowed; }
 
-  /* Answer line: which holiday is cheapest across everything priced so far. */
-  .topline-go {
-    display: flex; flex-direction: column; gap: 3px; width: 100%; text-align: left; cursor: pointer;
-    background: var(--surface-1); border: 1px solid var(--axis); border-radius: 14px;
-    padding: 14px 16px; margin-top: 18px; font: inherit; color: var(--text-secondary);
-  }
-  .topline-go:hover { border-color: var(--text-secondary); }
-  .topline-label { font-size: 12px; color: var(--text-muted); }
-  .topline-main { font-size: 14px; color: var(--text-primary); }
-  .topline-main b { font-size: 22px; font-weight: 650; letter-spacing: -0.02em; }
-  .topline-sub { font-size: 13px; color: var(--text-muted); }
   .badge {
     font-size: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
     color: var(--good); border: 1px solid currentColor; border-radius: 999px; padding: 1px 7px;
@@ -461,16 +469,230 @@
   .about dt { color: var(--text-muted); }
   .about dd { margin: 0; }
   .about .caveat { border-left: 2px solid var(--series-2); padding-left: 12px; margin: 12px 0; }
+
+  /* ── Redesign: type, brand, controls ─────────────────────────────────── */
+  h1, h2, h3, .hero-title { font-family: 'Bricolage Grotesque', system-ui, sans-serif; }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand-mark {
+    width: 42px; height: 42px; border-radius: 12px; background: var(--accent); flex: none;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .brand h1 { font-size: 24px; letter-spacing: -0.02em; line-height: 1.1; }
+  .brand .meta { display: block; }
+  header { align-items: center; gap: 10px; margin-bottom: 6px; }
+  #theme, .refresh, #install { height: 38px; }
+
+  .flabel { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+  .seg { display: inline-flex; padding: 3px; gap: 3px; background: var(--grid); border-radius: 11px; }
+  .seg button {
+    font: inherit; font-size: 13px; font-weight: 600; border: 0; background: transparent; cursor: pointer;
+    color: var(--text-secondary); height: 36px; min-width: 62px; padding: 0 12px; border-radius: 8px;
+  }
+  .seg button:hover { color: var(--text-primary); }
+  .seg button[aria-pressed="true"] { background: var(--surface-1); color: var(--text-primary); box-shadow: 0 1px 3px rgba(0,0,0,.16); }
+  button.primary { height: 38px; }
+  .cal { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .cal[hidden], .linkish[hidden] { display: none; }
+  .cal-state { font-size: 12px; color: var(--text-muted); }
+  .linkish { background: none; border: 0; padding: 0; font: inherit; font-size: 12px; color: var(--text-muted); cursor: pointer; text-decoration: underline; }
+
+  /* ── Day strips: holiday / leave / weekend at a glance ───────────────── */
+  .strip { display: inline-flex; gap: 3px; vertical-align: middle; }
+  .dk {
+    display: inline-flex; align-items: center; justify-content: center; flex: none;
+    width: 22px; height: 22px; border-radius: 5px; font-size: 10px; font-weight: 600; font-style: normal;
+    font-variant-numeric: tabular-nums; background: var(--grid); color: var(--text-secondary);
+  }
+  .dk-H { background: var(--dk-h); color: var(--dk-h-fg); }
+  .dk-L { background: var(--dk-l); color: #fff; }
+  .dk-W { background: var(--dk-w); color: var(--text-primary); }
+  .dk-off { background: none; border: 1px dashed var(--axis); }
+  .strip-xs .dk { width: 9px; height: 9px; border-radius: 2px; }
+  .strip-lg .dk { width: 38px; height: 38px; border-radius: 8px; flex-direction: column; line-height: 1.1; font-weight: 500; }
+  .strip-lg .dk b { font-size: 13px; }
+  .dk-key { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 10px; font-size: 12px; color: var(--text-secondary); }
+  .dk-key span { display: inline-flex; align-items: center; gap: 6px; }
+  .dk-key .dk { width: 12px; height: 12px; border-radius: 3px; }
+
+  /* ── Answer card and insights ────────────────────────────────────────── */
+  .insights { display: grid; grid-template-columns: 1.5fr repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 20px; }
+  .insights:empty { display: none; }
+  .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--text-muted); }
+  .hero {
+    background: var(--hero-bg); color: #fff; border-radius: 18px; padding: 24px 26px;
+    display: flex; flex-direction: column; gap: 8px; min-width: 0;
+  }
+  .hero-empty { grid-column: 1 / -1; }
+  .hero .eyebrow { color: #B9C6E6; }
+  .hero-title { margin: 0; font-weight: 700; font-size: 30px; line-height: 1.1; letter-spacing: -0.02em; }
+  .hero-price { font-family: 'IBM Plex Mono', ui-monospace, monospace; font-weight: 600; font-size: 42px; letter-spacing: -0.03em; line-height: 1.1; }
+  .hero-price small { font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 14px; font-weight: 400; color: #C9CDD6; letter-spacing: 0; margin-left: 10px; }
+  .hero-sub { font-size: 14px; color: #E4E6EB; margin: 0; }
+  .hero .strip { margin-top: 4px; flex-wrap: wrap; }
+  .hero .dk-H { background: #fff; color: #15171C; }
+  .hero .dk-W { background: #3A3D45; color: #fff; }
+  .hero .dk-X { background: #2A2D34; color: #C9CDD6; }
+  .hero-go {
+    align-self: flex-start; margin-top: 8px; background: #fff; color: #15171C; border: 0; border-radius: 10px;
+    min-height: 44px; padding: 0 18px; font: inherit; font-weight: 600; font-size: 14px; cursor: pointer;
+  }
+  .hero-go:hover { background: #E8ECF6; }
+  .insight {
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 18px; padding: 22px;
+    display: flex; flex-direction: column; gap: 8px; min-width: 0;
+  }
+  .insight h3 { margin: 0; font-size: 21px; line-height: 1.18; letter-spacing: -0.01em; }
+  .insight p { margin: 0; font-size: 14px; line-height: 1.5; color: var(--text-secondary); }
+  @media (max-width: 1100px) {
+    .insights { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .insights .hero { grid-column: 1 / -1; }
+  }
+  @media (max-width: 760px) { .insights { grid-template-columns: 1fr; } .hero-title { font-size: 26px; } .hero-price { font-size: 36px; } }
+
+  /* ── Chart ────────────────────────────────────────────────────────────── */
+  .panel { background: var(--surface-1); border: 1px solid var(--border); border-radius: 18px; padding: 22px 24px 18px; margin-top: 20px; }
+  .panel-head { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 24px; margin-bottom: 16px; }
+  .panel-head h2 { font-size: 22px; letter-spacing: -0.01em; }
+  .panel-head .sub { margin: 4px 0 0; font-size: 13px; color: var(--text-muted); }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-left: auto; font-size: 12px; color: var(--text-secondary); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .chart-scroll { overflow-x: auto; margin: 0 -6px; padding: 14px 6px 4px; }
+  .chart { position: relative; min-width: calc(var(--cols) * 82px + 48px); padding-left: 48px; }
+  .chart-ticks { position: absolute; left: 48px; right: 0; top: 0; height: 250px; pointer-events: none; }
+  .chart-ticks div { position: absolute; left: 0; right: 0; border-top: 1px solid var(--grid); }
+  .chart-ticks span {
+    position: absolute; right: calc(100% + 6px); top: -8px; font: 11px 'IBM Plex Mono', ui-monospace, monospace;
+    color: var(--text-muted); white-space: nowrap;
+  }
+  .chart-cols { display: flex; position: relative; }
+  .chart-col {
+    flex: 1 1 0; min-width: 82px; background: none; border: 0; padding: 0 3px; margin: 0; cursor: pointer;
+    font: inherit; color: inherit; text-align: center; display: flex; flex-direction: column;
+  }
+  .chart-col .plot { position: relative; height: 250px; border-radius: 10px; display: block; }
+  .chart-col:nth-child(even) .plot { background: color-mix(in srgb, var(--text-primary) 2.5%, transparent); }
+  .chart-col:hover .plot, .chart-col:focus-visible .plot { background: color-mix(in srgb, var(--accent) 9%, transparent); }
+  .chart-col.pending .plot { border: 1px dashed var(--axis); background: none; }
+  .chart-col.muted { cursor: default; }
+  .chart-col.muted:hover .plot { background: none; }
+  .chart-col .dot {
+    position: absolute; width: 12px; height: 12px; border-radius: 50%; transform: translate(-50%, 50%);
+    border: 2px solid var(--surface-1); box-shadow: 0 1px 2px rgba(0,0,0,.25);
+  }
+  .chart-col .dot.top { width: 16px; height: 16px; z-index: 1; }
+  .chart-col .best {
+    position: absolute; left: 0; right: 0; font: 600 12px 'IBM Plex Mono', ui-monospace, monospace;
+    color: var(--text-primary); white-space: nowrap;
+  }
+  .chart-col .note { position: absolute; top: 42%; left: 4px; right: 4px; font-size: 11px; line-height: 1.4; color: var(--text-muted); }
+  .chart-col .note b { display: block; margin-top: 6px; color: var(--accent); font-size: 12px; }
+  .chart-col .lbl { display: flex; flex-direction: column; align-items: center; gap: 3px; padding-top: 8px; border-top: 1px solid var(--border); }
+  .chart-col .lbl b { font-size: 12px; line-height: 1.2; font-weight: 600; }
+  .chart-col .lbl small { font-size: 11px; color: var(--text-muted); }
+  .chart-col.pending .lbl b, .chart-col.muted .lbl b { color: var(--text-muted); }
+  .chart-col .booked-tag { color: var(--accent) !important; font-weight: 600; }
+  .chart-col.booked .plot { opacity: .55; }
+
+  /* ── Holiday cards ───────────────────────────────────────────────────── */
+  .card-price { display: flex; align-items: baseline; gap: 4px 10px; flex-wrap: wrap; margin-top: 10px; }
+  .card-price b { font: 600 28px 'IBM Plex Mono', ui-monospace, monospace; letter-spacing: -0.03em; color: var(--text-primary); }
+  .card-price > span { font-size: 13px; color: var(--text-secondary); }
+  .card-strip { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: 12px; color: var(--text-muted); }
+  .bars { display: flex; flex-direction: column; gap: 5px; margin-top: 12px; }
+  .bar-row { display: grid; grid-template-columns: 88px minmax(0, 1fr) 48px; align-items: center; gap: 10px; font-size: 12px; color: var(--text-secondary); }
+  .bar-row > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bar-row .track { height: 9px; border-radius: 5px; background: var(--grid); position: relative; overflow: hidden; display: block; }
+  .bar-row .fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 5px; opacity: .5; }
+  .bar-row.top { color: var(--text-primary); font-weight: 700; }
+  .bar-row.top .fill { opacity: 1; }
+  .bar-row .v { font-family: 'IBM Plex Mono', ui-monospace, monospace; text-align: right; }
+  .badge.booked { color: var(--accent); }
+  .badge.busy { color: var(--text-muted); }
+  .plans { margin: 6px 0 0; font-size: 12px; color: var(--text-secondary); }
+  details.card.is-booked:not([open]) { opacity: .8; }
+
+  /* ── Holiday detail ──────────────────────────────────────────────────── */
+  .detail { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 28px; margin-top: 10px; }
+  .detail h3 { font-size: 18px; margin: 0 0 2px; letter-spacing: -0.01em; }
+  .detail h3.gap { margin-top: 24px; }
+  .detail .hint { font-size: 12px; color: var(--text-muted); margin: 0 0 10px; }
+  .ladder { display: flex; flex-direction: column; gap: 4px; }
+  .ladder-row {
+    display: grid; grid-template-columns: 124px repeat(var(--days), minmax(24px, 40px)) minmax(76px, 1fr);
+    gap: 5px; align-items: center; padding: 8px 10px; border-radius: 12px; border: 2px solid transparent;
+    background: none; font: inherit; color: inherit; text-align: left; cursor: pointer; width: 100%;
+  }
+  .ladder-row:hover { background: color-mix(in srgb, var(--text-primary) 4%, transparent); }
+  .ladder-row[aria-pressed="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, transparent); }
+  .ladder-head { cursor: default; padding-top: 0; padding-bottom: 0; }
+  .ladder-head:hover { background: none; }
+  .ladder-row .dk { width: auto; height: 32px; border-radius: 7px; font-size: 11px; }
+  .ladder-dayhead { text-align: center; font-size: 11px; color: var(--text-muted); line-height: 1.2; }
+  .ladder-dayhead b { display: block; font-size: 13px; color: var(--text-primary); }
+  .ladder-row .lt b { display: block; font-size: 14px; }
+  .ladder-row .lt small, .ladder-row .lp small { font-size: 12px; color: var(--text-muted); }
+  .ladder-row .lp { text-align: right; }
+  .ladder-row .lp b { display: block; font: 600 16px 'IBM Plex Mono', ui-monospace, monospace; }
+  .pgrid { display: grid; grid-template-columns: 104px repeat(var(--opts), minmax(66px, 1fr)); gap: 5px; overflow-x: auto; }
+  .pgrid .ph { font-size: 11px; color: var(--text-muted); text-align: center; padding: 5px 2px; border-radius: 8px; line-height: 1.3; }
+  .pgrid .ph b { display: block; font-size: 12px; color: var(--text-primary); }
+  .pgrid .ph.sel { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+  .pgrid .pc { font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 7px; min-width: 0; }
+  .pgrid .pc i, .fare .fc i { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+  .pgrid .cell {
+    min-height: 48px; border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-decoration: none; font: 600 14px 'IBM Plex Mono', ui-monospace, monospace;
+  }
+  .pgrid .cell small { font: 400 10px 'IBM Plex Sans', system-ui, sans-serif; opacity: .9; }
+  .pgrid a.cell:hover { filter: brightness(1.08); }
+  .pgrid .cell.sel { outline: 2px solid var(--text-primary); outline-offset: 1px; }
+  .pgrid .cell.na { border: 1px dashed var(--axis); color: var(--text-muted); }
+  .heat-0 { background: var(--h0); color: var(--h0-fg); } .heat-1 { background: var(--h1); color: var(--h1-fg); }
+  .heat-2 { background: var(--h2); color: var(--h2-fg); } .heat-3 { background: var(--h3); color: var(--h3-fg); }
+  .heat-4 { background: var(--h4); color: var(--h4-fg); }
+  .buys { background: var(--hero-bg); color: #fff; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+  .buys .eyebrow { color: #B9C6E6; }
+  .buys h3 { color: #fff; font-size: 19px; line-height: 1.2; margin: 0; }
+  .buy-row { display: grid; grid-template-columns: 84px minmax(0, 1fr) 58px; gap: 10px; align-items: center; font-size: 12px; color: #E4E6EB; }
+  .buy-track { position: relative; height: 14px; display: block; }
+  .buy-track .line { position: absolute; top: 6px; height: 2px; background: #6B7488; }
+  .buy-track .from, .buy-track .to { position: absolute; top: 50%; transform: translate(-50%, -50%); border-radius: 50%; }
+  .buy-track .from { width: 9px; height: 9px; background: #8C94A6; }
+  .buy-track .to { width: 12px; height: 12px; border: 2px solid #fff; }
+  .buy-row .d { font: 600 12px 'IBM Plex Mono', ui-monospace, monospace; text-align: right; }
+  .buy-row .d.save { color: #9FE0B8; } .buy-row .d.cost { color: #F2B8A0; }
+  .buys .foot { font-size: 11px; color: #B8BCC6; }
+  .fare { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; padding: 10px 0; border-top: 1px solid var(--grid); }
+  .fare .fc { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; }
+  .fare .fp { font: 600 15px 'IBM Plex Mono', ui-monospace, monospace; text-align: right; }
+  .fare .fm { font-size: 12px; color: var(--text-muted); }
+  .fare .fl { text-align: right; font-size: 12px; }
+  details.more { margin: 20px 0 8px; }
+  details.more > summary { font-weight: 600; }
+  @media (max-width: 900px) { .detail { grid-template-columns: 1fr; } }
+  @media (max-width: 680px) {
+    .ladder-row { grid-template-columns: 76px repeat(var(--days), minmax(20px, 1fr)) 60px; gap: 3px; padding: 6px; }
+    .ladder-row .lt b { font-size: 12px; }
+    .ladder-row .lp b { font-size: 13px; }
+    .ladder-row .dk { height: 28px; }
+    .pgrid { grid-template-columns: 84px repeat(var(--opts), minmax(62px, 1fr)); }
+    .brand h1 { font-size: 21px; }
+    header .refresh { margin-left: 0; }
+    .card-price b { font-size: 24px; }
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <h1>Singapore holiday fares</h1>
-    <span class="meta" id="meta"></span>
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg></span>
+      <div><h1>SG Fares</h1><span class="meta" id="meta">Live return fares from Singapore for every public holiday</span></div>
+    </div>
     <!-- Bypasses the server cache and re-queries every fare from Singapore. -->
     <button class="refresh" id="refresh" type="button"
-            title="Re-query every fare now, ignoring the 15-minute cache">Refresh</button>
+            title="Re-query every priced fare now, ignoring the 15-minute cache">Re-check prices</button>
     <button id="theme" type="button">Theme</button>
     <!-- Only shown where the browser offers installation (Chrome, Edge,
          Android); Safari installs from Share → Add to Home Screen instead. -->
@@ -480,13 +702,13 @@
   <div id="controls" hidden>
     <div class="filters">
       <span class="field">
-        <label for="leave">Annual leave</label>
-        <select id="leave">
-          <option value="9">Any</option>
-          <option value="0">None — public holidays only</option>
-          <option value="1">Up to 1 day</option>
-          <option value="2">Up to 2 days</option>
-        </select>
+        <span class="flabel" id="leave-label">Days of leave I'll take</span>
+        <span class="seg" id="leave" role="group" aria-labelledby="leave-label">
+          <button type="button" data-leave="0" aria-pressed="false">None</button>
+          <button type="button" data-leave="1" aria-pressed="false">1 day</button>
+          <button type="button" data-leave="2" aria-pressed="false">2 days</button>
+          <button type="button" data-leave="3" aria-pressed="true">3 days</button>
+        </span>
       </span>
       <span class="field">
         <label for="order">Order</label>
@@ -502,6 +724,12 @@
       <!-- Card-by-card pricing answers "how much for this holiday". Comparing
            holidays needs them all priced, which is a dozen clicks by hand. -->
       <button class="primary" id="price-all" type="button">Price every holiday</button>
+      <!-- Hidden until GOOGLE_CLIENT_ID is set in the script below. -->
+      <span class="cal" id="cal" hidden>
+        <button class="primary" id="cal-sync" type="button">Connect Google Calendar</button>
+        <span class="cal-state" id="cal-state"></span>
+        <button class="linkish" id="cal-forget" type="button" hidden>Forget</button>
+      </span>
     </div>
 
     <details class="picker-panel" id="picker-panel">
@@ -539,7 +767,19 @@
     </details>
   </div>
 
-  <div id="topline"></div>
+  <section class="insights" id="insights" aria-live="polite"></section>
+
+  <section class="panel" id="chart-panel">
+    <div class="panel-head">
+      <div>
+        <h2>Cheapest return fare, holiday by holiday</h2>
+        <p class="sub">One dot per city — its lowest fare within your leave. Tap a holiday to open it, or to price it.</p>
+      </div>
+      <div class="legend" id="chart-legend"></div>
+    </div>
+    <div class="chart-scroll" id="chart"></div>
+    <div class="dk-key"><span><i class="dk dk-H"></i>Public holiday</span><span><i class="dk dk-L"></i>Day of leave</span><span><i class="dk dk-W"></i>Weekend</span></div>
+  </section>
   <div id="out"></div>
 
   <!-- Below the holiday cards deliberately: this is the escape hatch for dates
@@ -635,7 +875,7 @@
 </div>
 
 <script>
-const SLOTS = 8;
+const SLOTS = 10;
 const fmtDay = d => d.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
 const fmtWeekday = d => d.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -681,11 +921,12 @@ async function faresRequest(queries, { fresh = false } = {}) {
   return results;
 }
 
-/* A destination's colour follows its code (a stable hash), not its position in
-   any list or its price rank — so it never changes as selections or prices
-   change, with no chart to protect from repainting and no slot bookkeeping to
-   maintain. */
+/* A tracked destination takes the palette slot of its place in the list, so
+   the cities on screen never share a colour; anything else (a one-off custom
+   search) falls back to a stable hash of its code. */
 function colorFor(code) {
+  const at = DESTS.findIndex(d => d.code === code);
+  if (at >= 0) return `var(--series-${(at % SLOTS) + 1})`;
   let h = 0;
   for (const c of code) h = (h * 31 + c.charCodeAt(0)) >>> 0;
   return `var(--series-${(h % SLOTS) + 1})`;
@@ -1273,43 +1514,30 @@ document.getElementById('custom-form').addEventListener('submit', async event =>
    needs a prior sweep to have run. Prices are fetched on demand per holiday
    and held only in memory (LIVE); nothing about a price is ever written to
    disk or compared against history. */
-const MIN_LEAD_DAYS = 14, LOOKAHEAD_DAYS = 180;
+const MIN_LEAD_DAYS = 14, LOOKAHEAD_DAYS = 330;
 let PLAN = null;
 let LIVE = new Map();      // "CODE|depart|return" -> latest API result
 const PRICED = new Set();  // holiday anchors that have been queried at least once
 const LOADING = new Set(); // holiday anchors with a lookup in flight
 const OPEN = new Set();    // holiday anchors currently expanded
 
+/* Only windows still ahead, and only real trips: a lone midweek holiday with
+   no leave is a same-day return, which is not a holiday anyone takes. */
 function windowsForBreak(brk, maxLeave = 3) {
+  const today = iso(new Date());
   return brk.options
-    .filter(o => o.leave_days <= maxLeave)
+    .filter(o => o.leave_days <= maxLeave && o.depart >= today && o['return'] > o.depart)
     .map(o => {
       const nights = Math.round((parse(o['return']) - parse(o.depart)) / 864e5);
       return {
-        depart: o.depart, return: o['return'], leave_days: o.leave_days, nights,
+        depart: o.depart, return: o['return'], leave_days: o.leave_days, nights, leave_dates: o.leave_dates || [],
         label: `${fmtWeekday(parse(o.depart))}–${fmtWeekday(parse(o['return']))} (${nights} nights, ${o.leave_days ? o.leave_days + 'd leave' : 'no leave'})`,
       };
     });
 }
 
-const currentLeave = () => Number(document.getElementById('leave').value);
-
-/* The single cheapest priced fare for a holiday, under the leave filter the
-   page is currently showing — what both the ordering and the answer line at
-   the top rank on. Null while a holiday has no price yet. */
-function cheapestFor(brk, maxLeave) {
-  const windows = windowsForBreak(brk, maxLeave);
-  let best = null;
-  for (const dest of DESTS) {
-    if (!SELECTED.has(dest.code)) continue;
-    for (const w of windows) {
-      const result = LIVE.get(`${dest.code}|${w.depart}|${w.return}`);
-      if (!result || !result.best) continue;
-      if (!best || result.best.price < best.price) best = { price: result.best.price, dest, window: w };
-    }
-  }
-  return best;
-}
+let LEAVE = 3;
+const currentLeave = () => LEAVE;
 
 function inHorizon(anchor) {
   const brk = PLAN.breaks.find(b => b.anchor === anchor);
@@ -1399,10 +1627,12 @@ async function priceAll() {
   if (BULK) { BULK.stop = true; button.textContent = 'Stopping…'; return; }
 
   if (!SELECTED.size) { setLiveStatus('pick at least one destination first', false); return; }
-  const targets = PLAN.breaks
-    .filter(b => inHorizon(b.anchor) && !PRICED.has(b.anchor))
+  // Holidays already booked in your calendar are skipped: no point pricing them.
+  const skipped = upcomingBreaks().filter(b => inHorizon(b.anchor) && !PRICED.has(b.anchor) && isBooked(b.anchor)).length;
+  const targets = upcomingBreaks()
+    .filter(b => inHorizon(b.anchor) && !PRICED.has(b.anchor) && !isBooked(b.anchor))
     .map(b => b.anchor);
-  if (!targets.length) { setLiveStatus('every holiday in the booking window is already priced', false); return; }
+  if (!targets.length) { setLiveStatus(`every holiday in the booking window is already priced${skipped ? ` (${skipped} booked, skipped)` : ''}`, false); return; }
 
   BULK = { stop: false };
   button.classList.add('running');
@@ -1422,7 +1652,7 @@ async function priceAll() {
   button.textContent = 'Price every holiday';
   document.getElementById('refresh').disabled = false;
   setLiveStatus(
-    stopped ? `stopped — ${done} of ${targets.length} priced` : `priced ${done} holiday${done === 1 ? '' : 's'} · from Singapore`,
+    stopped ? `stopped — ${done} of ${targets.length} priced` : `priced ${done} holiday${done === 1 ? '' : 's'}${skipped ? `, skipped ${skipped} already booked` : ''} · from Singapore`,
     false,
   );
   render();
@@ -1495,75 +1725,318 @@ document.getElementById('out').addEventListener('keydown', event => {
   toggleSort(th.dataset.sort);
 });
 
-/* ═══ Rendering ═══ */
-function renderHoliday(brk, maxLeave, openByDefault) {
+/* ═══ Rendering ═══
+   Everything below derives from the same three things: the plan, what has been
+   priced (LIVE), and how much leave the reader will take (LEAVE). One number —
+   a city's cheapest fare for a holiday within that leave — feeds the answer
+   card, the insights, the chart dots and the card bars, so they always agree. */
+const fmt = n => Math.round(n).toLocaleString();
+const WD = d => d.toLocaleDateString(undefined, { weekday: 'short' });
+const leaveWord = l => (l === 0 ? 'no leave' : l === 1 ? '1 day of leave' : `${l} days of leave`);
+const leaveShort = w => `${w.nights + 1} days · ${w.leave_days ? `${w.leave_days}d leave` : 'no leave'}`;
+const fmtRange = w => `${fmtWeekday(parse(w.depart))} – ${fmtWeekday(parse(w['return']))}`;
+const shortRange = w => {
+  const a = parse(w.depart), b = parse(w['return']);
+  return `${WD(a)} ${a.getDate()} – ${WD(b)} ${b.getDate()}`;
+};
+const holidayDate = brk => {
+  const d = parse(brk.anchor);
+  const year = d.getFullYear() === new Date().getFullYear() ? '' : ` ’${String(d.getFullYear()).slice(2)}`;
+  return fmtWeekday(d) + year;
+};
+const selectedDests = () => DESTS.filter(d => SELECTED.has(d.code));
+const upcomingBreaks = () => (PLAN ? PLAN.breaks.filter(b => windowsForBreak(b, 3).length) : []);
+const fareFor = (code, w) => LIVE.get(`${code}|${w.depart}|${w['return']}`);
+
+/* Each selected city's cheapest priced fare for a holiday, within the leave
+   budget. Ties go to the option that spends less leave. */
+function perDest(brk, maxLeave) {
+  const out = new Map();
   const windows = windowsForBreak(brk, maxLeave);
-  // Measured midnight to midnight: against the current clock a holiday that
-  // starts today reads as "-1 days away" for most of the day.
-  const midnight = new Date(); midnight.setHours(0, 0, 0, 0);
-  const days = Math.round((parse(brk.anchor) - midnight) / 864e5);
-  const away = days === 0 ? 'today' : days === 1 ? 'tomorrow'
-    : days > 0 ? `${days} days away` : `${-days} days ago`;
-  const dateLabel = parse(brk.anchor).toLocaleDateString(undefined,
-    { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-  const badge = brk.anchor === CHEAPEST_ANCHOR ? '<span class="badge">cheapest</span>' : '';
-  const head = `<div class="htitle"><h2>${esc(brk.name)}</h2>${badge}
-      <span class="away">${esc(dateLabel)} · ${esc(away)}</span>
-      <button class="card-refresh" type="button" data-refresh="${esc(brk.anchor)}"
-        title="Re-check prices for ${esc(brk.name)}" aria-label="Refresh ${esc(brk.name)}">⟳</button></div>`;
-
-  const busy = LOADING.has(brk.anchor);
-
-  // Nothing selected prices nothing, so say that rather than leaving every
-  // card inviting a click that would return an empty table.
-  if (!SELECTED.size) {
-    return `<details class="holiday card" data-anchor="${esc(brk.anchor)}">
-      <summary>${head}<p class="headline muted">No destinations selected — pick some under Destinations.</p></summary>
-      <div class="card-body"><p class="note">No destinations selected.</p></div>
-    </details>`;
-  }
-
-  const rows = [];
-  for (const dest of DESTS) {
-    if (!SELECTED.has(dest.code)) continue;
+  for (const dest of selectedDests()) {
     for (const w of windows) {
-      const result = LIVE.get(`${dest.code}|${w.depart}|${w.return}`);
+      const result = fareFor(dest.code, w);
+      if (!result || !result.best) continue;
+      const price = result.best.price;
+      const held = out.get(dest.code);
+      if (!held || price < held.price || (price === held.price && w.leave_days < held.window.leave_days)) {
+        out.set(dest.code, { dest, price, window: w, result });
+      }
+    }
+  }
+  return out;
+}
+
+function cheapestFor(brk, maxLeave) {
+  let best = null;
+  for (const x of perDest(brk, maxLeave).values()) {
+    if (!best || x.price < best.price || (x.price === best.price && x.window.leave_days < best.window.leave_days)) best = x;
+  }
+  return best;
+}
+
+/* One scale for the chart and every card's bars, rounded up so the axis reads
+   in whole hundreds. */
+function priceScale(maxLeave) {
+  let hi = 0;
+  for (const brk of upcomingBreaks()) for (const x of perDest(brk, maxLeave).values()) hi = Math.max(hi, x.price);
+  const step = hi > 3000 ? 1000 : 500;
+  return Math.max(500, Math.ceil(hi / step) * step);
+}
+
+/* ── Day strips: which days of a window are holidays, leave and weekend ── */
+const KIND_NAME = { H: 'public holiday', L: 'day of leave', W: 'weekend', X: 'weekday' };
+function daysOf(w) {
+  const leave = new Set(w.leave_dates || []);
+  return eachDay(w.depart, w['return']).map(key => {
+    const date = parse(key);
+    const kind = PLAN.holidays[key] ? 'H' : leave.has(key) ? 'L' : date.getDay() % 6 === 0 ? 'W' : 'X';
+    return { key, date, kind };
+  });
+}
+const dayTitle = d => `${fmtWeekday(d.date)} — ${d.kind === 'H' ? PLAN.holidays[d.key] : KIND_NAME[d.kind]}`;
+function stripHtml(w, size = '') {
+  return `<span class="strip${size ? ` strip-${size}` : ''}">${daysOf(w).map(d => {
+    const inner = size === 'lg' ? `<b>${d.date.getDate()}</b>${esc(WD(d.date))}` : size === 'xs' ? '' : d.date.getDate();
+    return `<span class="dk dk-${d.kind}" title="${esc(dayTitle(d))}">${inner}</span>`;
+  }).join('')}</span>`;
+}
+
+/* ═══ Answer card and insights ═══ */
+function leaveInsight(priced, maxLeave) {
+  if (maxLeave === 0) return null;
+  let pick = null;
+  for (const brk of priced) {
+    const windows = windowsForBreak(brk, maxLeave);
+    const w0 = windows.find(w => w.leave_days === 0);
+    const wL = windows.filter(w => w.leave_days > 0)
+      .sort((a, b) => b.leave_days - a.leave_days || b.nights - a.nights)[0];
+    if (!w0 || !wL) continue;
+    let total = 0, cheaper = 0, star = null;
+    for (const dest of selectedDests()) {
+      const a = fareFor(dest.code, w0), b = fareFor(dest.code, wL);
+      if (!a?.best || !b?.best) continue;
+      total++;
+      const saving = a.best.price - b.best.price;
+      if (saving > 0) {
+        cheaper++;
+        if (!star || saving > star.saving) star = { dest, saving, from: a.best.price, to: b.best.price };
+      }
+    }
+    if (!cheaper) continue;
+    const score = cheaper / total;
+    // More cities agreeing beats a bigger saving on one of them.
+    if (!pick || cheaper > pick.cheaper || (cheaper === pick.cheaper && (score > pick.score || (score === pick.score && star.saving > pick.star.saving)))) {
+      pick = { brk, w0, wL, total, cheaper, star, score };
+    }
+  }
+  if (!pick) return null;
+  const { brk, w0, wL, total, cheaper, star } = pick;
+  const all = cheaper === total;
+  return {
+    eyebrow: 'Leave can cost less',
+    title: all ? `Leaving ${parse(wL.depart).toLocaleDateString(undefined, { weekday: 'long' })} beats the long weekend` : `${cheaper} of ${total} cities get cheaper with leave`,
+    body: `Before ${esc(brk.name)}, ${all ? `all ${total}` : `${cheaper} of ${total}`} cities are cheaper from ${esc(fmtWeekday(parse(wL.depart)))} than from ${esc(fmtWeekday(parse(w0.depart)))}. ${esc(star.dest.name)} drops from ${CURRENCY} ${fmt(star.from)} to ${fmt(star.to)} — and you gain ${wL.nights - w0.nights} day${wL.nights - w0.nights === 1 ? '' : 's'}.`,
+  };
+}
+
+const listNames = names => (names.length <= 1 ? names.join('')
+  : names.length <= 3 ? `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`
+    : `${names.slice(0, 2).join(', ')} and ${names.length - 2} more`);
+
+function dearestInsight(priced, maxLeave) {
+  if (priced.length < 3) return null;
+  const tables = priced.map(brk => ({ brk, per: perDest(brk, maxLeave) }));
+  const dearestBy = new Map(); // anchor -> [dest]
+  const detail = new Map();    // dest code -> {hi, lo}
+  for (const dest of selectedDests()) {
+    let hi = null, lo = null;
+    for (const t of tables) {
+      const x = t.per.get(dest.code);
+      if (!x) continue;
+      if (!hi || x.price > hi.price) hi = { brk: t.brk, price: x.price };
+      if (!lo || x.price < lo.price) lo = { brk: t.brk, price: x.price };
+    }
+    if (!hi || hi.brk === lo.brk) continue;
+    detail.set(dest.code, { dest, hi, lo });
+    if (!dearestBy.has(hi.brk.anchor)) dearestBy.set(hi.brk.anchor, []);
+    dearestBy.get(hi.brk.anchor).push(dest);
+  }
+  const [anchor, dests] = [...dearestBy.entries()].sort((a, b) => b[1].length - a[1].length)[0] || [];
+  if (!anchor || dests.length < 2) return null;
+  const brk = priced.find(b => b.anchor === anchor);
+  const first = detail.get(dests[0].code);
+  const every = dests.length === detail.size;
+  return {
+    eyebrow: 'Most expensive holiday',
+    title: every ? `${brk.name} is the dearest for every city` : `${brk.name} costs most for ${listNames(dests.map(d => d.name))}`,
+    body: `The cheapest ${esc(first.dest.name)} fare at ${esc(brk.name)} is ${CURRENCY} ${fmt(first.hi.price)}, against ${fmt(first.lo.price)} at ${esc(first.lo.brk.name)}.`,
+  };
+}
+
+function outlierInsight(priced, maxLeave) {
+  if (priced.length < 2) return null;
+  const ratios = new Map(), ranges = new Map(), wins = new Map();
+  for (const brk of priced) {
+    const per = [...perDest(brk, maxLeave).values()];
+    if (per.length < 2) continue;
+    const low = per.reduce((a, b) => (b.price < a.price ? b : a));
+    wins.set(low.dest.code, (wins.get(low.dest.code) || 0) + 1);
+    for (const x of per) {
+      if (!ratios.has(x.dest.code)) ratios.set(x.dest.code, []);
+      ratios.get(x.dest.code).push(x.price / low.price);
+      const r = ranges.get(x.dest.code);
+      if (!r) ranges.set(x.dest.code, { dest: x.dest, lo: x, hi: x, brkLo: brk });
+      else {
+        if (x.price < r.lo.price) { r.lo = x; r.brkLo = brk; }
+        if (x.price > r.hi.price) r.hi = x;
+      }
+    }
+  }
+  const median = xs => { const s = xs.slice().sort((a, b) => a - b); return s[Math.floor(s.length / 2)]; };
+  const [cheapCode, cheapWins] = [...wins.entries()].sort((a, b) => b[1] - a[1])[0] || [];
+  if (!cheapCode) return null;
+  const cheap = DESTS.find(d => d.code === cheapCode);
+  const [outCode, outRatios] = [...ratios.entries()].filter(([code, xs]) => code !== cheapCode && xs.length >= 2)
+    .sort((a, b) => median(b[1]) - median(a[1]))[0] || [];
+  const m = outRatios ? median(outRatios) : 0;
+  if (m >= 1.8) {
+    const r = ranges.get(outCode);
+    const times = Math.round(m * 2) / 2;
+    return {
+      eyebrow: 'The outlier',
+      title: `${r.dest.name} costs about ${times}× ${cheap.name}`,
+      body: `${esc(r.dest.name)} runs ${CURRENCY} ${fmt(r.lo.price)}–${fmt(r.hi.price)} across these ${priced.length} holidays. ${esc(r.brkLo.name)} with ${esc(leaveWord(r.lo.window.leave_days))} is its low point.`,
+    };
+  }
+  return {
+    eyebrow: 'Most reliable deal',
+    title: `${cheap.name} is the cheapest trip ${cheapWins === priced.length ? 'every time' : `${cheapWins} of ${priced.length} times`}`,
+    body: `Across the holidays priced so far, no other city undercuts ${esc(cheap.name)} as often.`,
+  };
+}
+
+function renderInsights(ranked, maxLeave) {
+  const el = document.getElementById('insights');
+  if (!SELECTED.size) { el.innerHTML = ''; return; }
+  if (!ranked.length) {
+    const count = upcomingBreaks().filter(b => inHorizon(b.anchor)).length;
+    el.innerHTML = `<div class="hero hero-empty">
+        <span class="eyebrow">Which holiday is cheapest?</span>
+        <h2 class="hero-title">Price every holiday to find your best-value break</h2>
+        <p class="hero-sub">Checks the next ${count} holidays for ${SELECTED.size} cit${SELECTED.size === 1 ? 'y' : 'ies'}, live from Singapore. Nothing is priced until you ask.</p>
+        <button class="hero-go" type="button" data-act="price-all">Price every holiday</button>
+      </div>`;
+    return;
+  }
+  const { brk, best } = ranked[0];
+  const w = best.window;
+  const priced = upcomingBreaks().filter(b => PRICED.has(b.anchor));
+  const cards = [leaveInsight(priced, maxLeave), dearestInsight(priced, maxLeave), outlierInsight(priced, maxLeave)].filter(Boolean);
+  el.innerHTML = `<div class="hero${cards.length ? '' : ' hero-empty'}">
+      <span class="eyebrow">Best value break · ${maxLeave === 0 ? 'no leave' : `up to ${esc(leaveWord(maxLeave))}`}</span>
+      <h2 class="hero-title">${esc(brk.name)} in ${esc(best.dest.name)}</h2>
+      <div class="hero-price">${CURRENCY} ${fmt(best.price)}<small>return${NONSTOP_ONLY ? ', nonstop' : ''}</small></div>
+      <div class="hero-sub">${esc(fmtRange(w))} · ${w.nights + 1} days off for ${esc(leaveWord(w.leave_days))} · ${CURRENCY} ${fmt(best.price / (w.nights || 1))} a night</div>
+      ${stripHtml(w, 'lg')}
+      <button class="hero-go" type="button" data-anchor="${esc(brk.anchor)}">See every fare for this holiday →</button>
+    </div>` + cards.map(c => `<div class="insight">
+      <span class="eyebrow">${esc(c.eyebrow)}</span><h3>${esc(c.title)}</h3><p>${c.body}</p>
+    </div>`).join('');
+}
+
+document.getElementById('insights').addEventListener('click', event => {
+  if (event.target.closest('[data-act="price-all"]')) { priceAll(); return; }
+  const anchor = event.target.closest('[data-anchor]')?.dataset.anchor;
+  if (anchor) openHoliday(anchor);
+});
+
+/* ═══ Chart: every holiday, one dot per city ═══ */
+function renderChart(maxLeave, max) {
+  const el = document.getElementById('chart');
+  const legend = document.getElementById('chart-legend');
+  const breaks = upcomingBreaks();
+  const dests = selectedDests();
+  legend.innerHTML = dests.map(d => `<span><i style="background:${colorFor(d.code)}"></i>${esc(d.name)}</span>`).join('');
+  if (!breaks.length || !dests.length) { el.innerHTML = ''; return; }
+
+  const step = Math.min(10, 64 / Math.max(1, dests.length));
+  const tickStep = max > 3000 ? 1000 : max > 1000 ? 500 : 250;
+  const ticks = [];
+  for (let v = 0; v <= max; v += tickStep) ticks.push(v);
+  const pct = p => `${(p / max * 100).toFixed(2)}%`;
+
+  const cols = breaks.map(brk => {
+    const anchor = brk.anchor;
+    const windows = windowsForBreak(brk, maxLeave);
+    const per = perDest(brk, maxLeave);
+    const busy = LOADING.has(anchor);
+    const booked = isBooked(anchor);
+    let top = null;
+    for (const x of per.values()) if (!top || x.price < top.price) top = x;
+
+    let plot, state = '';
+    if (!windows.length) {
+      const need = Math.min(...windowsForBreak(brk, 9).map(w => w.leave_days));
+      plot = `<span class="note">Midweek — needs ${esc(leaveWord(need))}</span>`;
+      state = ' muted';
+    } else if (per.size) {
+      plot = dests.map((d, i) => {
+        const x = per.get(d.code);
+        if (!x) return '';
+        const off = (i - (dests.length - 1) / 2) * step;
+        return `<span class="dot${x === top ? ' top' : ''}" style="left:calc(50% + ${off.toFixed(1)}px);bottom:${pct(x.price)};background:${colorFor(d.code)}"
+          title="${esc(`${d.name} ${CURRENCY} ${fmt(x.price)} · ${fmtRange(x.window)} · ${leaveWord(x.window.leave_days)}`)}"></span>`;
+      }).join('') + `<span class="best" style="bottom:max(2px, calc(${pct(top.price)} - 30px))">${esc(top.dest.code)} ${fmt(top.price)}</span>`;
+    } else if (busy) {
+      plot = `<span class="note"><span class="spin"></span></span>`;
+    } else if (PRICED.has(anchor)) {
+      plot = `<span class="note">No fares found</span>`;
+    } else {
+      plot = `<span class="note">Not priced yet<b>Price it</b></span>`;
+      state = ' pending';
+    }
+    return `<button type="button" class="chart-col${state}${booked ? ' booked' : ''}" data-anchor="${esc(anchor)}"
+        title="${esc(`${brk.name}, ${parse(anchor).toLocaleDateString(undefined, { dateStyle: 'full' })}`)}">
+        <span class="plot">${plot}</span>
+        <span class="lbl"><b>${esc(brk.name)}</b><small>${esc(holidayDate(brk))}</small>
+          ${top ? stripHtml(top.window, 'xs') : ''}${booked ? '<small class="booked-tag">booked</small>' : ''}</span>
+      </button>`;
+  });
+
+  el.innerHTML = `<div class="chart" style="--cols:${breaks.length}">
+      <div class="chart-ticks">${ticks.map(v => `<div style="bottom:${pct(v)}"><span>${fmt(v)}</span></div>`).join('')}</div>
+      <div class="chart-cols">${cols.join('')}</div>
+    </div>`;
+}
+
+document.getElementById('chart').addEventListener('click', event => {
+  const anchor = event.target.closest('.chart-col')?.dataset.anchor;
+  if (anchor) openHoliday(anchor);
+});
+
+function openHoliday(anchor) {
+  const brk = PLAN.breaks.find(b => b.anchor === anchor);
+  if (!brk || !windowsForBreak(brk, currentLeave()).length) return;
+  OPEN.add(anchor);
+  history.replaceState(null, '', `#${anchor}`);
+  if (PRICED.has(anchor)) render(); else refreshLive({ only: anchor });
+  requestAnimationFrame(() => document.querySelector(`details.holiday[data-anchor="${anchor}"]`)
+    ?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+}
+
+/* ═══ Holiday cards ═══ */
+const SEL = new Map();   // anchor -> "depart|return" picked on the leave ladder
+const MORE = new Set();  // anchors whose full fare table is expanded
+
+function fareTable(brk, windows) {
+  const rows = [];
+  for (const dest of selectedDests()) {
+    for (const w of windows) {
+      const result = fareFor(dest.code, w);
       if (result && result.best) rows.push({ dest, window: w, result });
     }
   }
-
-  if (!rows.length) {
-    if (busy) {
-      const bars = [72, 58, 64, 50, 68, 54].map(w => `<span class="skeleton" style="width:${w}px"></span>`).join('');
-      return `<details class="holiday card" data-anchor="${esc(brk.anchor)}"${openByDefault ? ' open' : ''}>
-        <summary>${head}
-          <p class="headline muted"><span class="spin"></span> Checking live prices from Singapore…</p>
-          <div class="skeleton-row">${bars}</div>
-        </summary>
-        <div class="card-body"><p class="note">Querying every travel window for this holiday.</p></div>
-      </details>`;
-    }
-    const state = PRICED.has(brk.anchor)
-      ? 'No fares returned for this holiday right now — try again shortly.'
-      : 'Open to load live prices.';
-    return `<details class="holiday card" data-anchor="${esc(brk.anchor)}"${openByDefault ? ' open' : ''}>
-      <summary>${head}<p class="headline muted">${esc(state)}</p></summary>
-      <div class="card-body"><p class="note">${esc(state)}</p></div>
-    </details>`;
-  }
-
-  const byDest = new Map();
-  for (const r of rows) {
-    const held = byDest.get(r.dest.code);
-    if (!held || r.result.best.price < held.result.best.price) byDest.set(r.dest.code, r);
-  }
-  const ranked = [...byDest.values()].sort((a, b) => a.result.best.price - b.result.best.price);
-  const cheapest = ranked[0];
-
-  const mini = ranked.map(r => `<span class="mini-item" title="${esc(r.dest.name)}">
-      <span class="mini-dot" style="background:${colorFor(r.dest.code)}"></span>${esc(r.dest.code)}
-      <b>${r.result.best.price.toLocaleString()}</b></span>`).join('');
-
   const rowData = rows.map(r => ({
     rank: DESTS.findIndex(d => d.code === r.dest.code),
     name: r.dest.name,
@@ -1578,7 +2051,6 @@ function renderHoliday(brk, maxLeave, openByDefault) {
     book: r.result.book,
   }));
   sortRows(rowData);
-
   const rowsHtml = rowData.map(r => `<tr>
       <td class="name" data-label="Destination">${esc(r.name)} <span class="meta">${esc(r.code)}</span></td>
       <td data-label="Window">${esc(r.label)}</td>
@@ -1589,76 +2061,220 @@ function renderHoliday(brk, maxLeave, openByDefault) {
       <td class="num" data-label="Journey">${esc(fmtDuration(r.journey))}</td>
       <td data-label="Book">${r.book ? `<a class="book" href="${esc(r.book)}" target="_blank" rel="noopener noreferrer">Open ↗</a>` : '—'}</td>
     </tr>`).join('');
-
-  return `<details class="holiday card" data-anchor="${esc(brk.anchor)}"${openByDefault ? ' open' : ''}>
-    <summary>
-      ${head}
-      <p class="headline">Cheapest — ${esc(cheapest.dest.name)} at <b>${esc(CURRENCY)} ${cheapest.result.best.price.toLocaleString()}</b>${
-        busy ? '<span class="updating"><span class="spin"></span> updating…</span>' : ''}</p>
-      <div class="mini">${mini}</div>
-    </summary>
-    <div class="card-body">
+  return `<details class="more" data-more="${esc(brk.anchor)}"${MORE.has(brk.anchor) ? ' open' : ''}>
+      <summary>All ${rowData.length} fares as a sortable table</summary>
       <div class="scroller"><table class="stack-table">
         <thead><tr>${tableHead()}</tr></thead>
         <tbody>${rowsHtml}</tbody>
       </table></div>
+    </details>`;
+}
+
+const stopsText = s => (s === 0 ? 'nonstop' : s == null ? '' : `${s} stop${s === 1 ? '' : 's'}`);
+
+function detailHtml(brk, windows, top) {
+  const anchor = brk.anchor;
+  const dests = selectedDests();
+  const ordered = windows.slice().sort((a, b) => a.leave_days - b.leave_days || a.nights - b.nights || (a.depart < b.depart ? -1 : 1));
+  const keyOf = w => `${w.depart}|${w['return']}`;
+  const sel = ordered.find(w => keyOf(w) === SEL.get(anchor)) || top.window;
+
+  // Leave ladder: one row per way of taking this holiday, drawn on one calendar.
+  const first = ordered.reduce((m, w) => (w.depart < m ? w.depart : m), ordered[0].depart);
+  const last = ordered.reduce((m, w) => (w['return'] > m ? w['return'] : m), ordered[0]['return']);
+  const allDays = eachDay(first, last);
+  const ladderHead = `<div class="ladder-row ladder-head" style="--days:${allDays.length}"><span></span>${
+    allDays.map(k => `<span class="ladder-dayhead"><b>${parse(k).getDate()}</b>${esc(WD(parse(k)))}</span>`).join('')
+  }<span class="lp"><small>Cheapest</small></span></div>`;
+  const ladderRows = ordered.map(w => {
+    const days = new Map(daysOf(w).map(d => [d.key, d]));
+    let best = null;
+    for (const d of dests) {
+      const r = fareFor(d.code, w);
+      if (r?.best && (!best || r.best.price < best.price)) best = { dest: d, price: r.best.price };
+    }
+    const cells = allDays.map(k => {
+      const d = days.get(k);
+      if (!d) return `<span class="dk dk-off" title="${esc(fmtWeekday(parse(k)))} — at work"></span>`;
+      return `<span class="dk dk-${d.kind}" title="${esc(dayTitle(d))}">${d.kind === 'H' ? 'H' : d.kind === 'L' ? 'L' : ''}</span>`;
+    }).join('');
+    return `<button type="button" class="ladder-row" style="--days:${allDays.length}" data-sel="${esc(anchor)}|${esc(keyOf(w))}" aria-pressed="${w === sel}">
+        <span class="lt"><b>${w.leave_days ? esc(leaveWord(w.leave_days)) : 'No leave'}</b><small>${w.nights + 1} days away</small></span>
+        ${cells}
+        <span class="lp"><b>${best ? fmt(best.price) : '—'}</b><small>${best ? esc(best.dest.name) : ''}</small></span>
+      </button>`;
+  }).join('');
+
+  // City × option grid, each row coloured on its own scale.
+  const gridRows = dests.filter(d => ordered.some(w => fareFor(d.code, w)?.best)).map(d => {
+    const prices = ordered.map(w => fareFor(d.code, w)?.best?.price).filter(p => p != null);
+    const lo = Math.min(...prices), hi = Math.max(...prices);
+    const cells = ordered.map(w => {
+      const r = fareFor(d.code, w);
+      if (!r?.best) return `<span class="cell na">—</span>`;
+      const p = r.best.price;
+      const bucket = hi === lo ? 0 : Math.min(4, Math.floor((p - lo) / (hi - lo) * 4.999));
+      const tip = [d.name, fmtRange(w), (r.best.airlines || []).join(', '), stopsText(r.best.stops), fmtDuration(r.best.duration)].filter(Boolean).join(' · ');
+      const inner = `${fmt(p)}<small>${fmt(p / (w.nights || 1))}/night</small>`;
+      return r.book
+        ? `<a class="cell heat-${bucket}${w === sel ? ' sel' : ''}" href="${esc(r.book)}" target="_blank" rel="noopener noreferrer" title="${esc(tip)} — open in Google Flights">${inner}</a>`
+        : `<span class="cell heat-${bucket}${w === sel ? ' sel' : ''}" title="${esc(tip)}">${inner}</span>`;
+    }).join('');
+    return `<span class="pc"><i style="background:${colorFor(d.code)}"></i>${esc(d.name)}</span>${cells}`;
+  }).join('');
+  const grid = `<div class="pgrid" style="--opts:${ordered.length}"><span></span>${
+    ordered.map(w => `<span class="ph${w === sel ? ' sel' : ''}"><b>${esc(shortRange(w))}</b>${esc(leaveShort(w))}</span>`).join('')
+  }${gridRows}</div>`;
+
+  // What the most leave buys over the plain holiday, city by city.
+  let buys = '';
+  const w0 = ordered.find(w => w.leave_days === 0);
+  const wL = ordered.filter(w => w.leave_days > 0).sort((a, b) => b.leave_days - a.leave_days || b.nights - a.nights)[0];
+  if (w0 && wL) {
+    const pairs = dests.map(d => ({ d, a: fareFor(d.code, w0)?.best?.price, b: fareFor(d.code, wL)?.best?.price }))
+      .filter(x => x.a != null && x.b != null);
+    if (pairs.length) {
+      const top2 = Math.max(...pairs.flatMap(x => [x.a, x.b])) * 1.04;
+      const X = v => (v / top2 * 100).toFixed(1);
+      const cheaper = pairs.filter(x => x.b < x.a).length;
+      const gain = wL.nights - w0.nights;
+      const headline = cheaper === pairs.length
+        ? `${gain} more day${gain === 1 ? '' : 's'} away, and a cheaper fare for ${pairs.length === 1 ? pairs[0].d.name : `all ${pairs.length} cities`}`
+        : cheaper ? `${cheaper} of ${pairs.length} cities get cheaper with ${leaveWord(wL.leave_days)}`
+          : `${leaveWord(wL.leave_days)} costs more for every city here`;
+      buys = `<div class="buys">
+          <span class="eyebrow">What ${esc(leaveWord(wL.leave_days))} buys</span>
+          <h3>${esc(headline[0].toUpperCase() + headline.slice(1))}</h3>
+          ${pairs.map(({ d, a, b }) => {
+            const lo = Math.min(a, b), hi = Math.max(a, b);
+            return `<div class="buy-row"><span>${esc(d.name)}</span>
+              <span class="buy-track"><span class="line" style="left:${X(lo)}%;width:${(X(hi) - X(lo)).toFixed(1)}%"></span>
+                <span class="from" style="left:${X(a)}%"></span><span class="to" style="left:${X(b)}%;background:${colorFor(d.code)}"></span></span>
+              <span class="d ${b < a ? 'save' : 'cost'}">${b < a ? '−' : b > a ? '+' : '±'}${fmt(Math.abs(a - b))}</span></div>`;
+          }).join('')}
+          <span class="foot">Grey dot: ${esc(shortRange(w0))}, no leave. Coloured dot: ${esc(shortRange(wL))}.</span>
+        </div>`;
+    }
+  }
+
+  // Fares for the picked option.
+  const fares = dests.map(d => ({ d, r: fareFor(d.code, sel) })).filter(x => x.r?.best)
+    .sort((a, b) => a.r.best.price - b.r.best.price)
+    .map(({ d, r }) => `<div class="fare">
+        <span class="fc"><i style="background:${colorFor(d.code)}"></i>${esc(d.name)} <span class="meta">${esc(r.airport || d.code)}</span></span>
+        <span class="fp">${CURRENCY} ${fmt(r.best.price)}</span>
+        <span class="fm">${esc([(r.best.airlines || []).join(', '), stopsText(r.best.stops), fmtDuration(r.best.duration), `${CURRENCY} ${fmt(r.best.price / (sel.nights || 1))}/night`].filter(Boolean).join(' · '))}</span>
+        ${r.book ? `<a class="fl book" href="${esc(r.book)}" target="_blank" rel="noopener noreferrer">Google Flights ↗</a>` : '<span></span>'}
+      </div>`).join('');
+
+  return `<div class="detail">
+      <div>
+        <h3>How long can you go?</h3>
+        <p class="hint">Every way to take this holiday. Pick one to see its fares.</p>
+        <div class="ladder">${ladderHead}${ladderRows}</div>
+        <div class="dk-key"><span><i class="dk dk-H"></i>Public holiday</span><span><i class="dk dk-L"></i>Day of leave</span><span><i class="dk dk-W"></i>Weekend</span><span><i class="dk dk-off"></i>At work</span></div>
+        <h3 class="gap">Every city, every option</h3>
+        <p class="hint">Each row is coloured on its own — darkest is that city's cheapest option. Tap a fare to open it in Google Flights.</p>
+        ${grid}
+      </div>
+      <div>
+        ${buys}
+        <h3 class="gap">Fares for ${esc(shortRange(sel))}</h3>
+        <p class="hint">${esc(leaveShort(sel))} · outbound flight time shown</p>
+        <div class="fares">${fares || '<p class="note">No fares for this option.</p>'}</div>
+      </div>
     </div>
-  </details>`;
+    ${fareTable(brk, windows)}`;
+}
+
+function renderHoliday(brk, maxLeave, openByDefault, max) {
+  const anchor = brk.anchor;
+  const windows = windowsForBreak(brk, maxLeave);
+  const midnight = new Date(); midnight.setHours(0, 0, 0, 0);
+  const days = Math.round((parse(anchor) - midnight) / 864e5);
+  const away = days === 0 ? 'today' : days === 1 ? 'tomorrow' : days > 0 ? `in ${days} days` : `${-days} days ago`;
+  const dateLabel = parse(anchor).toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  const plans = calendarPlans(anchor);
+  const booked = plans.some(p => p.kind === 'trip');
+  const badge = (booked ? '<span class="badge booked">booked</span>' : plans.length ? '<span class="badge busy">in your calendar</span>' : '')
+    + (anchor === CHEAPEST_ANCHOR ? '<span class="badge">cheapest</span>' : '');
+  const planLine = plans.length
+    ? `<p class="plans"><b>In your calendar:</b> ${plans.slice(0, 2).map(p => esc(`${p.title} (${p.when})`)).join('; ')}${plans.length > 2 ? ` +${plans.length - 2} more` : ''}</p>` : '';
+  const head = `<div class="htitle"><h2>${esc(brk.name)}</h2>${badge}
+      <span class="away">${esc(dateLabel)} · ${esc(away)}</span>
+      <button class="card-refresh" type="button" data-refresh="${esc(anchor)}"
+        title="Re-check prices for ${esc(brk.name)}" aria-label="Refresh ${esc(brk.name)}">⟳</button></div>${planLine}`;
+  const open = openByDefault ? ' open' : '';
+  const shell = (summary, body) => `<details class="holiday card${booked ? ' is-booked' : ''}" id="h-${esc(anchor)}" data-anchor="${esc(anchor)}"${open}>
+      <summary>${head}${summary}</summary><div class="card-body">${body}</div></details>`;
+
+  if (!SELECTED.size) {
+    return shell('<p class="headline muted">No destinations selected — pick some under Destinations.</p>', '');
+  }
+  if (!windows.length) {
+    const need = Math.min(...windowsForBreak(brk, 9).map(w => w.leave_days));
+    const msg = `Falls midweek — needs ${leaveWord(need)} to make a trip. Allow more leave above to price it.`;
+    return shell(`<p class="headline muted">${esc(msg)}</p>`, '');
+  }
+
+  const per = perDest(brk, maxLeave);
+  const busy = LOADING.has(anchor);
+  if (!per.size) {
+    if (busy) {
+      const bars = [72, 58, 64, 50, 68, 54].map(w => `<span class="skeleton" style="width:${w}px"></span>`).join('');
+      return shell(`<p class="headline muted"><span class="spin"></span> Checking live prices from Singapore…</p><div class="skeleton-row">${bars}</div>`,
+        '<p class="note">Querying every travel window for this holiday.</p>');
+    }
+    const state = PRICED.has(anchor) ? 'No fares returned for this holiday right now — try ⟳ shortly.' : 'Tap to check live prices.';
+    return shell(`<p class="headline muted">${esc(state)}</p>`, '');
+  }
+
+  let top = null;
+  for (const x of per.values()) if (!top || x.price < top.price || (x.price === top.price && x.window.leave_days < top.window.leave_days)) top = x;
+  const bars = selectedDests().map(d => {
+    const x = per.get(d.code);
+    return `<span class="bar-row${x === top ? ' top' : ''}"><span>${esc(d.name)}</span>
+        <span class="track"><span class="fill" style="width:${x ? Math.max(3, x.price / max * 100).toFixed(1) : 0}%;background:${colorFor(d.code)}"></span></span>
+        <span class="v">${x ? fmt(x.price) : '—'}</span></span>`;
+  }).join('');
+  const summary = `<span class="card-price"><b>${esc(CURRENCY)} ${fmt(top.price)}</b>
+      <span>${esc(top.dest.name)} · ${top.window.nights + 1} days off, ${esc(leaveWord(top.window.leave_days))}</span>
+      ${busy ? '<span class="updating"><span class="spin"></span> updating…</span>' : ''}</span>
+    <span class="card-strip">${stripHtml(top.window)}<span>${esc(shortRange(top.window))}</span></span>
+    <span class="bars">${bars}</span>`;
+  return shell(summary, openByDefault ? detailHtml(brk, windows, top) : '');
 }
 
 /* Set by render() before the cards are built, read by renderHoliday. */
 let CHEAPEST_ANCHOR = null;
 
-/* The whole point of pricing more than one holiday: which is cheapest. It
-   only appears once there are at least two to compare — with one priced it
-   would just restate the card directly below it. */
-function renderTopline(ranked) {
-  const el = document.getElementById('topline');
-  if (ranked.length < 2) { el.innerHTML = ''; return; }
-
-  const { brk, best } = ranked[0];
-  const w = best.window;
-  el.innerHTML = `<button class="topline-go" type="button" data-anchor="${esc(brk.anchor)}">
-      <span class="topline-label">Cheapest of the ${ranked.length} holidays priced so far</span>
-      <span class="topline-main"><b>${esc(CURRENCY)} ${best.price.toLocaleString()}</b> · ${esc(best.dest.name)} · ${esc(brk.name)}</span>
-      <span class="topline-sub">${esc(w.label)} · ${esc(CURRENCY)} ${Math.round(best.price / (w.nights || 1)).toLocaleString()} per night</span>
-    </button>`;
-}
-
-document.getElementById('topline').addEventListener('click', event => {
-  const anchor = event.target.closest('[data-anchor]')?.dataset.anchor;
-  if (!anchor) return;
-  OPEN.add(anchor);
-  render();
-  document.querySelector(`details.holiday[data-anchor="${anchor}"]`)
-    ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-});
-
 function render() {
+  if (!PLAN) return;
   const out = document.getElementById('out');
   const maxLeave = currentLeave();
+  const breaks = upcomingBreaks();
 
-  // Priced holidays, cheapest first. Unpriced ones have nothing to rank on,
-  // so they keep their chronological place at the back of a price ordering.
-  const ranked = PLAN.breaks
+  // Priced holidays, cheapest first — booked ones are already spoken for, so
+  // they never win the answer card.
+  const ranked = breaks
+    .filter(brk => !isBooked(brk.anchor))
     .map(brk => ({ brk, best: cheapestFor(brk, maxLeave) }))
     .filter(x => x.best)
-    .sort((a, b) => a.best.price - b.best.price);
+    .sort((a, b) => a.best.price - b.best.price || a.best.window.leave_days - b.best.window.leave_days);
 
   CHEAPEST_ANCHOR = ranked.length > 1 ? ranked[0].brk.anchor : null;
-  renderTopline(ranked);
+  const max = priceScale(maxLeave);
+  renderInsights(ranked, maxLeave);
+  renderChart(maxLeave, max);
 
   const order = document.getElementById('order').value;
   const rank = new Map(ranked.map((x, i) => [x.brk.anchor, i]));
-  // Unranked holidays share a finite sentinel rather than Infinity, whose
-  // difference is NaN and would leave the comparator inconsistent.
   const rankOf = brk => (rank.has(brk.anchor) ? rank.get(brk.anchor) : Number.MAX_SAFE_INTEGER);
-  const breaks = order === 'price'
-    ? [...PLAN.breaks].sort((a, b) =>
-        rankOf(a) - rankOf(b) || (a.anchor < b.anchor ? -1 : a.anchor > b.anchor ? 1 : 0))
-    : PLAN.breaks;
+  const list = order === 'price'
+    ? [...breaks].sort((a, b) => rankOf(a) - rankOf(b) || (a.anchor < b.anchor ? -1 : a.anchor > b.anchor ? 1 : 0))
+    : breaks;
 
-  out.innerHTML = breaks.map(brk => renderHoliday(brk, maxLeave, OPEN.has(brk.anchor))).join('')
+  out.innerHTML = list.map(brk => renderHoliday(brk, maxLeave, OPEN.has(brk.anchor), max)).join('')
     || `<div class="empty">No upcoming holidays found.</div>`;
 
   out.querySelectorAll('details.holiday').forEach(card => {
@@ -1666,17 +2282,205 @@ function render() {
       event.preventDefault();
       const anchor = card.dataset.anchor;
       if (event.target.closest('.card-refresh')) { refreshLive({ only: anchor, fresh: true }); return; }
-      if (OPEN.has(anchor)) { OPEN.delete(anchor); render(); return; }
+      if (OPEN.has(anchor)) {
+        OPEN.delete(anchor);
+        if (location.hash === `#${anchor}`) history.replaceState(null, '', location.pathname + location.search);
+        render();
+        return;
+      }
+      const brk = PLAN.breaks.find(b => b.anchor === anchor);
+      if (!windowsForBreak(brk, currentLeave()).length) return;
       OPEN.add(anchor);
+      history.replaceState(null, '', `#${anchor}`);
       if (PRICED.has(anchor)) render(); else refreshLive({ only: anchor });
     });
   });
 }
 
-document.getElementById('leave').addEventListener('change', event => {
-  remember(LEAVE_KEY, event.target.value);
+document.getElementById('out').addEventListener('click', event => {
+  const row = event.target.closest('.ladder-row[data-sel]');
+  if (!row) return;
+  const [anchor, depart, ret] = row.dataset.sel.split('|');
+  SEL.set(anchor, `${depart}|${ret}`);
   render();
 });
+// toggle does not bubble; capture it so the full table stays open across renders.
+document.getElementById('out').addEventListener('toggle', event => {
+  const more = event.target.closest?.('details.more');
+  if (!more) return;
+  if (more.open) MORE.add(more.dataset.more); else MORE.delete(more.dataset.more);
+}, true);
+
+/* ═══ Leave budget ═══ */
+function setLeave(value, { save = true } = {}) {
+  LEAVE = Math.max(0, Math.min(3, Number(value) || 0));
+  for (const b of document.querySelectorAll('#leave button')) b.setAttribute('aria-pressed', String(Number(b.dataset.leave) === LEAVE));
+  if (save) remember(LEAVE_KEY, String(LEAVE));
+}
+document.getElementById('leave').addEventListener('click', event => {
+  const b = event.target.closest('button[data-leave]');
+  if (!b) return;
+  setLeave(b.dataset.leave);
+  render();
+});
+
+/* ═══ Google Calendar — which holidays are already spoken for ═══
+   Read-only and entirely in this browser: the token lives in memory only, and
+   what is kept (in local storage, so a reload still shows it) is just the
+   title and dates of each matching event. With no client ID configured the
+   whole feature stays hidden. */
+const GOOGLE_CLIENT_ID = '';
+const CAL_KEY = 'sgfares.calendar.v1';
+const CAL_SCOPE = 'https://www.googleapis.com/auth/calendar.readonly';
+const TRIP_WORDS = /\b(flights?|hotel|stay at|check[- ]?in|trip|vacation|travel|airbnb|resort|getaway|annual leave|on leave|ooo|out of office)\b|✈/i;
+let CAL = (() => { try { return JSON.parse(localStorage.getItem(CAL_KEY) || 'null'); } catch { return null; } })();
+let calToken = null;
+
+const calendarPlans = anchor => (CAL && CAL.byAnchor && CAL.byAnchor[anchor]) || [];
+const isBooked = anchor => calendarPlans(anchor).some(p => p.kind === 'trip');
+
+function loadGis() {
+  if (window.google?.accounts?.oauth2) return Promise.resolve();
+  return new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = 'https://accounts.google.com/gsi/client';
+    s.async = true;
+    s.onload = resolve;
+    s.onerror = () => reject(new Error('could not load Google sign-in'));
+    document.head.appendChild(s);
+  });
+}
+
+function requestCalendarToken() {
+  return new Promise((resolve, reject) => {
+    const client = google.accounts.oauth2.initTokenClient({
+      client_id: GOOGLE_CLIENT_ID,
+      scope: CAL_SCOPE,
+      callback: resp => (resp.error ? reject(new Error(resp.error_description || resp.error)) : resolve(resp.access_token)),
+      error_callback: err => reject(new Error(err.message || err.type || 'sign-in cancelled')),
+    });
+    client.requestAccessToken({ prompt: CAL ? '' : 'consent' });
+  });
+}
+
+async function gcal(path, params) {
+  const url = new URL(`https://www.googleapis.com/calendar/v3/${path}`);
+  for (const [k, v] of Object.entries(params || {})) url.searchParams.set(k, v);
+  const response = await fetch(url, { headers: { authorization: `Bearer ${calToken}` } });
+  if (!response.ok) throw new Error(`Calendar API ${response.status}`);
+  return response.json();
+}
+
+async function calendarEvents(timeMin, timeMax) {
+  const list = await gcal('users/me/calendarList', { minAccessRole: 'reader', fields: 'items(id,selected,primary)' });
+  // Your own calendars and imported feeds (TripIt and the like); not the
+  // public-holiday and birthday calendars, which would "book" every holiday.
+  const calendars = (list.items || []).filter(c => (c.primary || c.selected)
+    && !/#(holiday|contacts|weeknum)@/.test(c.id) && !/@group\.v\.calendar\.google\.com$/.test(c.id));
+  const events = [];
+  for (const cal of calendars) {
+    let pageToken = '';
+    do {
+      const page = await gcal(`calendars/${encodeURIComponent(cal.id)}/events`, {
+        timeMin, timeMax, singleEvents: 'true', maxResults: '2500',
+        fields: 'nextPageToken,items(summary,start,end,eventType,status,attendees(self,responseStatus))',
+        ...(pageToken ? { pageToken } : {}),
+      });
+      events.push(...(page.items || []));
+      pageToken = page.nextPageToken || '';
+    } while (pageToken);
+  }
+  return events;
+}
+
+function classifyEvent(ev, holidayNames) {
+  if (ev.status === 'cancelled' || ['birthday', 'workingLocation', 'focusTime'].includes(ev.eventType)) return null;
+  if ((ev.attendees || []).some(a => a.self && a.responseStatus === 'declined')) return null;
+  const title = (ev.summary || '').trim();
+  if (!title || holidayNames.has(title.toLowerCase()) || /public holiday/i.test(title)) return null;
+  if (ev.eventType === 'fromGmail' || ev.eventType === 'outOfOffice' || TRIP_WORDS.test(title)) return 'trip';
+  return ev.start?.date ? 'busy' : null; // all-day plans; ordinary timed events don't block a trip
+}
+
+function eventDays(ev) {
+  if (ev.start?.date) {
+    const end = parse(ev.end?.date || ev.start.date);
+    end.setDate(end.getDate() - 1); // all-day end dates are exclusive
+    return [ev.start.date, iso(end) < ev.start.date ? ev.start.date : iso(end)];
+  }
+  return [iso(new Date(ev.start.dateTime)), iso(new Date(ev.end?.dateTime || ev.start.dateTime))];
+}
+
+function calendarByBreak(events) {
+  const holidayNames = new Set(Object.values(PLAN.holidays).map(n => n.toLowerCase().replace(/\s*\(observed\)$/, '')));
+  const byAnchor = {};
+  for (const brk of PLAN.breaks) {
+    const from = brk.options.reduce((m, o) => (o.depart < m ? o.depart : m), brk.options[0].depart);
+    const to = brk.options.reduce((m, o) => (o['return'] > m ? o['return'] : m), brk.options[0]['return']);
+    const seen = new Set();
+    for (const ev of events) {
+      const kind = classifyEvent(ev, holidayNames);
+      if (!kind) continue;
+      const [start, end] = eventDays(ev);
+      if (start > to || end < from) continue;
+      const id = `${ev.summary}|${start}`;
+      if (seen.has(id)) continue;
+      seen.add(id);
+      const when = start === end ? fmtDay(parse(start)) : `${fmtDay(parse(start))}–${fmtDay(parse(end))}`;
+      (byAnchor[brk.anchor] ||= []).push({ title: ev.summary.slice(0, 80), when, kind });
+    }
+    if (byAnchor[brk.anchor]) byAnchor[brk.anchor].sort((a, b) => (a.kind === b.kind ? 0 : a.kind === 'trip' ? -1 : 1));
+  }
+  return byAnchor;
+}
+
+function renderCalState(extra) {
+  const wrap = document.getElementById('cal');
+  wrap.hidden = !GOOGLE_CLIENT_ID;
+  if (!GOOGLE_CLIENT_ID) return;
+  const state = document.getElementById('cal-state');
+  document.getElementById('cal-sync').textContent = CAL ? 'Re-check calendar' : 'Connect Google Calendar';
+  document.getElementById('cal-forget').hidden = !CAL;
+  if (extra) { state.textContent = extra; return; }
+  if (!CAL) { state.textContent = 'marks holidays you have already booked'; return; }
+  const booked = Object.keys(CAL.byAnchor).filter(isBooked).length;
+  const mins = Math.round((Date.now() - CAL.checkedAt) / 60000);
+  const ago = mins < 1 ? 'just now' : mins < 60 ? `${mins} min ago` : mins < 1440 ? `${Math.round(mins / 60)} h ago` : `${Math.round(mins / 1440)} d ago`;
+  state.textContent = `${booked} holiday${booked === 1 ? '' : 's'} booked · checked ${ago}`;
+}
+
+async function syncCalendar() {
+  const button = document.getElementById('cal-sync');
+  button.disabled = true;
+  renderCalState('checking your calendar…');
+  try {
+    await loadGis();
+    calToken = await requestCalendarToken();
+    const start = new Date(); start.setHours(0, 0, 0, 0);
+    const end = parse(PLAN.range.end); end.setDate(end.getDate() + 8);
+    const events = await calendarEvents(start.toISOString(), end.toISOString());
+    CAL = { checkedAt: Date.now(), byAnchor: calendarByBreak(events) };
+    try { localStorage.setItem(CAL_KEY, JSON.stringify(CAL)); } catch { /* private mode */ }
+    renderCalState();
+    render();
+  } catch (error) {
+    renderCalState(`calendar check failed — ${error.message}`);
+  } finally {
+    button.disabled = false;
+  }
+}
+
+document.getElementById('cal-sync').addEventListener('click', syncCalendar);
+document.getElementById('cal-forget').addEventListener('click', () => {
+  if (calToken && window.google?.accounts?.oauth2) google.accounts.oauth2.revoke(calToken, () => {});
+  calToken = null;
+  CAL = null;
+  try { localStorage.removeItem(CAL_KEY); } catch { /* ignore */ }
+  renderCalState('calendar forgotten on this device');
+  render();
+});
+if (GOOGLE_CLIENT_ID) loadGis().catch(() => { /* retried on click */ });
+
 document.getElementById('order').addEventListener('change', event => {
   remember(ORDER_KEY, event.target.value);
   render();
@@ -1847,8 +2651,20 @@ document.getElementById('months').addEventListener('click', event => {
 document.getElementById('theme').addEventListener('click', () => {
   const dark = matchMedia('(prefers-color-scheme: dark)').matches;
   const now = document.documentElement.getAttribute('data-theme') || (dark ? 'dark' : 'light');
-  document.documentElement.setAttribute('data-theme', now === 'dark' ? 'light' : 'dark');
+  const next = now === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  remember('sgfares.theme.v1', next);
+  syncThemeColor();
 });
+
+function syncThemeColor() {
+  const forced = document.documentElement.getAttribute('data-theme');
+  for (const meta of document.querySelectorAll('meta[name="theme-color"]')) {
+    const dark = forced ? forced === 'dark' : meta.media.includes('dark');
+    meta.content = dark ? '#111214' : '#f6f4ef';
+  }
+}
+syncThemeColor();
 
 /* ═══ Installable app ═══ */
 if ('serviceWorker' in navigator) {
@@ -1880,7 +2696,7 @@ Promise.all([grab('data/plan.json'), loadAirports(), loadDestinations()])
   .then(([plan]) => {
     PLAN = plan;
     document.getElementById('meta').textContent =
-      `holidays through ${parse(plan.range.end).toLocaleDateString()} · prices in ${CURRENCY}`;
+      `Live return fares from Singapore · holidays through ${parse(plan.range.end).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}`;
 
     document.getElementById('planner').hidden = false;
     document.getElementById('budget').addEventListener('change', renderPlan);
@@ -1902,12 +2718,17 @@ Promise.all([grab('data/plan.json'), loadAirports(), loadDestinations()])
     document.getElementById('nonstop-only').checked = NONSTOP_ONLY;
     // Filters are answers to "how do I travel", not per-visit decisions.
     const leave = recall(LEAVE_KEY), order = recall(ORDER_KEY);
-    if (leave) document.getElementById('leave').value = leave;
+    // "9" was the old "Any" option; three days is every option the plan has.
+    setLeave(leave == null || leave === '9' ? 3 : leave, { save: false });
     if (order) document.getElementById('order').value = order;
     loadSelection();
     renderPicker();
     renderSyncState();
-    render();
+    renderCalState();
+    // A shared link to one holiday (#2026-11-08) opens and prices it.
+    const wanted = decodeURIComponent(location.hash.slice(1));
+    if (wanted && upcomingBreaks().some(b => b.anchor === wanted)) openHoliday(wanted);
+    else render();
     setLiveStatus('open a holiday, or price every holiday, for live prices', false);
   })
   .catch(err => {

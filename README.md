@@ -63,34 +63,61 @@ byproduct of that script, not something you write by hand.
 
 ## The dashboard
 
-Each holiday is a summary card: the cheapest destination, then every tracked
-destination's current lowest return fare. Click a card to expand it into the
-full window-by-window table; click the **⟳** on a card's header to re-check
-its prices without expanding it.
+One control drives the page: **Days of leave I'll take** (none to three).
+Every number on screen is "each city's cheapest fare for a holiday, within
+that much leave", so the answer card, the insights, the chart and the cards
+always agree.
 
-**Every** future public holiday gets a card, and nothing is priced until you
-ask for it. Opening a card fetches that holiday's prices on the spot; nothing
-loads eagerly on page open, so visiting the page costs nothing until you
-actually click something.
+- **Best value break** — the cheapest trip across every holiday priced so
+  far, with its dates drawn as a strip of holiday / leave / weekend days and
+  the cost per night. Holidays already booked in your calendar never win it.
+- **Insights** — up to three findings computed from the prices on screen:
+  a holiday where taking leave makes the fare *cheaper* than the plain long
+  weekend, the holiday that costs most for the most cities, and the city that
+  is consistently the outlier (or, failing one, the city that is cheapest
+  most often). They only appear once there is enough priced to say them.
+- **Chart** — every upcoming holiday on one price scale, one dot per city;
+  the cheapest is labelled. Unpriced holidays are dashed columns: tap one to
+  price it. A midweek holiday that needs leave says so rather than pricing a
+  same-day return.
+- **Cards** — each holiday's cheapest fare, its day strip and a bar per city
+  on the same scale as the chart. Opening a card shows every way to take
+  that holiday on one calendar (the leave ladder), a city × option price grid
+  coloured per city so each row's cheapest option stands out, what the
+  most leave buys over the plain holiday, the fares for the option you pick
+  (each links to the exact Google Flights search), and the full sortable
+  table underneath.
 
-**Price every holiday** does the same thing for every holiday inside the
-booking window, one after another — the answer to "when should I go", which
-card-by-card clicking only gets to a dozen clicks later. It runs sequentially
-so it neither trips the API's rate limit nor throws away its shared fare
-cache, skips holidays already priced, and turns into a **Stop · n of N**
-button while it works. **Refresh** at the top re-checks only what is already
-priced, ignoring the fifteen-minute server cache.
+**Every** future public holiday gets a card and a column, and nothing is
+priced until you ask. Past holidays and windows that have already departed
+are hidden. **Price every holiday** prices everything inside the booking
+window (14–330 days out) one holiday after another, skips ones already priced
+or booked, and turns into a **Stop · n of N** button while it works.
+**Re-check prices** re-queries only what is already priced, ignoring the
+fifteen-minute server cache; **⟳** on a card does the same for one holiday.
 
-Once two or more holidays have prices, a line above the cards names the
-cheapest one found so far — click it to jump to that card — and that card
-carries a **cheapest** badge. **Order** switches the cards between
-chronological and cheapest-first; holidays with no price yet keep their date
-order at the back.
+A link ending `#2026-11-08` (a holiday's date) opens and prices that holiday,
+so a specific holiday can be shared. The leave choice, order, nonstop filter
+and theme are remembered in this browser.
 
-Inside an expanded card the table sorts by price, cheapest first, and carries
-a **per night** column: a nine-night window at a higher total is not worse
-value than a three-night one, and nothing else on the row makes that
-comparable. Any column header re-sorts every holiday's table at once.
+### Google Calendar (optional)
+
+**Connect Google Calendar** reads your calendars (read-only, entirely in the
+browser — nothing is sent anywhere but Google) and marks holidays you have
+already booked: flight and hotel events Gmail added, out-of-office and
+"leave"/"trip"-style events, and all-day plans. Booked holidays get a
+**booked** badge, are skipped by *Price every holiday*, and never win the
+answer card. Only the matching events' titles and dates are kept, in local
+storage; **Forget** removes them and revokes the token.
+
+It stays hidden until `GOOGLE_CLIENT_ID` in `docs/index.html` is set. To get
+one, in a Google Cloud project of your own:
+
+1. Enable the **Google Calendar API**.
+2. OAuth consent screen: External, Testing, add yourself as a test user.
+3. Credentials → OAuth client ID → **Web application**, with authorised
+   JavaScript origins `https://kenneth-cheong.github.io` and
+   `http://localhost:8141`.
 
 **Nonstop only**, next to the leave filter, is on by default and wins over each
 destination's own `max_stops` — a connection out of SIN usually costs hours for
