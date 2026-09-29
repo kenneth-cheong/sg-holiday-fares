@@ -448,16 +448,8 @@
   .sync { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; margin-top: 10px; font-size: 12px; }
   .sync-state { color: var(--text-muted); }
   .sync-state.ok { color: var(--good); }
-  .sync-form { display: flex; gap: 8px; align-items: center; }
-  .sync-form input {
-    font: inherit; font-size: 12px; padding: 4px 8px; border-radius: 7px;
-    border: 1px solid var(--border); background: var(--surface-1); color: var(--text-primary);
-  }
-  .sync-form button {
-    background: none; border: 0; padding: 0; font: inherit; font-size: 12px;
-    color: var(--text-muted); cursor: pointer; text-decoration: underline;
-  }
-  .sync-form button:hover { color: var(--text-primary); }
+  .sync-state.warn { color: var(--text-secondary); }
+  #sync-signin { font-size: 12px; padding: 5px 10px; }
 
   .live-status { font-size: 12px; color: var(--text-muted); }
   .live-status.busy::after { content: ' ⟳'; }
@@ -610,6 +602,9 @@
   .badge.booked { color: var(--accent); }
   .badge.busy { color: var(--text-muted); }
   .plans { margin: 6px 0 0; font-size: 12px; color: var(--text-secondary); }
+  .local { margin: 6px 0 0; font-size: 12px; color: var(--text-secondary); }
+  .local em { font-style: normal; color: var(--text-muted); }
+  .fare .fh { grid-column: 1 / -1; font-size: 12px; color: var(--text-secondary); }
   details.card.is-booked:not([open]) { opacity: .8; }
 
   /* ── Holiday detail ──────────────────────────────────────────────────── */
@@ -774,11 +769,7 @@
 
       <div class="sync" id="sync">
         <span class="sync-state" id="sync-state"></span>
-        <form class="sync-form" id="sync-form" autocomplete="off">
-          <input type="password" id="sync-key" placeholder="edit key" aria-label="Edit key" size="14">
-          <button type="submit">Save key</button>
-          <button type="button" id="sync-forget">Forget</button>
-        </form>
+        <button class="primary" id="sync-signin" type="button" hidden>Sign in with Google to save</button>
       </div>
     </details>
   </div>
@@ -952,7 +943,9 @@ function colorFor(code) {
 /* ═══ Destinations — shared across the page and (optionally) the API ═══ */
 const STORE_KEY = 'sgfares.selected.v1';
 const DEST_KEY = 'sgfares.list.v1';
-const KEY_STORE = 'sgfares.editkey.v1';
+const KEY_STORE = 'sgfares.editkey.v1';   // the old typed edit key, still honoured if present
+const DIRTY_KEY = 'sgfares.list.dirty.v1'; // '1' while this browser holds edits the API has not got
+const TOKEN_KEY = 'sgfares.edittoken.v1';  // {token, exp}: a Google sign-in that may save the list
 const NONSTOP_KEY = 'sgfares.nonstop.v1';
 const LEAVE_KEY = 'sgfares.leave.v1';
 const ORDER_KEY = 'sgfares.order.v1';
@@ -971,6 +964,8 @@ let DESTS = [];          // [{code, name, airports, maxStops, alertBelow}]
 let SELECTED = new Set();
 let WRITABLE = false;     // the API accepts writes (an edit key is configured on it)
 let SHARED = false;       // this list came from the API rather than the browser
+let DIRTY = recall(DIRTY_KEY) === '1';
+const setDirty = on => { DIRTY = on; remember(DIRTY_KEY, on ? '1' : '0'); };
 
 // Mirrors config.json's destinations, so the page and the sweep agree even
 // when the API holds no shared list.
@@ -999,48 +994,75 @@ const fromApi = list => list.map(d => ({
   maxStops: d.max_stops ?? 1, alertBelow: d.alert_below ?? null,
 }));
 
-/* The list lives on the API so the page and a manually-run sweep agree on it.
-   Local storage is the fallback for offline use and for anyone without an edit
-   key; a small starter set covers a completely fresh install of either. */
+/* The list lives on the API so every device, and the daily sweep, see the same
+   one. An edit lands in this browser first and is marked unsynced until the API
+   has it — a reload keeps the unsynced list rather than the API's older one, so
+   nothing is lost while signed out. Saving to the API needs a Google sign-in
+   (the API checks the token was issued to this page, for an allowed address). */
+const sameCodes = (a, b) => a.map(d => d.code).join() === b.map(d => d.code).join();
+
 async function loadDestinations() {
+  let local = null;
+  try { local = JSON.parse(localStorage.getItem(DEST_KEY) || 'null'); } catch { /* private mode */ }
+  if (!Array.isArray(local) || !local.length) local = null;
+
+  let remote = null, reached = false;
   try {
     const response = await fetch(`${API}/destinations`, { cache: 'no-store' });
     const payload = await response.json();
+    reached = response.ok;
     WRITABLE = !!payload.writable;
-    if (Array.isArray(payload.destinations) && payload.destinations.length) {
-      DESTS = fromApi(payload.destinations);
-      SHARED = true;
-      return;
-    }
-  } catch { /* fall through to local */ }
+    if (Array.isArray(payload.destinations) && payload.destinations.length) remote = fromApi(payload.destinations);
+  } catch { /* offline: fall through to local */ }
 
+  if (local && (DIRTY || !remote)) {
+    DESTS = local;
+    // Edited here before the API held any list: those edits exist nowhere else.
+    if (reached && !remote && !sameCodes(local, STARTER_DESTINATIONS)) setDirty(true);
+  } else if (remote) {
+    DESTS = remote;
+    SHARED = true;
+    try { localStorage.setItem(DEST_KEY, JSON.stringify(DESTS)); } catch { /* ignore */ }
+  } else {
+    DESTS = STARTER_DESTINATIONS.map(d => ({ ...d }));
+  }
+}
+
+function editToken() {
   try {
-    const saved = JSON.parse(localStorage.getItem(DEST_KEY) || 'null');
-    if (Array.isArray(saved) && saved.length) { DESTS = saved; return; }
-  } catch { /* private mode */ }
+    const saved = JSON.parse(localStorage.getItem(TOKEN_KEY) || 'null');
+    return saved && saved.exp > Date.now() + 60000 ? saved.token : '';
+  } catch { return ''; }
+}
+const forgetToken = () => { try { localStorage.removeItem(TOKEN_KEY); } catch { /* ignore */ } };
 
-  DESTS = STARTER_DESTINATIONS.map(d => ({ ...d }));
+async function pushDestinations() {
+  if (!WRITABLE) return { saved: false };
+  const token = editToken(), key = editKey();
+  if (!token && !key) return { saved: false };
+  try {
+    const response = await fetch(`${API}/destinations`, {
+      method: 'PUT',
+      headers: { 'content-type': 'application/json', ...(token ? { authorization: `Bearer ${token}` } : { 'x-edit-key': key }) },
+      body: JSON.stringify({ destinations: toApi(DESTS) }),
+    });
+    const payload = await response.json();
+    if (!response.ok) {
+      if (response.status === 401 && token) forgetToken();
+      return { saved: false, message: payload.reason || `HTTP ${response.status}` };
+    }
+    setDirty(false);
+    SHARED = true;
+    return { saved: true };
+  } catch (error) {
+    return { saved: false, message: error.message };
+  }
 }
 
 async function saveDestinations() {
   try { localStorage.setItem(DEST_KEY, JSON.stringify(DESTS)); } catch { /* ignore */ }
-
-  const key = editKey();
-  if (!key) return { saved: false, reason: WRITABLE ? 'no-key' : 'read-only' };
-
-  try {
-    const response = await fetch(`${API}/destinations`, {
-      method: 'PUT',
-      headers: { 'content-type': 'application/json', 'x-edit-key': key },
-      body: JSON.stringify({ destinations: toApi(DESTS) }),
-    });
-    const payload = await response.json();
-    if (!response.ok) return { saved: false, reason: payload.reason || `HTTP ${response.status}` };
-    SHARED = true;
-    return { saved: true };
-  } catch (error) {
-    return { saved: false, reason: error.message };
-  }
+  setDirty(true);
+  return pushDestinations();
 }
 
 function loadSelection() {
@@ -1084,38 +1106,51 @@ function applySelection() {
 function renderSyncState(extra) {
   const el = document.getElementById('sync-state');
   if (!el) return;
-  const hasKey = !!editKey();
-  let text;
-  if (!WRITABLE) text = 'Shared list is read-only — no edit key is configured on the API.';
-  else if (!hasKey) text = 'Changes stay in this browser. Enter the edit key to sync them everywhere.';
-  else text = SHARED ? 'Synced to the shared list.' : 'Edit key saved. Your next change syncs.';
-  el.textContent = extra ? `${text} ${extra}` : text;
-  el.className = `sync-state${hasKey && WRITABLE ? ' ok' : ''}`;
-  document.getElementById('sync-form').hidden = !WRITABLE;
+  const signIn = document.getElementById('sync-signin');
+  let text, tone = '';
+  if (!WRITABLE) text = DIRTY ? 'Saved in this browser only.' : '';
+  else if (DIRTY) { text = 'Saved in this browser only — sign in to keep this list on every device.'; tone = 'warn'; }
+  else if (SHARED) { text = 'Saved — this list opens the same on every device.'; tone = 'ok'; }
+  else text = '';
+  el.textContent = [text, extra].filter(Boolean).join(' ');
+  el.className = `sync-state ${tone}`;
+  signIn.hidden = !(WRITABLE && DIRTY && GOOGLE_CLIENT_ID);
 }
 
 async function persistDestinations(note) {
   const outcome = await saveDestinations();
-  if (outcome.saved) renderSyncState(note ? `(${note})` : '');
-  else if (outcome.reason && !['no-key', 'read-only'].includes(outcome.reason)) {
-    renderSyncState(`Sync failed: ${outcome.reason}.`);
-  } else renderSyncState();
+  renderSyncState(outcome.saved ? (note ? `(${note})` : '') : outcome.message ? `Not saved: ${outcome.message}.` : '');
+  loadLocalHolidays();
   return outcome;
 }
 
-document.getElementById('sync-form').addEventListener('submit', event => {
-  event.preventDefault();
-  const field = document.getElementById('sync-key');
-  const value = field.value.trim();
-  if (!value) return;
-  try { localStorage.setItem(KEY_STORE, value); } catch { /* ignore */ }
-  field.value = '';
-  persistDestinations('list pushed');
-});
+function requestEditToken() {
+  return new Promise((resolve, reject) => {
+    const client = google.accounts.oauth2.initTokenClient({
+      client_id: GOOGLE_CLIENT_ID,
+      scope: 'openid email',
+      callback: resp => (resp.error ? reject(new Error(resp.error_description || resp.error))
+        : resolve({ token: resp.access_token, exp: Date.now() + (Number(resp.expires_in) || 3600) * 1000 })),
+      error_callback: err => reject(new Error(err.message || err.type || 'sign-in cancelled')),
+    });
+    client.requestAccessToken({ prompt: '' });
+  });
+}
 
-document.getElementById('sync-forget').addEventListener('click', () => {
-  try { localStorage.removeItem(KEY_STORE); } catch { /* ignore */ }
-  renderSyncState('Key removed from this browser.');
+document.getElementById('sync-signin').addEventListener('click', async () => {
+  const button = document.getElementById('sync-signin');
+  button.disabled = true;
+  try {
+    await loadGis();
+    const grant = await requestEditToken();
+    try { localStorage.setItem(TOKEN_KEY, JSON.stringify(grant)); } catch { /* ignore */ }
+    const outcome = await pushDestinations();
+    renderSyncState(outcome.saved ? '' : `Not saved: ${outcome.message || 'unknown error'}.`);
+  } catch (error) {
+    renderSyncState(`Sign-in failed — ${error.message}.`);
+  } finally {
+    button.disabled = false;
+  }
 });
 
 document.getElementById('picker').addEventListener('click', event => {
@@ -1215,7 +1250,7 @@ async function pickAirport(airport) {
     // Prices every selected destination for the affected holidays, the newly
     // added one included — refreshLive has no notion of "just this airport".
     refreshLive();
-    await persistDestinations();
+    await persistDestinations();   // also fetches the new city's holidays
   } catch (error) {
     say(`could not reach the price service (${error.message})`, 'bad');
   } finally {
@@ -2206,6 +2241,7 @@ function detailHtml(brk, windows, top) {
         <span class="fp">${CURRENCY} ${fmt(r.best.price)}</span>
         <span class="fm">${esc([(r.best.airlines || []).join(', '), stopsText(r.best.stops), fmtDuration(r.best.duration)].filter(Boolean).join(' · '))}</span>
         ${r.book ? `<a class="fl book" href="${esc(r.book)}" target="_blank" rel="noopener noreferrer">Google Flights ↗</a>` : '<span></span>'}
+        ${(() => { const runs = localRuns(countryOf(d), sel.depart, sel['return']); return runs.length ? `<span class="fh">Local holiday: ${esc(runs.map(x => x.text).join('; '))}</span>` : ''; })()}
       </div>`).join('');
 
   return `<div class="detail">
@@ -2242,10 +2278,14 @@ function renderHoliday(brk, maxLeave, openByDefault, max) {
     + (anchor === CHEAPEST_ANCHOR ? '<span class="badge">cheapest</span>' : '');
   const planLine = plans.length
     ? `<p class="plans"><b>In your calendar:</b> ${plans.slice(0, 2).map(p => esc(`${p.title} (${p.when})`)).join('; ')}${plans.length > 2 ? ` +${plans.length - 2} more` : ''}</p>` : '';
+  const span = windows.length ? windows : windowsForBreak(brk, 3);
+  const localHtml = span.length && SELECTED.size
+    ? localLine(selectedDests(), span.reduce((m, w) => (w.depart < m ? w.depart : m), span[0].depart),
+      span.reduce((m, w) => (w['return'] > m ? w['return'] : m), span[0]['return'])) : '';
   const head = `<div class="htitle"><h2>${esc(brk.name)}</h2>${badge}
       <span class="away">${esc(dateLabel)} · ${esc(away)}</span>
       <button class="card-refresh" type="button" data-refresh="${esc(anchor)}"
-        title="Re-check prices for ${esc(brk.name)}" aria-label="Refresh ${esc(brk.name)}">⟳</button></div>${planLine}`;
+        title="Re-check prices for ${esc(brk.name)}" aria-label="Refresh ${esc(brk.name)}">⟳</button></div>${planLine}${localHtml}`;
   const open = openByDefault ? ' open' : '';
   const shell = (summary, body) => `<details class="holiday card${booked ? ' is-booked' : ''}" id="h-${esc(anchor)}" data-anchor="${esc(anchor)}"${open}>
       <summary>${head}${summary}</summary><div class="card-body">${body}</div></details>`;
@@ -2285,6 +2325,87 @@ function renderHoliday(brk, maxLeave, openByDefault, max) {
     <span class="card-strip">${stripHtml(top.window)}<span>${esc(shortRange(top.window))}</span></span>
     <span class="bars">${bars}</span>`;
   return shell(summary, openByDefault ? detailHtml(brk, windows, top) : '');
+}
+
+/* ═══ Holidays and festivals at the destination ═══
+   From Google's public holiday calendar for each destination's country, fetched
+   through the API (the feeds send no CORS headers). A holiday there means fuller
+   flights and hotels and some closures — or a festival worth going for. */
+const HOLIDAY_FEEDS = {
+  Argentina: 'ar', Australia: 'australian', Austria: 'austrian', Bahrain: 'bh', Bangladesh: 'bd', Belgium: 'be',
+  Brazil: 'brazilian', Brunei: 'bn', Cambodia: 'kh', Canada: 'canadian', Chile: 'cl', China: 'china', Colombia: 'co',
+  'Czech Republic': 'czech', Denmark: 'danish', Egypt: 'eg', Ethiopia: 'et', Fiji: 'fj', Finland: 'finnish',
+  France: 'french', 'French Polynesia': 'pf', Germany: 'german', Greece: 'greek', Guam: 'gu', 'Hong Kong': 'hong_kong',
+  Hungary: 'hungarian', Iceland: 'is', India: 'indian', Indonesia: 'indonesian', Ireland: 'irish', Israel: 'jewish',
+  Italy: 'italian', Japan: 'japanese', Jordan: 'jo', Kenya: 'ke', Kuwait: 'kw', Laos: 'la', Macau: 'mo',
+  Malaysia: 'malaysia', Maldives: 'mv', Mauritius: 'mu', Mexico: 'mexican', Morocco: 'ma', Myanmar: 'mm', Nepal: 'np',
+  Netherlands: 'dutch', 'New Zealand': 'new_zealand', Norway: 'norwegian', Oman: 'om', Pakistan: 'pk', Palau: 'pw',
+  Peru: 'pe', Philippines: 'philippines', Poland: 'polish', Portugal: 'portuguese', Qatar: 'qa', Russia: 'russian',
+  'Saudi Arabia': 'saudiarabian', Seychelles: 'sc', Singapore: 'singapore', 'South Africa': 'sa',
+  'South Korea': 'south_korea', Spain: 'spain', 'Sri Lanka': 'lk', Sweden: 'swedish', Switzerland: 'ch',
+  Taiwan: 'taiwan', Tanzania: 'tz', Thailand: 'th', Turkey: 'turkish', UAE: 'ae', 'United Kingdom': 'uk',
+  'United States': 'usa', Vietnam: 'vietnamese',
+};
+const LOCAL = new Map();   // feed -> [{date, name, kind}] | null (feed failed)
+
+function countryOf(dest) {
+  const codes = new Set([dest.code, ...airportsOf(dest)]);
+  return AIRPORTS.find(a => codes.has(a.code))?.country || null;
+}
+
+async function loadLocalHolidays() {
+  if (!PLAN) return;
+  const feeds = [...new Set(DESTS.map(d => HOLIDAY_FEEDS[countryOf(d)]).filter(Boolean))].filter(f => !LOCAL.has(f));
+  if (!feeds.length) return;
+  const to = parse(PLAN.range.end); to.setDate(to.getDate() + 10);
+  try {
+    const url = `${API}/local-holidays?feeds=${feeds.join(',')}&from=${iso(new Date())}&to=${iso(to)}`;
+    const payload = await fetch(url).then(r => r.json());
+    for (const feed of feeds) LOCAL.set(feed, payload.feeds?.[feed] ?? null);
+    render();
+  } catch { /* the flags are a nicety; the page works without them */ }
+}
+
+/* Days in a row become one run ("National Day, 1–7 Oct"), named after its
+   shortest public-holiday name — the plain one ("National Day", not "National
+   Day Golden Week holiday"), and never a minor observance that happens to sit
+   next to it ("Farmer's Day" the day before Lunar New Year). */
+function localRuns(country, from, to) {
+  const days = (LOCAL.get(HOLIDAY_FEEDS[country]) || []).filter(d => d.date >= from && d.date <= to);
+  const runs = [];
+  for (const d of days) {
+    const last = runs[runs.length - 1];
+    if (last && (last.to === d.date || addDays(last.to, 1) === d.date)) {
+      last.to = d.date; last.days.push(d); if (d.kind === 'holiday') last.kind = 'holiday';
+    } else runs.push({ from: d.date, to: d.date, days: [d], kind: d.kind });
+  }
+  return runs.map(r => {
+    const names = [...new Set(r.days.map(d => d.name))];
+    const name = [...new Set(r.days.filter(d => d.kind === r.kind).map(d => d.name))].sort((a, b) => a.length - b.length)[0];
+    const a = parse(r.from), b = parse(r.to);
+    const when = r.from === r.to ? fmtDay(a)
+      : a.getMonth() === b.getMonth() ? `${a.getDate()}–${b.getDate()} ${b.toLocaleDateString(undefined, { month: 'short' })}` : `${fmtDay(a)}–${fmtDay(b)}`;
+    const label = r.kind === 'festival' && !/festival/i.test(name) ? `${name} (festival)` : name;
+    return { ...r, text: `${label}, ${when}`, all: names.join(' · ') };
+  });
+}
+
+// One line per country, since cities in one country share its calendar.
+function localLine(dests, from, to) {
+  const byCountry = new Map();
+  for (const d of dests) {
+    const c = countryOf(d);
+    if (c && HOLIDAY_FEEDS[c]) (byCountry.get(c) || byCountry.set(c, []).get(c)).push(d.name);
+  }
+  const parts = [];
+  for (const [country, cities] of byCountry) {
+    const runs = localRuns(country, from, to);
+    if (!runs.length) continue;
+    const who = cities.length === 1 ? cities[0] : country;
+    parts.push(`<span title="${esc(`${cities.join(', ')} — ${runs.map(r => r.all).join('; ')}`)}">${esc(who)}: ${esc(runs.map(r => r.text).join('; '))}</span>`);
+  }
+  return parts.length
+    ? `<p class="local"><b>Holidays there too:</b> ${parts.join(' <em>·</em> ')} <em>— busier flights and hotels</em></p>` : '';
 }
 
 /* ═══ ±3 days around a holiday option ═══
@@ -2920,7 +3041,10 @@ Promise.all([grab('data/plan.json'), loadAirports(), loadDestinations()])
     loadSelection();
     renderPicker();
     renderSyncState();
+    // Edits made while signed out go up as soon as a live sign-in is around.
+    if (DIRTY && WRITABLE && editToken()) pushDestinations().then(() => renderSyncState());
     renderCalState();
+    loadLocalHolidays();
     // A shared link to one holiday (#2026-11-08) opens and prices it.
     const wanted = decodeURIComponent(location.hash.slice(1));
     if (wanted && upcomingBreaks().some(b => b.anchor === wanted)) openHoliday(wanted);

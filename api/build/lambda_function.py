@@ -9,6 +9,9 @@ would actually be quoted.
 Routes
     POST /fares    batch lookup   {origin, currency, fresh?, queries:[{dest,depart,ret,maxStops}]}
     GET  /verify   ?dest=HND      confirm a destination code returns itineraries
+    GET  /destinations            the shared tracked list (PUT to replace it)
+    GET  /local-holidays ?feeds=china,th&from=&to=
+                                  public holidays and festivals at the destinations
 """
 
 from __future__ import annotations
@@ -16,7 +19,10 @@ from __future__ import annotations
 import hmac
 import json
 import os
+import re
 import time
+import urllib.parse
+import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date, datetime, timedelta, timezone
 
@@ -34,6 +40,11 @@ _CACHE: dict[str, tuple[float, dict]] = {}
 
 CONFIG_TABLE = os.environ.get("CONFIG_TABLE", "sg-holiday-fares-config")
 EDIT_KEY = os.environ.get("EDIT_KEY", "")
+# Editing from the page is a Google sign-in: the access token must have been
+# issued to the dashboard's own OAuth client, for one of these addresses.
+GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "")
+EDITOR_EMAILS = {e.strip().lower() for e in os.environ.get("EDITOR_EMAILS", "").split(",") if e.strip()}
+WRITABLE = bool(EDIT_KEY or (GOOGLE_CLIENT_ID and EDITOR_EMAILS))
 
 
 def _cors(body: dict, status: int = 200) -> dict:
@@ -64,23 +75,49 @@ def _read_destinations() -> dict:
     return {
         "destinations": json.loads(item["payload"]),
         "updated_at": item.get("updated_at"),
-        "writable": bool(EDIT_KEY),
     }
+
+
+def _google_editor(token: str) -> tuple[bool, str]:
+    """Check a Google access token: issued to this app, for an allowed address."""
+    url = "https://oauth2.googleapis.com/tokeninfo?" + urllib.parse.urlencode({"access_token": token})
+    try:
+        with urllib.request.urlopen(url, timeout=8) as response:
+            info = json.loads(response.read())
+    except Exception:
+        return False, "Google sign-in expired — sign in again"
+    if info.get("aud") != GOOGLE_CLIENT_ID and info.get("azp") != GOOGLE_CLIENT_ID:
+        return False, "that sign-in was not for this app"
+    email = str(info.get("email", "")).lower()
+    if str(info.get("email_verified")).lower() != "true" or email not in EDITOR_EMAILS:
+        return False, f"{email or 'this account'} cannot edit the list"
+    return True, email
+
+
+def _authorise(event) -> tuple[bool, str]:
+    headers = event.get("headers") or {}
+    supplied = headers.get("x-edit-key", "")
+    if EDIT_KEY and supplied and hmac.compare_digest(supplied, EDIT_KEY):
+        return True, "edit key"
+    bearer = headers.get("authorization", "")
+    if GOOGLE_CLIENT_ID and EDITOR_EMAILS and bearer.lower().startswith("bearer "):
+        return _google_editor(bearer[7:].strip())
+    return False, "sign in to edit the list"
 
 
 def _handle_destinations(event, method: str) -> dict:
     if method == "GET":
-        return _cors({**_read_destinations(), "writable": bool(EDIT_KEY)})
+        return _cors({**_read_destinations(), "writable": WRITABLE})
 
     # Writes are gated because the endpoint is public — the repository is public,
-    # so the URL is too. With no key configured the list stays read-only rather
+    # so the URL is too. With no gate configured the list stays read-only rather
     # than silently accepting anonymous edits.
-    if not EDIT_KEY:
-        return _cors({"ok": False, "reason": "editing is disabled — no EDIT_KEY is set on the API"}, 503)
+    if not WRITABLE:
+        return _cors({"ok": False, "reason": "editing is disabled on the API"}, 503)
 
-    supplied = (event.get("headers") or {}).get("x-edit-key", "")
-    if not hmac.compare_digest(supplied, EDIT_KEY):
-        return _cors({"ok": False, "reason": "wrong or missing edit key"}, 403)
+    allowed, who = _authorise(event)
+    if not allowed:
+        return _cors({"ok": False, "reason": who}, 401)
 
     body = json.loads(event.get("body") or "{}")
     destinations = body.get("destinations")
@@ -111,7 +148,75 @@ def _handle_destinations(event, method: str) -> dict:
         "payload": json.dumps(cleaned),
         "updated_at": stamp,
     })
+    print(f"[destinations] {len(cleaned)} saved by {who}")
     return _cors({"ok": True, "destinations": cleaned, "updated_at": stamp})
+
+
+# Google's public holiday calendars, one per country ("china", "th", "japanese"
+# — the page maps country to id). The full feed, not ".official", because it
+# carries festivals (Lantern Festival, Setsubun) as well as days off.
+HOLIDAY_FEED = "https://calendar.google.com/calendar/ical/en.{}%23holiday%40group.v.calendar.google.com/public/basic.ics"
+HOLIDAY_TTL = 12 * 3600
+_HOLIDAYS: dict[str, tuple[float, list]] = {}
+# Observances every feed carries that say nothing about a destination.
+GENERIC_OBSERVANCE = re.compile(
+    r"valentine|christmas|halloween|mother'?s day|father'?s day|april fool|new year'?s eve|"
+    r"international|daylight saving|world |earth day|children'?s day|teacher'?s'? day|"
+    r"march equinox|june solstice|september equinox|december solstice", re.I)
+
+
+def _unfold(text: str) -> str:
+    return text.replace("\r\n ", "").replace("\n ", "")
+
+
+def _holiday_feed(feed: str) -> list:
+    hit = _HOLIDAYS.get(feed)
+    if hit and time.time() - hit[0] < HOLIDAY_TTL:
+        return hit[1]
+    with urllib.request.urlopen(HOLIDAY_FEED.format(feed), timeout=10) as response:
+        text = _unfold(response.read().decode("utf-8", "replace"))
+    days = []
+    for block in text.split("BEGIN:VEVENT")[1:]:
+        start = re.search(r"DTSTART;VALUE=DATE:(\d{8})", block)
+        end = re.search(r"DTEND;VALUE=DATE:(\d{8})", block)
+        name = re.search(r"\nSUMMARY:(.*)", block)
+        if not (start and name):
+            continue
+        name = name.group(1).strip().replace("\\,", ",")
+        description = (re.search(r"\nDESCRIPTION:(.*)", block) or [None, ""])[1]
+        kind = "holiday" if description.lower().startswith("public holiday") else "festival"
+        if kind == "festival" and GENERIC_OBSERVANCE.search(name):
+            continue
+        if "half-day" in name.lower():  # a half day off moves nobody
+            continue
+        first = datetime.strptime(start.group(1), "%Y%m%d").date()
+        last = datetime.strptime(end.group(1), "%Y%m%d").date() - timedelta(days=1) if end else first
+        day = first
+        while day <= max(first, last):  # a multi-day event becomes one row per day
+            days.append({"date": day.isoformat(), "name": name, "kind": kind})
+            day += timedelta(days=1)
+    days.sort(key=lambda d: d["date"])
+    _HOLIDAYS[feed] = (time.time(), days)
+    return days
+
+
+def _handle_local_holidays(params: dict) -> dict:
+    feeds = [f for f in str(params.get("feeds", "")).lower().split(",") if f][:20]
+    if not feeds or any(not re.fullmatch(r"[a-z_]{2,24}", f) for f in feeds):
+        return _cors({"ok": False, "reason": "feeds must be calendar ids like china,th"}, 400)
+    lo = str(params.get("from") or date.today().isoformat())[:10]
+    hi = str(params.get("to") or (date.today() + timedelta(days=400)).isoformat())[:10]
+
+    def one(feed):
+        try:
+            return feed, [d for d in _holiday_feed(feed) if lo <= d["date"] <= hi]
+        except Exception as exc:
+            print(f"[local-holidays] {feed}: {type(exc).__name__}: {exc}")
+            return feed, None
+
+    with ThreadPoolExecutor(max_workers=min(8, len(feeds))) as pool:
+        result = dict(pool.map(one, feeds))
+    return _cors({"ok": True, "feeds": result})
 
 
 def _offer_json(offer) -> dict | None:
@@ -244,6 +349,9 @@ def lambda_handler(event, context):
     try:
         if path.endswith("/destinations"):
             return _handle_destinations(event, method)
+
+        if path.endswith("/local-holidays"):
+            return _handle_local_holidays(event.get("queryStringParameters") or {})
 
         if path.endswith("/verify"):
             return _handle_verify(event.get("queryStringParameters") or {})

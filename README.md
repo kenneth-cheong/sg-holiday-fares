@@ -169,11 +169,14 @@ The picker's chips toggle which selected destinations are shown; the **×**
 removes one from tracking entirely. A destination's colour follows its code
 (a stable hash), so it never changes as you filter or as prices update.
 
-**Where the list lives.** By default your selections stay in this browser
-only. If the API has an edit key configured, pasting the same key into the
-**edit key** field under Destinations syncs your changes to the shared list
-everyone sees — otherwise it says plainly that the list is read-only or
-browser-only. There is also a `config.json` + `manage.py` path for editing the
+**Where the list lives.** On the API (a DynamoDB row), so every device and the
+daily sweep open the same list. An edit lands in the browser first and is
+marked unsynced; **Sign in with Google to save** under Destinations pushes it.
+The API checks the Google token was issued to this page's OAuth client for an
+address in `EDITOR_EMAILS` (Lambda env), so a stranger can read the list but
+not change it. Until it is saved, a reload keeps this browser's list rather
+than the API's older one, so nothing is lost while signed out; the sign-in
+lasts an hour, and any edit in that hour saves straight away. There is also a `config.json` + `manage.py` path for editing the
 list from the command line or the **Manage destinations** Actions workflow,
 independent of the page:
 
@@ -187,8 +190,21 @@ python manage.py add HND Tokyo --verify        # nonstop only; --max-stops 1 to 
 POST /fares          {origin, currency, fresh?, queries:[{dest,depart,ret,maxStops}]}
 GET  /verify          ?dest=HND
 GET  /destinations
-PUT  /destinations    (x-edit-key header required if an edit key is configured)
+PUT  /destinations    (Authorization: Bearer <Google token>, or x-edit-key if EDIT_KEY is set)
+GET  /local-holidays  ?feeds=china,th&from=YYYY-MM-DD&to=YYYY-MM-DD
 ```
+
+**Holidays at the destination.** Each holiday card lists public holidays and
+festivals in the destination countries that fall inside its travel windows
+("Holidays there too: China: Chinese New Year, 5–8 Feb"), and the fares list
+names them per city for the picked option. They come from Google's public
+holiday calendars (`en.<id>#holiday@group.v.calendar.google.com`, the full feed
+rather than `.official`, which is where festivals live). The feeds send no CORS
+headers, so `/local-holidays` fetches them and caches each for 12 hours. The
+page maps country to feed id in `HOLIDAY_FEEDS`; ids are inconsistent (`china`,
+`japanese`, `th`, `hong_kong`) and every country in `airports.json` was checked
+against a live feed. Generic observances (Valentine's, Christmas as an
+observance, equinoxes) and half-day holidays are dropped.
 
 Results are cached in the function for 15 minutes, so reopening a card you
 just checked is instant and Google sees a fraction of the traffic. The header
@@ -207,8 +223,8 @@ later chunk cannot evict what the earlier ones just fetched.
 
 Because the repository is public the endpoint URL is too, so the API Gateway
 stage is throttled (5 requests/second, burst 10) to bound what a stranger can
-cost, and `/destinations` writes are rejected outright unless an edit key is
-set on the function. Deploy changes with:
+cost, and `/destinations` writes are rejected outright unless the function
+has `GOOGLE_CLIENT_ID` + `EDITOR_EMAILS` (or an `EDIT_KEY`) set. Deploy changes with:
 
 ```bash
 ./api/build.sh && aws lambda update-function-code --region ap-southeast-1 --function-name sg-holiday-fares-api --zip-file fileb://api/fares-api.zip
@@ -307,7 +323,7 @@ fares/sources.py            FareSource interface + Google Flights implementation
 fares/store.py              JSONL history, alert state, plan payload
 fares/alerts.py             baseline, thresholds, re-alert suppression (manual sweep only)
 fares/notify.py             Telegram delivery (manual sweep only)
-api/lambda_function.py      live /fares, /verify, /destinations — what the page actually calls
+api/lambda_function.py      live /fares, /verify, /destinations, /local-holidays — what the page calls
 docs/index.html             the dashboard
 docs/data/plan.json         holidays + travel windows — the only file the page reads from disk
 docs/data/airports.json     destination search index
