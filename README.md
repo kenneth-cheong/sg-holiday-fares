@@ -209,6 +209,8 @@ just checked is instant and Google sees a fraction of the traffic. The header
 **Refresh** button sets `fresh` and re-queries everything currently on screen;
 a card's own **⟳** does the same for just that holiday.
 
+**Lookups are sequential and retried.** Holidays are priced one after another, never all at once, and a lookup that errors (as opposed to honestly finding no flight) is sent again once after a short pause. The ±3-day grids load only for the holiday you are viewing, one city at a time; opening another holiday stops the previous one's queue.
+
 **The page never sends a whole holiday in one request.** Two upstream limits
 decide the batch size: the function rejects more than 60 queries, and the HTTP
 API in front of it abandons the integration at 29 seconds — and ten

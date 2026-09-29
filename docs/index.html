@@ -864,7 +864,7 @@ const CURRENCY = 'SGD';
    Results are concatenated in request order, which callers rely on. */
 const MAX_PER_REQUEST = 16;
 
-async function faresRequest(queries, { fresh = false } = {}) {
+async function sendChunks(queries, fresh) {
   const results = [];
   for (let i = 0; i < queries.length; i += MAX_PER_REQUEST) {
     const response = await fetch(`${API}/fares`, {
@@ -880,6 +880,25 @@ async function faresRequest(queries, { fresh = false } = {}) {
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const payload = await response.json();
     results.push(...(payload.results || []));
+  }
+  return results;
+}
+
+/* Google's answer is flaky: a lookup that errors (as opposed to one that
+   honestly finds no matching flight) often works a moment later, and the API
+   does not cache failures. So errored lookups are sent again, once, after a
+   short pause. Everything is still sent one chunk at a time. */
+const RETRY_ROUNDS = 1;
+const failedLookup = r => r && !r.best && r.error && !/^no offers/.test(r.error);
+
+async function faresRequest(queries, { fresh = false } = {}) {
+  const results = await sendChunks(queries, fresh);
+  for (let round = 0; round < RETRY_ROUNDS; round++) {
+    const failed = results.map((r, i) => (failedLookup(r) ? i : -1)).filter(i => i >= 0);
+    if (!failed.length) break;
+    await new Promise(r => setTimeout(r, 800));
+    const again = await sendChunks(failed.map(i => queries[i]), false);
+    failed.forEach((i, j) => { if (again[j]) results[i] = again[j]; });
   }
   return results;
 }
@@ -1543,6 +1562,7 @@ let LIVE = new Map();      // "CODE|depart|return" -> latest API result
 const PRICED = new Set();  // holiday anchors that have been queried at least once
 const LOADING = new Set(); // holiday anchors with a lookup in flight
 const OPEN = new Set();    // holiday anchors currently expanded
+let VIEWING = null;        // the one being looked at: the last opened, while it stays open
 
 /* Only windows still ahead, and only real trips: a lone midweek holiday with
    no leave is a same-day return, which is not a holiday anyone takes. */
@@ -1594,13 +1614,15 @@ async function refreshLive({ fresh = false, only = null } = {}) {
   for (const dest of DESTS) for (const code of airportsOf(dest)) owner.set(code, dest.code);
 
   let ok = 0, failed = 0;
-  await Promise.all(groups.map(async ({ brk, windows }) => {
+  // One holiday after another: firing them all at once would put every
+  // holiday × every city on the API together and trip its rate limit.
+  for (const { brk, windows } of groups) {
     const queries = DESTS.filter(d => SELECTED.has(d.code)).flatMap(dest =>
       airportsOf(dest).flatMap(airport => windows.map(w => ({
         dest: airport, depart: w.depart, ret: w['return'],
         maxStops: NONSTOP_ONLY ? 0 : dest.maxStops ?? 1,
       }))));
-    if (!queries.length) { LOADING.delete(brk.anchor); return; }
+    if (!queries.length) { LOADING.delete(brk.anchor); continue; }
 
     try {
       const results = await faresRequest(queries, { fresh });
@@ -1627,7 +1649,7 @@ async function refreshLive({ fresh = false, only = null } = {}) {
       LOADING.delete(brk.anchor);
       render();
     }
-  }));
+  }
 
   setLiveStatus(
     ok ? `live · ${ok} priced${failed ? `, ${failed} unavailable` : ''} · from Singapore`
@@ -1997,6 +2019,7 @@ function openHoliday(anchor) {
   const brk = PLAN.breaks.find(b => b.anchor === anchor);
   if (!brk || !windowsForBreak(brk, currentLeave()).length) return;
   OPEN.add(anchor);
+  VIEWING = anchor;
   history.replaceState(null, '', `#${anchor}`);
   if (PRICED.has(anchor)) render(); else refreshLive({ only: anchor });
   requestAnimationFrame(() => document.querySelector(`details.holiday[data-anchor="${anchor}"]`)
@@ -2368,6 +2391,7 @@ async function loadFlexMany(anchor, codes, sel) {
   for (const code of codes) want.add(code);
   FLEX_WANT.set(anchor, want);
   for (const code of codes) {
+    if (VIEWING !== anchor) break;   // moved on to another holiday: stop spending lookups here
     const dest = DESTS.find(d => d.code === code);
     const now = selectedWindow(PLAN.breaks.find(b => b.anchor === anchor));
     if (dest && now.depart === sel.depart && now['return'] === sel['return']) await loadFlex(dest, sel);
@@ -2502,7 +2526,7 @@ function render() {
     + (list.map(brk => renderHoliday(brk, maxLeave, OPEN.has(brk.anchor), max)).join('')
       || `<div class="empty">No upcoming holidays found.</div>`);
 
-  for (const anchor of OPEN) if (PRICED.has(anchor)) autoFlex(anchor);
+  if (VIEWING && OPEN.has(VIEWING) && PRICED.has(VIEWING)) autoFlex(VIEWING);
 
   out.querySelectorAll('details.holiday').forEach(card => {
     card.querySelector('summary').addEventListener('click', event => {
@@ -2511,6 +2535,7 @@ function render() {
       if (event.target.closest('.card-refresh')) { refreshLive({ only: anchor, fresh: true }); return; }
       if (OPEN.has(anchor)) {
         OPEN.delete(anchor);
+        if (VIEWING === anchor) VIEWING = [...OPEN].pop() || null;
         if (location.hash === `#${anchor}`) history.replaceState(null, '', location.pathname + location.search);
         render();
         return;
@@ -2518,6 +2543,7 @@ function render() {
       const brk = PLAN.breaks.find(b => b.anchor === anchor);
       if (!windowsForBreak(brk, currentLeave()).length) return;
       OPEN.add(anchor);
+      VIEWING = anchor;
       history.replaceState(null, '', `#${anchor}`);
       if (PRICED.has(anchor)) render(); else refreshLive({ only: anchor });
     });
@@ -2528,6 +2554,7 @@ document.getElementById('out').addEventListener('click', event => {
   const chip = event.target.closest('[data-flex]');
   if (chip) {
     const [anchor, code] = chip.dataset.flex.split('|');
+    VIEWING = anchor;
     const sel = selectedWindow(PLAN.breaks.find(b => b.anchor === anchor));
     loadFlexMany(anchor, [code], sel);
     render();
@@ -2536,6 +2563,7 @@ document.getElementById('out').addEventListener('click', event => {
   const row = event.target.closest('.ladder-row[data-sel]');
   if (!row) return;
   const [anchor, depart, ret] = row.dataset.sel.split('|');
+  VIEWING = anchor;
   SEL.set(anchor, `${depart}|${ret}`);
   // Cities already asked for follow the option just picked.
   const nextSel = selectedWindow(PLAN.breaks.find(b => b.anchor === anchor));
