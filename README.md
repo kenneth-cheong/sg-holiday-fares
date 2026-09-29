@@ -176,7 +176,7 @@ The API checks the Google token was issued to this page's OAuth client for an
 address in `EDITOR_EMAILS` (Lambda env), so a stranger can read the list but
 not change it. Until it is saved, a reload keeps this browser's list rather
 than the API's older one, so nothing is lost while signed out; the sign-in
-lasts an hour, and any edit in that hour saves straight away. There is also a `config.json` + `manage.py` path for editing the
+is traded for the API's own signed session (`POST /session`, 180 days, `SESSION_SECRET` in the Lambda env), so a device signs in once, not hourly. There is also a `config.json` + `manage.py` path for editing the
 list from the command line or the **Manage destinations** Actions workflow,
 independent of the page:
 
@@ -191,6 +191,7 @@ POST /fares          {origin, currency, fresh?, queries:[{dest,depart,ret,maxSto
 GET  /verify          ?dest=HND
 GET  /destinations
 PUT  /destinations    (Authorization: Bearer <Google token>, or x-edit-key if EDIT_KEY is set)
+POST /session         (Bearer <Google token> -> long-lived session token)
 GET  /local-holidays  ?feeds=china,th&from=YYYY-MM-DD&to=YYYY-MM-DD
 ```
 

@@ -672,6 +672,11 @@
   .flex-chip:hover { color: var(--text-primary); border-color: var(--axis); }
   .flex-chip[aria-pressed="true"] { border-color: var(--accent); color: var(--text-primary); background: color-mix(in srgb, var(--accent) 12%, transparent); }
   .flex-chip i { width: 8px; height: 8px; border-radius: 50%; }
+  .flex-city { margin: 10px 0 14px; }
+  .flex-city > summary { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; }
+  .flex-city > summary i, .flex-idle i { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+  .flex-idle { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+  .flex-all { margin-bottom: 6px; }
   .flex-best { font-size: 13px; color: var(--text-secondary); margin: 2px 0 8px; }
   .flex-best b { color: var(--text-primary); }
   .flex-holiday td { padding: 4px 6px; line-height: 1.2; }
@@ -1110,7 +1115,7 @@ function renderSyncState(extra) {
   let text, tone = '';
   if (!WRITABLE) text = DIRTY ? 'Saved in this browser only.' : '';
   else if (DIRTY) { text = 'Saved in this browser only — sign in to keep this list on every device.'; tone = 'warn'; }
-  else if (SHARED) { text = 'Saved — this list opens the same on every device.'; tone = 'ok'; }
+  else if (SHARED) { text = editToken() ? 'Saved — this list opens the same on every device. You stay signed in on this device.' : 'Saved — this list opens the same on every device.'; tone = 'ok'; }
   else text = '';
   el.textContent = [text, extra].filter(Boolean).join(' ');
   el.className = `sync-state ${tone}`;
@@ -1142,7 +1147,16 @@ document.getElementById('sync-signin').addEventListener('click', async () => {
   button.disabled = true;
   try {
     await loadGis();
-    const grant = await requestEditToken();
+    const google = await requestEditToken();
+    // Trade the hour-long Google token for the API's own long-lived session,
+    // so this device stays signed in. If the API has sessions off, the hour
+    // token is used as before.
+    let grant = google;
+    try {
+      const swap = await fetch(`${API}/session`, { method: 'POST', headers: { authorization: `Bearer ${google.token}` } });
+      const payload = await swap.json();
+      if (swap.ok && payload.token) grant = { token: payload.token, exp: payload.exp };
+    } catch { /* keep the hour token */ }
     try { localStorage.setItem(TOKEN_KEY, JSON.stringify(grant)); } catch { /* ignore */ }
     const outcome = await pushDestinations();
     renderSyncState(outcome.saved ? '' : `Not saved: ${outcome.message || 'unknown error'}.`);
@@ -1683,7 +1697,7 @@ let BULK = null;
 async function priceAll() {
   const button = document.getElementById('price-all');
   if (!PLAN) return;
-  if (BULK) { BULK.stop = true; button.textContent = 'Stopping…'; return; }
+  if (BULK) { BULK.stop = true; button.textContent = 'Stopping…'; setLiveStatus('stopping after this holiday…', true); return; }
 
   if (!SELECTED.size) { setLiveStatus('pick at least one destination first', false); return; }
   // Holidays already booked in your calendar are skipped: no point pricing them.
@@ -1693,7 +1707,7 @@ async function priceAll() {
     .map(b => b.anchor);
   if (!targets.length) { setLiveStatus(`every holiday in the booking window is already priced${skipped ? ` (${skipped} booked, skipped)` : ''}`, false); return; }
 
-  BULK = { stop: false };
+  BULK = { stop: false, done: 0, total: targets.length, name: '' };
   button.classList.add('running');
   document.getElementById('refresh').disabled = true;
 
@@ -1701,6 +1715,8 @@ async function priceAll() {
   for (const anchor of targets) {
     if (BULK.stop) break;
     button.textContent = `Stop · ${done + 1} of ${targets.length}`;
+    BULK.done = done;
+    BULK.name = PLAN.breaks.find(b => b.anchor === anchor)?.name || '';
     await refreshLive({ only: anchor });
     done++;
   }
@@ -1988,7 +2004,10 @@ function renderInsights(ranked, maxLeave) {
         <span class="eyebrow">Which holiday is cheapest?</span>
         <h2 class="hero-title">Price every holiday to find your best-value break</h2>
         <p class="hero-sub">Checks the next ${count} holidays for ${SELECTED.size} cit${SELECTED.size === 1 ? 'y' : 'ies'}, live from Singapore. Nothing is priced until you ask.</p>
-        <button class="hero-go" type="button" data-act="price-all">Price every holiday</button>
+        ${BULK
+          ? `<p class="hero-sub"><span class="spin"></span> <b>Pricing ${esc(BULK.name || 'the first holiday')} — ${BULK.done + 1} of ${BULK.total}.</b> Each holiday takes a few seconds; results appear as they land.</p>
+             <button class="hero-go" type="button" data-act="price-all">Stop</button>`
+          : `<button class="hero-go" type="button" data-act="price-all">Price every holiday</button>`}
       </div>`;
     return;
   }
@@ -2414,7 +2433,7 @@ function localLine(dests, from, to) {
    the API), price every depart/return within FLEX_SPAN days of the picked
    option and show what each shift costs in leave. */
 const FLEX = new Map();       // "code|depart|return|stops" -> Map("d,r" -> result|null) | 'loading' | 'failed'
-const FLEX_PICK = new Map();  // anchor -> dest code whose grid is showing
+const FLEX_WANT = new Map();  // anchor -> Set of dest codes whose grid is wanted
 
 const stopsFor = dest => (NONSTOP_ONLY ? 0 : dest.maxStops ?? 1);
 const flexKey = (code, w, stops) => `${code}|${w.depart}|${w['return']}|${stops}`;
@@ -2458,26 +2477,44 @@ async function loadFlex(dest, w) {
   render();
 }
 
+const wanted = anchor => FLEX_WANT.get(anchor) || new Set();
+
+/* One grid per city, stacked. Nothing is priced until asked — a grid is up to
+   49 lookups, so nine cities are ~440 — but a city, or all of them, is one tap.
+   Cities are loaded one after another so the API's rate limit is never hit. */
+async function loadFlexMany(anchor, codes, sel) {
+  const want = wanted(anchor);
+  for (const code of codes) want.add(code);
+  FLEX_WANT.set(anchor, want);
+  for (const code of codes) {
+    const dest = DESTS.find(d => d.code === code);
+    const now = selectedWindow(PLAN.breaks.find(b => b.anchor === anchor));
+    if (dest && now.depart === sel.depart && now['return'] === sel['return']) await loadFlex(dest, sel);
+  }
+}
+
 function flexHtml(anchor, sel, dests) {
   if (!dests.length) return '';
-  const code = FLEX_PICK.get(anchor);
-  const chips = dests.map(d => `<button type="button" class="flex-chip" data-flex="${esc(anchor)}|${esc(d.code)}" aria-pressed="${d.code === code}">
-      <i style="background:${colorFor(d.code)}"></i>${esc(d.name)}</button>`).join('');
-  let body = '';
-  const dest = code && DESTS.find(d => d.code === code);
-  if (dest) {
-    const state = FLEX.get(flexKey(code, sel, stopsFor(dest)));
-    if (!state || state === 'loading') {
-      body = `<div class="flex-matrix-loading"><span class="spin"></span> Checking ${esc(dest.name)} for every date pair within ${FLEX_SPAN} days of ${esc(shortRange(sel))}…</div>`;
-    } else if (state === 'failed') {
-      body = `<p class="note">Couldn't check the nearby dates — tap ${esc(dest.name)} again to retry.</p>`;
-    } else {
-      body = flexMatrix(dest, sel, state);
+  const want = wanted(anchor);
+  const sections = dests.map(d => {
+    const state = FLEX.get(flexKey(d.code, sel, stopsFor(d)));
+    const head = (extra = '') => `<summary><i style="background:${colorFor(d.code)}"></i><b>${esc(d.name)}</b>${extra}</summary>`;
+    const shell = (extra, body, open = true) => `<details class="flex-city"${open ? ' open' : ''}>${head(extra)}${body}</details>`;
+    if (state === 'loading') {
+      return shell(' <span class="spin"></span>', `<div class="flex-matrix-loading">Checking every date pair within ${FLEX_SPAN} days of ${esc(shortRange(sel))}…</div>`);
     }
-  }
+    if (state === 'failed') {
+      return shell('', `<p class="note">Couldn't check the nearby dates. <button type="button" class="linkish" data-flex="${esc(anchor)}|${esc(d.code)}">Try again</button></p>`);
+    }
+    if (state) return shell('', flexMatrix(d, sel, state));
+    return `<div class="flex-city flex-idle"><i style="background:${colorFor(d.code)}"></i><b>${esc(d.name)}</b>
+      <button type="button" class="flex-chip" data-flex="${esc(anchor)}|${esc(d.code)}">${want.has(d.code) ? 'Waiting…' : 'Check dates'}</button></div>`;
+  }).join('');
+  const idle = dests.filter(d => !FLEX.get(flexKey(d.code, sel, stopsFor(d)))).length;
   return `<h3 class="gap">Shift the dates ±${FLEX_SPAN} days</h3>
-    <p class="hint">Would leaving earlier or coming back later be cheaper? Pick a city to price every date pair around ${esc(shortRange(sel))}.</p>
-    <div class="flex-chips">${chips}</div>${body}`;
+    <p class="hint">Would leaving earlier or coming back later be cheaper? One grid per city — departure down, return across — around ${esc(shortRange(sel))}.</p>
+    ${idle ? `<button type="button" class="flex-chip flex-all" data-flex-all="${esc(anchor)}">Check ${idle === dests.length ? 'every city' : `the other ${idle} ${idle === 1 ? 'city' : 'cities'}`}</button>` : ''}
+    ${sections}`;
 }
 
 function flexMatrix(dest, sel, grid) {
@@ -2588,13 +2625,19 @@ function render() {
 }
 
 document.getElementById('out').addEventListener('click', event => {
-  const chip = event.target.closest('.flex-chip[data-flex]');
+  const all = event.target.closest('[data-flex-all]');
+  if (all) {
+    const anchor = all.dataset.flexAll;
+    const sel = selectedWindow(PLAN.breaks.find(b => b.anchor === anchor));
+    loadFlexMany(anchor, selectedDests().map(d => d.code).filter(c => !FLEX.get(flexKey(c, sel, stopsFor(DESTS.find(d => d.code === c))))), sel);
+    render();
+    return;
+  }
+  const chip = event.target.closest('[data-flex]');
   if (chip) {
     const [anchor, code] = chip.dataset.flex.split('|');
-    if (FLEX_PICK.get(anchor) === code) { FLEX_PICK.delete(anchor); render(); return; }
-    FLEX_PICK.set(anchor, code);
-    const brk = PLAN.breaks.find(b => b.anchor === anchor);
-    loadFlex(DESTS.find(d => d.code === code), selectedWindow(brk));
+    const sel = selectedWindow(PLAN.breaks.find(b => b.anchor === anchor));
+    loadFlexMany(anchor, [code], sel);
     render();
     return;
   }
@@ -2602,8 +2645,9 @@ document.getElementById('out').addEventListener('click', event => {
   if (!row) return;
   const [anchor, depart, ret] = row.dataset.sel.split('|');
   SEL.set(anchor, `${depart}|${ret}`);
-  const code = FLEX_PICK.get(anchor);
-  if (code) loadFlex(DESTS.find(d => d.code === code), selectedWindow(PLAN.breaks.find(b => b.anchor === anchor)));
+  // Cities already asked for follow the option just picked.
+  const nextSel = selectedWindow(PLAN.breaks.find(b => b.anchor === anchor));
+  loadFlexMany(anchor, [...wanted(anchor)], nextSel);
   render();
 });
 // toggle does not bubble; capture it so the full table stays open across renders.

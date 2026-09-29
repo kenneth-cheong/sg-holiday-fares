@@ -16,6 +16,8 @@ Routes
 
 from __future__ import annotations
 
+import base64
+import hashlib
 import hmac
 import json
 import os
@@ -44,7 +46,36 @@ EDIT_KEY = os.environ.get("EDIT_KEY", "")
 # issued to the dashboard's own OAuth client, for one of these addresses.
 GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "")
 EDITOR_EMAILS = {e.strip().lower() for e in os.environ.get("EDITOR_EMAILS", "").split(",") if e.strip()}
+# A Google access token lasts an hour, so the page trades one for a signed
+# session of its own that lasts SESSION_DAYS — sign in once per device.
+SESSION_SECRET = os.environ.get("SESSION_SECRET", "")
+SESSION_DAYS = 180
 WRITABLE = bool(EDIT_KEY or (GOOGLE_CLIENT_ID and EDITOR_EMAILS))
+
+
+def _sign(payload: str) -> str:
+    return hmac.new(SESSION_SECRET.encode(), payload.encode(), hashlib.sha256).hexdigest()
+
+
+def _make_session(email: str) -> dict:
+    exp = int(time.time()) + SESSION_DAYS * 86400
+    body = base64.urlsafe_b64encode(json.dumps({"e": email, "x": exp}).encode()).decode().rstrip("=")
+    return {"token": f"s1.{body}.{_sign(body)}", "exp": exp * 1000}
+
+
+def _check_session(token: str) -> tuple[bool, str]:
+    try:
+        _, body, sig = token.split(".")
+        if not hmac.compare_digest(sig, _sign(body)):
+            return False, "sign in again"
+        data = json.loads(base64.urlsafe_b64decode(body + "=" * (-len(body) % 4)))
+    except Exception:
+        return False, "sign in again"
+    if data["x"] < time.time():
+        return False, "your sign-in expired — sign in again"
+    if data["e"] not in EDITOR_EMAILS:
+        return False, f"{data['e']} cannot edit the list"
+    return True, data["e"]
 
 
 def _cors(body: dict, status: int = 200) -> dict:
@@ -101,7 +132,10 @@ def _authorise(event) -> tuple[bool, str]:
         return True, "edit key"
     bearer = headers.get("authorization", "")
     if GOOGLE_CLIENT_ID and EDITOR_EMAILS and bearer.lower().startswith("bearer "):
-        return _google_editor(bearer[7:].strip())
+        token = bearer[7:].strip()
+        if token.startswith("s1.") and SESSION_SECRET:
+            return _check_session(token)
+        return _google_editor(token)
     return False, "sign in to edit the list"
 
 
@@ -150,6 +184,20 @@ def _handle_destinations(event, method: str) -> dict:
     })
     print(f"[destinations] {len(cleaned)} saved by {who}")
     return _cors({"ok": True, "destinations": cleaned, "updated_at": stamp})
+
+
+def _handle_session(event) -> dict:
+    """Swap a fresh Google sign-in for a long-lived session token."""
+    if not (SESSION_SECRET and GOOGLE_CLIENT_ID and EDITOR_EMAILS):
+        return _cors({"ok": False, "reason": "sessions are not enabled"}, 503)
+    bearer = (event.get("headers") or {}).get("authorization", "")
+    if not bearer.lower().startswith("bearer "):
+        return _cors({"ok": False, "reason": "sign in with Google first"}, 401)
+    allowed, who = _google_editor(bearer[7:].strip())
+    if not allowed:
+        return _cors({"ok": False, "reason": who}, 401)
+    print(f"[session] issued for {who}")
+    return _cors({"ok": True, **_make_session(who)})
 
 
 # Google's public holiday calendars, one per country ("china", "th", "japanese"
@@ -349,6 +397,9 @@ def lambda_handler(event, context):
     try:
         if path.endswith("/destinations"):
             return _handle_destinations(event, method)
+
+        if path.endswith("/session") and method == "POST":
+            return _handle_session(event)
 
         if path.endswith("/local-holidays"):
             return _handle_local_holidays(event.get("queryStringParameters") or {})
