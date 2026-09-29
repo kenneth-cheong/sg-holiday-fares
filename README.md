@@ -65,7 +65,7 @@ byproduct of that script, not something you write by hand.
 
 One control drives the page: **Days of leave I'll take** (none to three).
 Every number on screen is "each city's cheapest fare for a holiday, within
-that much leave", so the answer card, the insights, the chart and the cards
+that much leave", so the answer card, the insights and the cards
 always agree.
 
 - **Best value break** — the cheapest trip across every holiday priced so
@@ -76,12 +76,9 @@ always agree.
   weekend, the holiday that costs most for the most cities, and the city that
   is consistently the outlier (or, failing one, the city that is cheapest
   most often). They only appear once there is enough priced to say them.
-- **Chart** — every upcoming holiday on one price scale, one dot per city;
-  the cheapest is labelled. Unpriced holidays are dashed columns: tap one to
-  price it. A midweek holiday that needs leave says so rather than pricing a
-  same-day return.
 - **Cards** — each holiday's cheapest fare, its day strip and a bar per city
-  on the same scale as the chart. Opening a card shows every way to take
+  on one shared price scale. Unpriced and midweek holidays say so instead of pricing a
+  same-day return. Opening a card shows every way to take
   that holiday on one calendar (the leave ladder), a city × option price grid
   coloured per city so each row's cheapest option stands out, what the
   most leave buys over the plain holiday, the fares for the option you pick
@@ -113,7 +110,7 @@ already booked: flight and hotel events Gmail added, out-of-office and
 "leave"/"trip"-style events, and all-day plans. Booked holidays get a
 **booked** badge, are skipped by *Price every holiday*, and never win the
 answer card. **Hide booked holidays** (on by default) takes them out of the
-chart and the card list, so the price scale fits the holidays still open. Only the matching events' titles and dates are kept, in local
+card list, so the price scale fits the holidays still open. Only the matching events' titles and dates are kept, in local
 storage; **Forget** removes them and revokes the token.
 
 It stays hidden until `GOOGLE_CLIENT_ID` in `docs/index.html` is set. To get

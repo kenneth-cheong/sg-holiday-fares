@@ -549,42 +549,6 @@
   .legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-left: auto; font-size: 12px; color: var(--text-secondary); }
   .legend span { display: inline-flex; align-items: center; gap: 6px; }
   .legend i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-  .chart-scroll { overflow-x: auto; margin: 0 -6px; padding: 14px 6px 4px; }
-  .chart { position: relative; min-width: calc(var(--cols) * 82px + 48px); padding-left: 48px; }
-  .chart-ticks { position: absolute; left: 48px; right: 0; top: 0; height: 250px; pointer-events: none; }
-  .chart-ticks div { position: absolute; left: 0; right: 0; border-top: 1px solid var(--grid); }
-  .chart-ticks span {
-    position: absolute; right: calc(100% + 6px); top: -8px; font: 11px 'IBM Plex Mono', ui-monospace, monospace;
-    color: var(--text-muted); white-space: nowrap;
-  }
-  .chart-cols { display: flex; position: relative; }
-  .chart-col {
-    flex: 1 1 0; min-width: 82px; background: none; border: 0; padding: 0 3px; margin: 0; cursor: pointer;
-    font: inherit; color: inherit; text-align: center; display: flex; flex-direction: column;
-  }
-  .chart-col .plot { position: relative; height: 250px; border-radius: 10px; display: block; }
-  .chart-col:nth-child(even) .plot { background: color-mix(in srgb, var(--text-primary) 2.5%, transparent); }
-  .chart-col:hover .plot, .chart-col:focus-visible .plot { background: color-mix(in srgb, var(--accent) 9%, transparent); }
-  .chart-col.pending .plot { border: 1px dashed var(--axis); background: none; }
-  .chart-col.muted { cursor: default; }
-  .chart-col.muted:hover .plot { background: none; }
-  .chart-col .dot {
-    position: absolute; width: 12px; height: 12px; border-radius: 50%; transform: translate(-50%, 50%);
-    border: 2px solid var(--surface-1); box-shadow: 0 1px 2px rgba(0,0,0,.25);
-  }
-  .chart-col .dot.top { width: 16px; height: 16px; z-index: 1; }
-  .chart-col .best {
-    position: absolute; left: 0; right: 0; font: 600 12px 'IBM Plex Mono', ui-monospace, monospace;
-    color: var(--text-primary); white-space: nowrap;
-  }
-  .chart-col .note { position: absolute; top: 42%; left: 4px; right: 4px; font-size: 11px; line-height: 1.4; color: var(--text-muted); }
-  .chart-col .note b { display: block; margin-top: 6px; color: var(--accent); font-size: 12px; }
-  .chart-col .lbl { display: flex; flex-direction: column; align-items: center; gap: 3px; padding-top: 8px; border-top: 1px solid var(--border); }
-  .chart-col .lbl b { font-size: 12px; line-height: 1.2; font-weight: 600; }
-  .chart-col .lbl small { font-size: 11px; color: var(--text-muted); }
-  .chart-col.pending .lbl b, .chart-col.muted .lbl b { color: var(--text-muted); }
-  .chart-col .booked-tag { color: var(--accent) !important; font-weight: 600; }
-  .chart-col.booked .plot { opacity: .55; }
 
   /* ── Holiday cards ───────────────────────────────────────────────────── */
   .card-price { display: flex; align-items: baseline; gap: 4px 10px; flex-wrap: wrap; margin-top: 10px; }
@@ -676,7 +640,6 @@
   .flex-city > summary { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; }
   .flex-city > summary i, .flex-idle i { width: 10px; height: 10px; border-radius: 50%; flex: none; }
   .flex-idle { display: flex; align-items: center; gap: 8px; font-size: 14px; }
-  .flex-all { margin-bottom: 6px; }
   .flex-best { font-size: 13px; color: var(--text-secondary); margin: 2px 0 8px; }
   .flex-best b { color: var(--text-primary); }
   .flex-holiday td { padding: 4px 6px; line-height: 1.2; }
@@ -684,7 +647,6 @@
   .flex-holiday td small { display: block; font-size: 9px; opacity: .85; font-weight: 400; }
   details.more { margin: 20px 0 8px; }
   .hidden-note { grid-column: 1 / -1; margin: 0; font-size: 12px; color: var(--text-muted); }
-  #chart-tools:empty { display: none; }
   details.more > summary { font-weight: 600; }
   @media (max-width: 900px) { .detail { grid-template-columns: 1fr; } }
   @media (max-width: 680px) {
@@ -781,18 +743,6 @@
 
   <section class="insights" id="insights" aria-live="polite"></section>
 
-  <section class="panel" id="chart-panel">
-    <div class="panel-head">
-      <div>
-        <h2>Cheapest return fare, holiday by holiday</h2>
-        <p class="sub">One dot per city — its lowest fare within your leave. Tap a holiday to open it, or to price it.</p>
-      </div>
-      <span id="chart-tools"></span>
-      <div class="legend" id="chart-legend"></div>
-    </div>
-    <div class="chart-scroll" id="chart"></div>
-    <div class="dk-key"><span><i class="dk dk-H"></i>Public holiday</span><span><i class="dk dk-L"></i>Day of leave</span><span><i class="dk dk-W"></i>Weekend</span></div>
-  </section>
   <div id="out"></div>
 
   <!-- Below the holiday cards deliberately: this is the escape hatch for dates
@@ -1801,7 +1751,7 @@ document.getElementById('out').addEventListener('keydown', event => {
    Everything below derives from the same three things: the plan, what has been
    priced (LIVE), and how much leave the reader will take (LEAVE). One number —
    a city's cheapest fare for a holiday within that leave — feeds the answer
-   card, the insights, the chart dots and the card bars, so they always agree. */
+   card, the insights and the card bars, so they always agree. */
 const fmt = n => Math.round(n).toLocaleString();
 const WD = d => d.toLocaleDateString(undefined, { weekday: 'short' });
 const leaveWord = l => (l === 0 ? 'no leave' : l === 1 ? '1 day of leave' : `${l} days of leave`);
@@ -1821,7 +1771,7 @@ const upcomingBreaks = () => (PLAN ? PLAN.breaks.filter(b => windowsForBreak(b, 
 const fareFor = (code, w) => LIVE.get(`${code}|${w.depart}|${w['return']}`);
 
 /* Booked holidays are already decided, so by default they step out of the
-   chart and the card list and the rest get the width and the price scale. */
+   card list and the rest get the width and the price scale. */
 const HIDE_KEY = 'sgfares.hidebooked.v1';
 let HIDE_BOOKED = recall(HIDE_KEY) !== '0';
 const bookedCount = () => upcomingBreaks().filter(b => isBooked(b.anchor)).length;
@@ -1854,7 +1804,7 @@ function cheapestFor(brk, maxLeave) {
   return best;
 }
 
-/* One scale for the chart and every card's bars, rounded up so the axis reads
+/* One scale for every card's bars, rounded up so the axis reads
    in whole hundreds. */
 function priceScale(maxLeave, breaks = upcomingBreaks()) {
   let hi = 0;
@@ -2033,83 +1983,14 @@ document.getElementById('insights').addEventListener('click', event => {
   if (anchor) openHoliday(anchor);
 });
 
-/* ═══ Chart: every holiday, one dot per city ═══ */
-function renderChart(maxLeave, max) {
-  const el = document.getElementById('chart');
-  const legend = document.getElementById('chart-legend');
-  const breaks = visibleBreaks();
-  const dests = selectedDests();
-  const booked = bookedCount();
-  document.getElementById('chart-tools').innerHTML = booked
-    ? `<button type="button" class="flex-chip" id="hide-booked" aria-pressed="${HIDE_BOOKED}">Hide ${booked} booked holiday${booked === 1 ? '' : 's'}</button>` : '';
-  legend.innerHTML = dests.map(d => `<span><i style="background:${colorFor(d.code)}"></i>${esc(d.name)}</span>`).join('');
-  if (!breaks.length || !dests.length) { el.innerHTML = ''; return; }
-
-  const step = Math.min(10, 64 / Math.max(1, dests.length));
-  const tickStep = max > 3000 ? 1000 : max > 1000 ? 500 : 250;
-  const ticks = [];
-  for (let v = 0; v <= max; v += tickStep) ticks.push(v);
-  const pct = p => `${(p / max * 100).toFixed(2)}%`;
-
-  const cols = breaks.map(brk => {
-    const anchor = brk.anchor;
-    const windows = windowsForBreak(brk, maxLeave);
-    const per = perDest(brk, maxLeave);
-    const busy = LOADING.has(anchor);
-    const booked = isBooked(anchor);
-    let top = null;
-    for (const x of per.values()) if (!top || x.price < top.price) top = x;
-
-    let plot, state = '';
-    if (!windows.length) {
-      const need = Math.min(...windowsForBreak(brk, 9).map(w => w.leave_days));
-      plot = `<span class="note">Midweek — needs ${esc(leaveWord(need))}</span>`;
-      state = ' muted';
-    } else if (per.size) {
-      plot = dests.map((d, i) => {
-        const x = per.get(d.code);
-        if (!x) return '';
-        const off = (i - (dests.length - 1) / 2) * step;
-        return `<span class="dot${x === top ? ' top' : ''}" style="left:calc(50% + ${off.toFixed(1)}px);bottom:${pct(x.price)};background:${colorFor(d.code)}"
-          title="${esc(`${d.name} ${CURRENCY} ${fmt(x.price)} · ${fmtRange(x.window)} · ${leaveWord(x.window.leave_days)}`)}"></span>`;
-      }).join('') + `<span class="best" style="bottom:max(2px, calc(${pct(top.price)} - 30px))">${esc(top.dest.code)} ${fmt(top.price)}</span>`;
-    } else if (busy) {
-      plot = `<span class="note"><span class="spin"></span></span>`;
-    } else if (PRICED.has(anchor)) {
-      plot = `<span class="note">No fares found</span>`;
-    } else {
-      plot = `<span class="note">Not priced yet<b>Price it</b></span>`;
-      state = ' pending';
-    }
-    return `<button type="button" class="chart-col${state}${booked ? ' booked' : ''}" data-anchor="${esc(anchor)}"
-        title="${esc(`${brk.name}, ${parse(anchor).toLocaleDateString(undefined, { dateStyle: 'full' })}`)}">
-        <span class="plot">${plot}</span>
-        <span class="lbl"><b>${esc(brk.name)}</b><small>${esc(holidayDate(brk))}</small>
-          ${top ? stripHtml(top.window, 'xs') : ''}${booked ? '<small class="booked-tag">booked</small>' : ''}</span>
-      </button>`;
-  });
-
-  el.innerHTML = `<div class="chart" style="--cols:${breaks.length}">
-      <div class="chart-ticks">${ticks.map(v => `<div style="bottom:${pct(v)}"><span>${fmt(v)}</span></div>`).join('')}</div>
-      <div class="chart-cols">${cols.join('')}</div>
-    </div>`;
-}
-
+/* ═══ Booked holidays ═══ */
 function setHideBooked(hide) {
   HIDE_BOOKED = hide;
   remember(HIDE_KEY, hide ? '1' : '0');
   render();
 }
-document.getElementById('chart-tools').addEventListener('click', event => {
-  if (event.target.closest('#hide-booked')) setHideBooked(!HIDE_BOOKED);
-});
 document.getElementById('out').addEventListener('click', event => {
-  if (event.target.closest('[data-show-booked]')) setHideBooked(false);
-});
-
-document.getElementById('chart').addEventListener('click', event => {
-  const anchor = event.target.closest('.chart-col')?.dataset.anchor;
-  if (anchor) openHoliday(anchor);
+  if (event.target.closest('[data-toggle-booked]')) setHideBooked(!HIDE_BOOKED);
 });
 
 function openHoliday(anchor) {
@@ -2493,6 +2374,24 @@ async function loadFlexMany(anchor, codes, sel) {
   }
 }
 
+/* An opened holiday prices its grids by itself, one city after another. Only
+   cities that already have a fare for the holiday are worth 49 lookups, and a
+   grid that failed is left for its Try again button rather than retried in a
+   loop. Called from render(); FLEX_BUSY stops a second run overlapping. */
+const FLEX_BUSY = new Set();
+async function autoFlex(anchor) {
+  if (FLEX_BUSY.has(anchor)) return;
+  const brk = PLAN.breaks.find(b => b.anchor === anchor);
+  const windows = brk ? windowsForBreak(brk, currentLeave()) : [];
+  const sel = windows.length && selectedWindow(brk);
+  if (!sel) return;
+  const todo = selectedDests().filter(d => windows.some(w => fareFor(d.code, w)?.best) && !FLEX.has(flexKey(d.code, sel, stopsFor(d))));
+  if (!todo.length) return;
+  FLEX_BUSY.add(anchor);
+  try { await loadFlexMany(anchor, todo.map(d => d.code), sel); } finally { FLEX_BUSY.delete(anchor); }
+  autoFlex(anchor);   // the option may have changed while it ran
+}
+
 function flexHtml(anchor, sel, dests) {
   if (!dests.length) return '';
   const want = wanted(anchor);
@@ -2508,12 +2407,10 @@ function flexHtml(anchor, sel, dests) {
     }
     if (state) return shell('', flexMatrix(d, sel, state));
     return `<div class="flex-city flex-idle"><i style="background:${colorFor(d.code)}"></i><b>${esc(d.name)}</b>
-      <button type="button" class="flex-chip" data-flex="${esc(anchor)}|${esc(d.code)}">${want.has(d.code) ? 'Waiting…' : 'Check dates'}</button></div>`;
+      <span class="note">${want.has(d.code) ? 'queued…' : 'not checked'}</span></div>`;
   }).join('');
-  const idle = dests.filter(d => !FLEX.get(flexKey(d.code, sel, stopsFor(d)))).length;
   return `<h3 class="gap">Shift the dates ±${FLEX_SPAN} days</h3>
-    <p class="hint">Would leaving earlier or coming back later be cheaper? One grid per city — departure down, return across — around ${esc(shortRange(sel))}.</p>
-    ${idle ? `<button type="button" class="flex-chip flex-all" data-flex-all="${esc(anchor)}">Check ${idle === dests.length ? 'every city' : `the other ${idle} ${idle === 1 ? 'city' : 'cities'}`}</button>` : ''}
+    <p class="hint">Would leaving earlier or coming back later be cheaper? One grid per city — departure down, return across — around ${esc(shortRange(sel))}. They fill in one city after another.</p>
     ${sections}`;
 }
 
@@ -2590,7 +2487,6 @@ function render() {
   CHEAPEST_ANCHOR = ranked.length > 1 ? ranked[0].brk.anchor : null;
   const max = priceScale(maxLeave, breaks);
   renderInsights(ranked, maxLeave);
-  renderChart(maxLeave, max);
 
   const order = document.getElementById('order').value;
   const rank = new Map(ranked.map((x, i) => [x.brk.anchor, i]));
@@ -2600,9 +2496,13 @@ function render() {
     : breaks;
 
   const hidden = HIDE_BOOKED ? bookedCount() : 0;
-  out.innerHTML = (hidden ? `<p class="hidden-note">${hidden} booked holiday${hidden === 1 ? '' : 's'} hidden · <button type="button" class="linkish" data-show-booked>show</button></p>` : '')
+  const nBooked = bookedCount();
+  out.innerHTML = (nBooked
+    ? `<p class="hidden-note">${nBooked} booked holiday${nBooked === 1 ? '' : 's'} ${hidden ? 'hidden' : 'shown'} · <button type="button" class="linkish" data-toggle-booked>${hidden ? 'show' : 'hide'}</button></p>` : '')
     + (list.map(brk => renderHoliday(brk, maxLeave, OPEN.has(brk.anchor), max)).join('')
       || `<div class="empty">No upcoming holidays found.</div>`);
+
+  for (const anchor of OPEN) if (PRICED.has(anchor)) autoFlex(anchor);
 
   out.querySelectorAll('details.holiday').forEach(card => {
     card.querySelector('summary').addEventListener('click', event => {
@@ -2625,14 +2525,6 @@ function render() {
 }
 
 document.getElementById('out').addEventListener('click', event => {
-  const all = event.target.closest('[data-flex-all]');
-  if (all) {
-    const anchor = all.dataset.flexAll;
-    const sel = selectedWindow(PLAN.breaks.find(b => b.anchor === anchor));
-    loadFlexMany(anchor, selectedDests().map(d => d.code).filter(c => !FLEX.get(flexKey(c, sel, stopsFor(DESTS.find(d => d.code === c))))), sel);
-    render();
-    return;
-  }
   const chip = event.target.closest('[data-flex]');
   if (chip) {
     const [anchor, code] = chip.dataset.flex.split('|');
