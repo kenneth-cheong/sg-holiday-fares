@@ -95,6 +95,73 @@ def _to_int(price) -> int | None:
     return int(digits) if digits else None
 
 
+def _tolerant_parse_js(js: str):
+    """fast-flights' parser, but one bad entry no longer sinks the whole list.
+
+    The stock parser reads every itinerary with fixed index paths, so a single
+    entry Google returns without a price (sold out, "price unavailable") raises
+    IndexError and throws away every good itinerary beside it. That is why whole
+    destinations (Kunming, Hangzhou, Nanjing, Shanghai) looked like they had no
+    flights at all. Here each entry is parsed on its own and the unreadable
+    ones are skipped.
+    """
+    import json
+
+    from fast_flights.exceptions import FlightsNotFound
+    from fast_flights.parser import (
+        Airline, Airport, Alliance, CarbonEmission, Flights, JsMetadata,
+        ResultList, SimpleDatetime, SingleFlight,
+    )
+
+    data = js.split("data:", 1)[1].rsplit(",", 1)[0]
+    if data.endswith("errorHasStatus: true"):
+        raise FlightsNotFound("no flights found; received error")
+    payload = json.loads(data)
+
+    try:
+        alliances = [Alliance(code=c, name=n) for c, n in payload[7][1][0]]
+        airlines = [Airline(code=c, name=n) for c, n in payload[7][1][1]]
+    except (IndexError, TypeError):
+        alliances, airlines = [], []
+
+    flights = ResultList()
+    flights.metadata = JsMetadata(alliances=alliances, airlines=airlines)
+    try:
+        entries = payload[3][0]
+    except (IndexError, TypeError):
+        entries = None
+    for k in entries or []:
+        try:
+            flight = k[0]
+            price = k[1][0][1]
+            legs = []
+            for f in flight[2]:
+                legs.append(SingleFlight(
+                    from_airport=Airport(code=f[3], name=f[4]),
+                    to_airport=Airport(code=f[6], name=f[5]),
+                    departure=SimpleDatetime(date=f[20], time=f[8]),
+                    arrival=SimpleDatetime(date=f[21], time=f[10]),
+                    duration=f[11],
+                    plane_type=f[17],
+                ))
+            try:
+                extras = flight[22]
+                carbon = CarbonEmission(typical_on_route=extras[8], emission=extras[7])
+            except (IndexError, TypeError):
+                carbon = CarbonEmission(typical_on_route=0, emission=0)
+            flights.append(Flights(type=flight[0], price=price, airlines=flight[1], flights=legs, carbon=carbon))
+        except (IndexError, TypeError, KeyError):
+            continue
+    return flights
+
+
+def _patch_parser() -> None:
+    import fast_flights.parser as parser
+
+    if parser.parse_js is not _tolerant_parse_js:
+        parser.parse_js = _tolerant_parse_js
+
+
 def _query(origin, dest, depart, ret, max_stops, currency, language):
     from fast_flights import FlightQuery, Passengers, create_query
 
@@ -162,6 +229,8 @@ class GoogleFlightsSource:
     ) -> list[Offer]:
         from fast_flights import get_flights
         from fast_flights.exceptions import FlightsNotFound
+
+        _patch_parser()
 
         query = _query(origin, dest, depart, ret, max_stops, self.currency, self.language)
 

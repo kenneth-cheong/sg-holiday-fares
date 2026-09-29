@@ -342,12 +342,15 @@ replacing it with SerpAPI or Amadeus means implementing one method.
 `fast-flights` is pinned for the same reason — an unattended upgrade is a
 plausible way for this to break quietly.
 
-**The parser fails on some routes that genuinely have service** — not only
-obscure ones. Spot-checked failures include SIN–Shanghai, SIN–Chengdu,
-SIN–Xiamen, and even SIN–Paris CDG and SIN–New York JFK. `/verify` reports
-this honestly (a parser failure, not "no route") rather than telling you a
-real airport has no service, but it means some searches will come back empty
-for reasons that have nothing to do with actual flight availability.
+**The stock parser dropped whole routes over one bad entry — fixed.** The
+`fast-flights` parser reads each itinerary by fixed index, so one entry Google
+returns without a price raised `IndexError` and discarded every good itinerary
+next to it. That made Kunming, Hangzhou, Nanjing, Shanghai and Chengdu look
+like they had no service, and `/verify` refused to add them. `fares/sources.py`
+now swaps in a tolerant `parse_js` that skips unreadable entries and keeps the
+rest. A route can still come back empty when Google truly returns nothing, and
+"nonstop only" is sparse on routes like Kunming, where Scoot flies a few days a
+week, so many dates legitimately have no nonstop.
 
 **A round-trip result describes only the outbound.** Google returns the total
 round-trip price alongside the outbound itinerary; the return legs are not in

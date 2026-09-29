@@ -864,43 +864,72 @@ const CURRENCY = 'SGD';
    Results are concatenated in request order, which callers rely on. */
 const MAX_PER_REQUEST = 16;
 
-async function sendChunks(queries, fresh) {
-  const results = [];
-  for (let i = 0; i < queries.length; i += MAX_PER_REQUEST) {
-    const response = await fetch(`${API}/fares`, {
-      method: 'POST', headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        origin: 'SIN', currency: CURRENCY,
-        // Only the first chunk busts the server cache: a later chunk asking
-        // again would evict what the earlier ones just fetched.
-        fresh: fresh && i === 0,
-        queries: queries.slice(i, i + MAX_PER_REQUEST),
-      }),
-    });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const payload = await response.json();
-    results.push(...(payload.results || []));
+/* Speed comes from doing many lookups at once, bounded so the API is not
+   flooded: at most NET_MAX requests are in flight, whoever asked for them.
+   The queue is by priority — a holiday you just opened jumps ahead of the
+   background work — then first come, first served. A request whose owner has
+   moved on (`cancel()` is true when it reaches the front) is dropped unsent. */
+const NET_MAX = 6;
+const NET = { active: 0, queue: [], seq: 0 };
+const CANCELLED = Symbol('cancelled');
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+function netRun(task, prio) {
+  return new Promise((resolve, reject) => { NET.queue.push({ task, prio, resolve, reject, n: NET.seq++ }); netPump(); });
+}
+function netPump() {
+  while (NET.active < NET_MAX && NET.queue.length) {
+    NET.queue.sort((x, y) => y.prio - x.prio || x.n - y.n);
+    const job = NET.queue.shift();
+    NET.active++;
+    job.task().then(job.resolve, job.reject).finally(() => { NET.active--; netPump(); });
   }
-  return results;
+}
+
+async function sendChunk(queries, fresh, prio, cancel) {
+  return netRun(async () => {
+    if (cancel && cancel()) throw CANCELLED;
+    for (let attempt = 0; ; attempt++) {
+      const response = await fetch(`${API}/fares`, {
+        method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ origin: 'SIN', currency: CURRENCY, fresh, queries }),
+      });
+      // Throttled or briefly unavailable: wait a beat and go again.
+      if ([429, 502, 503].includes(response.status) && attempt < 3) { await sleep(700 * (attempt + 1)); continue; }
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return (await response.json()).results || [];
+    }
+  }, prio);
 }
 
 /* Google's answer is flaky: a lookup that errors (as opposed to one that
    honestly finds no matching flight) often works a moment later, and the API
-   does not cache failures. So errored lookups are sent again, once, after a
-   short pause. Everything is still sent one chunk at a time. */
-const RETRY_ROUNDS = 1;
+   does not cache failures. Each chunk re-sends its own errored lookups once,
+   the moment it lands, so retrying never holds up the other chunks. */
 const failedLookup = r => r && !r.best && r.error && !/^no offers/.test(r.error);
 
-async function faresRequest(queries, { fresh = false } = {}) {
-  const results = await sendChunks(queries, fresh);
-  for (let round = 0; round < RETRY_ROUNDS; round++) {
-    const failed = results.map((r, i) => (failedLookup(r) ? i : -1)).filter(i => i >= 0);
-    if (!failed.length) break;
-    await new Promise(r => setTimeout(r, 800));
-    const again = await sendChunks(failed.map(i => queries[i]), false);
-    failed.forEach((i, j) => { if (again[j]) results[i] = again[j]; });
+async function faresRequest(queries, { fresh = false, prio = 0, cancel = null } = {}) {
+  const out = new Array(queries.length);
+  const jobs = [];
+  for (let i = 0; i < queries.length; i += MAX_PER_REQUEST) {
+    jobs.push((async () => {
+      const slice = queries.slice(i, i + MAX_PER_REQUEST);
+      // `fresh` goes on every chunk: parallel requests land on different
+      // warm containers, and each one has its own cache to bypass.
+      const got = await sendChunk(slice, fresh, prio, cancel);
+      const failed = got.map((r, k) => (failedLookup(r) ? k : -1)).filter(k => k >= 0);
+      if (failed.length) {
+        await sleep(500);
+        try {
+          const again = await sendChunk(failed.map(k => slice[k]), false, prio, cancel);
+          failed.forEach((k, j) => { if (again[j]) got[k] = again[j]; });
+        } catch (error) { if (error === CANCELLED) throw error; /* keep the first answers */ }
+      }
+      got.forEach((r, k) => { out[i + k] = r; });
+    })());
   }
-  return results;
+  await Promise.all(jobs);
+  return out;
 }
 
 /* A tracked destination takes the palette slot of its place in the list, so
@@ -1595,7 +1624,7 @@ function setLiveStatus(text, busy) {
   if (el) { el.textContent = text; el.classList.toggle('busy', !!busy); }
 }
 
-async function refreshLive({ fresh = false, only = null } = {}) {
+async function refreshLive({ fresh = false, only = null, prio = 0 } = {}) {
   if (!PLAN || !DESTS.length) return;
   const groups = PLAN.breaks
     .filter(b => (only ? b.anchor === only : inHorizon(b.anchor)))
@@ -1614,18 +1643,17 @@ async function refreshLive({ fresh = false, only = null } = {}) {
   for (const dest of DESTS) for (const code of airportsOf(dest)) owner.set(code, dest.code);
 
   let ok = 0, failed = 0;
-  // One holiday after another: firing them all at once would put every
-  // holiday × every city on the API together and trip its rate limit.
-  for (const { brk, windows } of groups) {
+  // Holidays run side by side; netRun keeps the total in flight bounded.
+  await Promise.all(groups.map(async ({ brk, windows }) => {
     const queries = DESTS.filter(d => SELECTED.has(d.code)).flatMap(dest =>
       airportsOf(dest).flatMap(airport => windows.map(w => ({
         dest: airport, depart: w.depart, ret: w['return'],
         maxStops: NONSTOP_ONLY ? 0 : dest.maxStops ?? 1,
       }))));
-    if (!queries.length) { LOADING.delete(brk.anchor); continue; }
+    if (!queries.length) { LOADING.delete(brk.anchor); return; }
 
     try {
-      const results = await faresRequest(queries, { fresh });
+      const results = await faresRequest(queries, { fresh, prio });
 
       // A destination can span more than one airport; collapse each set of
       // per-airport results down to the cheapest before storing.
@@ -1649,7 +1677,7 @@ async function refreshLive({ fresh = false, only = null } = {}) {
       LOADING.delete(brk.anchor);
       render();
     }
-  }
+  }));
 
   setLiveStatus(
     ok ? `live · ${ok} priced${failed ? `, ${failed} unavailable` : ''} · from Singapore`
@@ -1684,14 +1712,21 @@ async function priceAll() {
   document.getElementById('refresh').disabled = true;
 
   let done = 0;
-  for (const anchor of targets) {
-    if (BULK.stop) break;
-    button.textContent = `Stop · ${done + 1} of ${targets.length}`;
-    BULK.done = done;
-    BULK.name = PLAN.breaks.find(b => b.anchor === anchor)?.name || '';
-    await refreshLive({ only: anchor });
-    done++;
-  }
+  const queue = [...targets];
+  // Three holidays at a time; each is several parallel chunks already.
+  const worker = async () => {
+    while (queue.length && !BULK.stop) {
+      const anchor = queue.shift();
+      BULK.name = PLAN.breaks.find(b => b.anchor === anchor)?.name || '';
+      BULK.done = done;
+      button.textContent = `Stop · ${done} of ${targets.length} done`;
+      await refreshLive({ only: anchor });
+      done++;
+      BULK.done = done;
+      button.textContent = `Stop · ${done} of ${targets.length} done`;
+    }
+  };
+  await Promise.all([worker(), worker(), worker()]);
 
   const stopped = BULK.stop;
   BULK = null;
@@ -1977,7 +2012,7 @@ function renderInsights(ranked, maxLeave) {
         <h2 class="hero-title">Price every holiday to find your best-value break</h2>
         <p class="hero-sub">Checks the next ${count} holidays for ${SELECTED.size} cit${SELECTED.size === 1 ? 'y' : 'ies'}, live from Singapore. Nothing is priced until you ask.</p>
         ${BULK
-          ? `<p class="hero-sub"><span class="spin"></span> <b>Pricing ${esc(BULK.name || 'the first holiday')} — ${BULK.done + 1} of ${BULK.total}.</b> Each holiday takes a few seconds; results appear as they land.</p>
+          ? `<p class="hero-sub"><span class="spin"></span> <b>Pricing holidays — ${BULK.done} of ${BULK.total} done.</b> Three run at a time; results appear as they land.</p>
              <button class="hero-go" type="button" data-act="price-all">Stop</button>`
           : `<button class="hero-go" type="button" data-act="price-all">Price every holiday</button>`}
       </div>`;
@@ -2021,7 +2056,7 @@ function openHoliday(anchor) {
   OPEN.add(anchor);
   VIEWING = anchor;
   history.replaceState(null, '', `#${anchor}`);
-  if (PRICED.has(anchor)) render(); else refreshLive({ only: anchor });
+  if (PRICED.has(anchor)) render(); else refreshLive({ only: anchor, prio: 2 });
   requestAnimationFrame(() => document.querySelector(`details.holiday[data-anchor="${anchor}"]`)
     ?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
 }
@@ -2350,7 +2385,7 @@ function selectedWindow(brk) {
   return picked || cheapestFor(brk, currentLeave())?.window || windows[0];
 }
 
-async function loadFlex(dest, w) {
+async function loadFlex(dest, w, { prio = 1, cancel = null } = {}) {
   const stops = stopsFor(dest);
   const key = flexKey(dest.code, w, stops);
   if (FLEX.has(key) && FLEX.get(key) !== 'failed') return;
@@ -2366,7 +2401,7 @@ async function loadFlex(dest, w) {
     }
   }
   try {
-    const results = await faresRequest(cells.map(c => c.q));
+    const results = await faresRequest(cells.map(c => c.q), { prio, cancel });
     const grid = new Map();
     cells.forEach((c, i) => {
       const k = `${c.d},${c.r}`, res = results[i];
@@ -2375,8 +2410,8 @@ async function loadFlex(dest, w) {
     });
     FLEX.set(key, grid);
   } catch (error) {
-    FLEX.set(key, 'failed');
-    console.warn('±3 days failed', error);
+    if (error === CANCELLED) FLEX.delete(key);   // left the holiday: ask again if it is reopened
+    else { FLEX.set(key, 'failed'); console.warn('±3 days failed', error); }
   }
   render();
 }
@@ -2390,12 +2425,16 @@ async function loadFlexMany(anchor, codes, sel) {
   const want = wanted(anchor);
   for (const code of codes) want.add(code);
   FLEX_WANT.set(anchor, want);
-  for (const code of codes) {
-    if (VIEWING !== anchor) break;   // moved on to another holiday: stop spending lookups here
-    const dest = DESTS.find(d => d.code === code);
+  // Every city at once; they share the bounded request pool, and stop
+  // queueing the moment another holiday becomes the one in view.
+  const stillHere = () => {
     const now = selectedWindow(PLAN.breaks.find(b => b.anchor === anchor));
-    if (dest && now.depart === sel.depart && now['return'] === sel['return']) await loadFlex(dest, sel);
-  }
+    return VIEWING === anchor && now.depart === sel.depart && now['return'] === sel['return'];
+  };
+  await Promise.all(codes.map(code => {
+    const dest = DESTS.find(d => d.code === code);
+    return dest && stillHere() ? loadFlex(dest, sel, { prio: 1, cancel: () => !stillHere() }) : null;
+  }));
 }
 
 /* An opened holiday prices its grids by itself, one city after another. Only
@@ -2413,7 +2452,7 @@ async function autoFlex(anchor) {
   if (!todo.length) return;
   FLEX_BUSY.add(anchor);
   try { await loadFlexMany(anchor, todo.map(d => d.code), sel); } finally { FLEX_BUSY.delete(anchor); }
-  autoFlex(anchor);   // the option may have changed while it ran
+  if (VIEWING === anchor) autoFlex(anchor);   // the option may have changed while it ran
 }
 
 function flexHtml(anchor, sel, dests) {
@@ -2545,7 +2584,7 @@ function render() {
       OPEN.add(anchor);
       VIEWING = anchor;
       history.replaceState(null, '', `#${anchor}`);
-      if (PRICED.has(anchor)) render(); else refreshLive({ only: anchor });
+      if (PRICED.has(anchor)) render(); else refreshLive({ only: anchor, prio: 2 });
     });
   });
 }
